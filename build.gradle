@@ -1,0 +1,70 @@
+buildscript {
+	ext {
+		// リリース物件ビルド構成。
+		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
+		propInstid = getProjectProperty("instid", "00")
+		propEnvname = getProjectProperty("envname", "prod")
+		propTopdir = getProjectProperty("topdir", "/opt/${rootProject.name}")
+		propInstdir = getProjectProperty("instdir", "${propTopdir}/${propInstid}")
+		propWebdir = getProjectProperty("webdir", "${propInstdir}/web")
+		propWebconfdir = getProjectProperty("webconfdir", "${propWebdir}/conf")
+		propWeblogdir = getProjectProperty("weblogdir", "${propWebdir}/log")
+		propBatchdir = getProjectProperty("batchdir", "${propInstdir}/batch")
+		propBatchconfdir = getProjectProperty("batchconfdir", "${propBatchdir}/conf")
+		propBatchlogdir = getProjectProperty("batchlogdir", "${propBatchdir}/log")
+		// 依存ライブラリのバージョン。
+		versionSpringBoot = "2.1.6.RELEASE"
+	}
+	repositories { mavenCentral() }
+	dependencies {
+		classpath "org.springframework.boot:spring-boot-gradle-plugin:${versionSpringBoot}"
+	}
+}
+
+plugins {
+	id "java-library"
+	id "eclipse"
+}
+
+subprojects {
+	apply plugin: "java-library"
+	apply plugin: "eclipse"
+	apply plugin: "io.spring.dependency-management"
+
+	sourceSets {
+		delivery
+	}
+
+	sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+	compileJava.options.encoding = "UTF-8"
+	compileTestJava.options.encoding = "UTF-8"
+	compileDeliveryJava.options.encoding = "UTF-8"
+
+	processDeliveryResources {
+
+		def props = new Properties()
+		["tokens/basis.properties", "tokens/${propEnvname}.properties", "tokens/${propEnvname}_${propInstid}.properties"].each {
+			def file = rootProject.file(it)
+			if (file.exists()) {
+				file.withInputStream { props.load(it) }
+			}
+		}
+
+		props.setProperty("tokens.instid", propInstid)
+		props.setProperty("tokens.envname", propEnvname)
+
+		props.setProperty("tokens.topdir", propTopdir)
+		props.setProperty("tokens.instdir", propInstdir)
+		props.setProperty("tokens.webdir", propWebdir)
+		props.setProperty("tokens.webconfdir", propWebconfdir)
+		props.setProperty("tokens.weblogdir", propWeblogdir)
+		props.setProperty("tokens.batchdir", propBatchdir)
+		props.setProperty("tokens.batchconfdir", propBatchconfdir)
+		props.setProperty("tokens.batchlogdir", propBatchlogdir)
+
+		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
+		rename("\\.template\$", "")
+	}
+}
