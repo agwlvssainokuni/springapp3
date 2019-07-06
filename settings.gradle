@@ -1,1 +1,2 @@
-include ":corelib:elemental:elemental-core"
+include ":corelib:elemental:elemental-core",
+	":corelib:elemental:elemental-crypto"
