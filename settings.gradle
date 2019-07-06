@@ -1,2 +1,3 @@
 include ":corelib:elemental:elemental-core",
-	":corelib:elemental:elemental-crypto"
+	":corelib:elemental:elemental-crypto",
+	":corelib:elemental:elemental-log"
