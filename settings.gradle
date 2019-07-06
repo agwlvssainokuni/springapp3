@@ -1,4 +1,5 @@
 include ":corelib:elemental:elemental-core",
+	":corelib:elemental:elemental-command",
 	":corelib:elemental:elemental-crypto",
 	":corelib:elemental:elemental-log",
 	":corelib:elemental:elemental-paginate",

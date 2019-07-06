@@ -79,6 +79,9 @@ subprojects {
 		if (project.name == "elemental-core") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 		}
+		if (project.name == "elemental-command") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+		}
 		if (project.name == "elemental-crypto") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			testImplementation "commons-codec:commons-codec:${versionCommonsCodec}"
