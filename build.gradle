@@ -89,6 +89,9 @@ subprojects {
 		if (project.name == "elemental-paginate") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 		}
+		if (project.name == "elemental-wakachi") {
+			// なし。
+		}
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
 		testImplementation "org.mockito:mockito-core:${versionMockito}"
