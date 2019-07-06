@@ -17,6 +17,8 @@ buildscript {
 		versionCommonsCodec = "1.12"
 		versionSpringBoot = "2.1.6.RELEASE"
 		versionSlf4j = "1.7.26"
+		versionLogback = "1.2.3"
+		versionFluentLogger = "0.3.4"
 		versionJunit = "4.12"
 		versionHamcrest = "1.3"
 		versionMockito = "2.28.2"
@@ -94,6 +96,10 @@ subprojects {
 		}
 		if (project.name == "elemental-wakachi") {
 			// なし。
+		}
+		if (project.name == "elemental-fluent") {
+			implementation "org.fluentd:fluent-logger:${versionFluentLogger}"
+			implementation "ch.qos.logback:logback-classic:${versionLogback}"
 		}
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
