@@ -86,6 +86,9 @@ subprojects {
 		if (project.name == "elemental-log") {
 			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
 		}
+		if (project.name == "elemental-paginate") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+		}
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
 		testImplementation "org.mockito:mockito-core:${versionMockito}"
