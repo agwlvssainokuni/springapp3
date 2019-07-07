@@ -5,4 +5,5 @@ include ":corelib:elemental:elemental-core",
 	":corelib:elemental:elemental-log",
 	":corelib:elemental:elemental-paginate",
 	":corelib:elemental:elemental-wakachi",
-	":corelib:elemental:elemental-fluent"
+	":corelib:elemental:elemental-fluent",
+	":corelib:fundamental:fundamental-appinfo"
