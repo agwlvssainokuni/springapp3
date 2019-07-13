@@ -121,6 +121,12 @@ subprojects {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			testRuntime "org.springframework.boot:spring-boot-starter-aop"
 		}
+		if (project.name == "fundamental-numbering") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			testRuntime "org.springframework.boot:spring-boot-starter-aop"
+		}
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
