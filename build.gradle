@@ -117,6 +117,10 @@ subprojects {
 		if (project.name == "fundamental-appinfo") {
 			testRuntime "org.springframework.boot:spring-boot-starter-aop"
 		}
+		if (project.name == "fundamental-bizcal") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			testRuntime "org.springframework.boot:spring-boot-starter-aop"
+		}
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
