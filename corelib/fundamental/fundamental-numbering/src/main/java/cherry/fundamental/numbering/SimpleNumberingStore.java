@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.apache.commons.collections4.map.DefaultedMap;
+import org.apache.commons.collections4.map.LazyMap;
 
 public class SimpleNumberingStore implements NumberingStore {
 
@@ -35,8 +35,8 @@ public class SimpleNumberingStore implements NumberingStore {
 
 	public SimpleNumberingStore(Map<String, Definition> definitionMap) {
 		this.definitionMap = definitionMap;
-		currentValueMap = DefaultedMap.defaultedMap(new HashMap<String, Long>(), Long.valueOf(0L));
-		lockMap = new HashMap<String, Lock>();
+		currentValueMap = LazyMap.lazyMap(new HashMap<String, Long>(), () -> Long.valueOf(0L));
+		lockMap = LazyMap.lazyMap(new HashMap<String, Lock>(), () -> new ReentrantLock(true));
 	}
 
 	@Override
@@ -49,12 +49,7 @@ public class SimpleNumberingStore implements NumberingStore {
 
 	@Override
 	public synchronized long loadAndLock(String numberName) {
-		Lock lock = lockMap.get(numberName);
-		if (lock == null) {
-			lock = new ReentrantLock(true);
-			lockMap.put(numberName, lock);
-		}
-		lock.lock();
+		lockMap.get(numberName).lock();
 		return currentValueMap.get(numberName).longValue();
 	}
 

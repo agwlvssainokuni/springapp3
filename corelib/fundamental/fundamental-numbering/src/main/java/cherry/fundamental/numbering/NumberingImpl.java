@@ -19,6 +19,12 @@ package cherry.fundamental.numbering;
 import static java.text.MessageFormat.format;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 public class NumberingImpl implements Numbering {
 
@@ -28,37 +34,67 @@ public class NumberingImpl implements Numbering {
 		this.numberingStore = numberingStore;
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public String issueAsString(String numberName) {
-
-		if (numberName == null) {
-			throw new IllegalArgumentException("numberName must not be null");
-		}
-
-		Definition def = numberingStore.getDefinition(numberName);
-		MessageFormat fmt = new MessageFormat(def.getTemplate());
-		long current = numberingStore.loadAndLock(numberName);
-		int offset = 0;
-		try {
-
-			long v = current + 1;
-			if (v < def.getMinValue()) {
-				throw new IllegalStateException(format("{0} must not be < {1}", numberName, def.getMinValue()));
-			}
-			if (v > def.getMaxValue()) {
-				throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
-			}
-			String result = fmt.format(new Object[] { Long.valueOf(v) });
-
-			offset = 1;
-			return result;
-		} finally {
-			numberingStore.saveAndUnlock(numberName, current + offset);
-		}
+		return doIssueAsT(numberName, 1, def -> {
+			MessageFormat fmt = new MessageFormat(def.getTemplate());
+			return v -> fmt.format(new Object[] { v });
+		}).get(0);
 	}
 
+	@Transactional()
 	@Override
-	public String[] issueAsString(String numberName, int count) {
+	public String issueAsStringInTx(String numberName) {
+		return doIssueAsT(numberName, 1, def -> {
+			MessageFormat fmt = new MessageFormat(def.getTemplate());
+			return v -> fmt.format(new Object[] { v });
+		}).get(0);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public List<String> issueAsString(String numberName, int count) {
+		return doIssueAsT(numberName, count, def -> {
+			MessageFormat fmt = new MessageFormat(def.getTemplate());
+			return v -> fmt.format(new Object[] { v });
+		});
+	}
+
+	@Transactional()
+	@Override
+	public List<String> issueAsStringInTx(String numberName, int count) {
+		return doIssueAsT(numberName, count, def -> {
+			MessageFormat fmt = new MessageFormat(def.getTemplate());
+			return v -> fmt.format(new Object[] { v });
+		});
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public Long issueAsLong(String numberName) {
+		return doIssueAsT(numberName, 1, def -> Function.identity()).get(0);
+	}
+
+	@Transactional()
+	@Override
+	public Long issueAsLongInTx(String numberName) {
+		return doIssueAsT(numberName, 1, def -> Function.identity()).get(0);
+	}
+
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	public List<Long> issueAsLong(String numberName, int count) {
+		return doIssueAsT(numberName, count, def -> Function.identity());
+	}
+
+	@Transactional()
+	@Override
+	public List<Long> issueAsLongInTx(String numberName, int count) {
+		return doIssueAsT(numberName, count, def -> Function.identity());
+	}
+
+	private <T> List<T> doIssueAsT(String numberName, int count, Function<Definition, Function<Long, T>> genfmt) {
 
 		if (numberName == null) {
 			throw new IllegalArgumentException("numberName must not be null");
@@ -68,12 +104,12 @@ public class NumberingImpl implements Numbering {
 		}
 
 		Definition def = numberingStore.getDefinition(numberName);
-		MessageFormat fmt = new MessageFormat(def.getTemplate());
+		Function<Long, T> fmt = genfmt.apply(def);
 		long current = numberingStore.loadAndLock(numberName);
 		int offset = 0;
 		try {
 
-			String[] result = new String[count];
+			List<T> result = new ArrayList<>(count);
 			for (int i = 1; i <= count; i++) {
 				long v = current + i;
 				if (v < def.getMinValue()) {
@@ -82,68 +118,7 @@ public class NumberingImpl implements Numbering {
 				if (v > def.getMaxValue()) {
 					throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
 				}
-				result[i - 1] = fmt.format(new Object[] { Long.valueOf(v) });
-			}
-
-			offset = count;
-			return result;
-		} finally {
-			numberingStore.saveAndUnlock(numberName, current + offset);
-		}
-	}
-
-	@Override
-	public long issueAsLong(String numberName) {
-
-		if (numberName == null) {
-			throw new IllegalArgumentException("numberName must not be null");
-		}
-
-		Definition def = numberingStore.getDefinition(numberName);
-		long current = numberingStore.loadAndLock(numberName);
-		int offset = 0;
-		try {
-
-			long v = current + 1;
-			if (v < def.getMinValue()) {
-				throw new IllegalStateException(format("{0} must not be < {1}", numberName, def.getMinValue()));
-			}
-			if (v > def.getMaxValue()) {
-				throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
-			}
-
-			offset = 1;
-			return v;
-		} finally {
-			numberingStore.saveAndUnlock(numberName, current + offset);
-		}
-	}
-
-	@Override
-	public long[] issueAsLong(String numberName, int count) {
-
-		if (numberName == null) {
-			throw new IllegalArgumentException("numberName must not be null");
-		}
-		if (count <= 0) {
-			throw new IllegalArgumentException("count must not be <= 0");
-		}
-
-		Definition def = numberingStore.getDefinition(numberName);
-		long current = numberingStore.loadAndLock(numberName);
-		int offset = 0;
-		try {
-
-			long[] result = new long[count];
-			for (int i = 1; i <= count; i++) {
-				long v = current + i;
-				if (v < def.getMinValue()) {
-					throw new IllegalStateException(format("{0} must not be < {1}", numberName, def.getMinValue()));
-				}
-				if (v > def.getMaxValue()) {
-					throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
-				}
-				result[i - 1] = v;
+				result.add(fmt.apply(v));
 			}
 
 			offset = count;

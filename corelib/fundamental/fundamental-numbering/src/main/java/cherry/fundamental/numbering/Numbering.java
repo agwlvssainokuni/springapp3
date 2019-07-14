@@ -16,9 +16,11 @@
 
 package cherry.fundamental.numbering;
 
+import java.util.List;
+
 /**
  * 発番管理機能。<br />
- * 番号を発行する機能を提供する。番号は、基本的に、文字列として発行する。ただし、数値 (long) として発行することも可能とする。
+ * 番号を発行する機能を提供する。番号は、基本的に、文字列として発行する。ただし、数値 (Long) として発行することも可能とする。
  */
 public interface Numbering {
 
@@ -31,14 +33,32 @@ public interface Numbering {
 	String issueAsString(String numberName);
 
 	/**
+	 * 文字列形式で番号を発行する。
+	 * 
+	 * @param numberName 番号を識別する名前。
+	 * @return 発行した番号 (文字列)。
+	 */
+	String issueAsStringInTx(String numberName);
+
+	/**
 	 * 文字列形式で番号を発行する。<br />
-	 * 発行する番号の数を指定する。返却値は番号の配列であり、要素数は、引数に指定した数と同じである。
+	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
 	 * 
 	 * @param numberName 番号を識別する名前。
 	 * @param count 発行する番号の数。
-	 * @return 発行した番号 (文字列) の配列。
+	 * @return 発行した番号 (文字列) のリスト。
 	 */
-	String[] issueAsString(String numberName, int count);
+	List<String> issueAsString(String numberName, int count);
+
+	/**
+	 * 文字列形式で番号を発行する。<br />
+	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
+	 * 
+	 * @param numberName 番号を識別する名前。
+	 * @param count 発行する番号の数。
+	 * @return 発行した番号 (文字列) のリスト。
+	 */
+	List<String> issueAsStringInTx(String numberName, int count);
 
 	/**
 	 * 整数値形式で番号を発行する。
@@ -46,16 +66,34 @@ public interface Numbering {
 	 * @param numberName 番号を識別する名前。
 	 * @return 発行した番号 (整数値)。
 	 */
-	long issueAsLong(String numberName);
+	Long issueAsLong(String numberName);
+
+	/**
+	 * 整数値形式で番号を発行する。
+	 * 
+	 * @param numberName 番号を識別する名前。
+	 * @return 発行した番号 (整数値)。
+	 */
+	Long issueAsLongInTx(String numberName);
 
 	/**
 	 * 整数値形式で番号を発行する。<br />
-	 * 発行する番号の数を指定する。返却値は番号の配列であり、要素数は、引数に指定した数と同じである。
+	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
 	 * 
 	 * @param numberName 番号を識別する名前。
 	 * @param count 発行する番号の数。
-	 * @return 発行した番号 (整数値) の配列。
+	 * @return 発行した番号 (整数値) のリスト。
 	 */
-	long[] issueAsLong(String numberName, int count);
+	List<Long> issueAsLong(String numberName, int count);
+
+	/**
+	 * 整数値形式で番号を発行する。<br />
+	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
+	 * 
+	 * @param numberName 番号を識別する名前。
+	 * @param count 発行する番号の数。
+	 * @return 発行した番号 (整数値) のリスト。
+	 */
+	List<Long> issueAsLongInTx(String numberName, int count);
 
 }

@@ -132,7 +132,7 @@ subprojects {
 		if (project.name == "fundamental-numbering") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
-			implementation "org.springframework.boot:spring-boot-starter"
+			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 		}
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"

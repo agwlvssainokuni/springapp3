@@ -22,68 +22,85 @@ import static org.junit.Assert.fail;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.test.context.junit4.SpringRunner;
 
-public class NumberingImplTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = NumberingTest.class)
+@SpringBootApplication
+@ImportResource(locations = "classpath:spring/appctx-trace.xml")
+public class NumberingTest {
+
+	@Autowired
+	private Numbering numbering;
+
+	@Autowired
+	private SimpleNumberingStoreConfiguration simpleNumberingStoreConfiguration;
 
 	@Test
 	public void testIssueAsString_OK() {
-		NumberingImpl impl = create();
+		reset();
 		NumberFormat fmt = new DecimalFormat("0000");
 		for (int i = 0; i < 100; i++) {
-			assertEquals(fmt.format(1 + i), impl.issueAsString("TEST00"));
+			assertEquals(fmt.format(1 + i), numbering.issueAsString("TEST00"));
 		}
-		String[] n100 = impl.issueAsString("TEST00", 100);
+		List<String> n100 = numbering.issueAsString("TEST00", 100);
 		for (int i = 0; i < 100; i++) {
-			assertEquals(fmt.format(101 + i), n100[i]);
+			assertEquals(fmt.format(101 + i), n100.get(i));
 		}
 	}
 
 	@Test
 	public void testIssueAsString_NG() {
-		NumberingImpl impl = create();
+		reset();
 
 		try {
-			impl.issueAsString((String) null);
+			numbering.issueAsString((String) null);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: numberName must not be null", ex.toString());
 		}
 		try {
-			impl.issueAsString("TEST01");
+			numbering.issueAsString("TEST01");
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST01 must not be < 2", ex.toString());
 		}
 		try {
-			impl.issueAsString("TEST02");
+			numbering.issueAsString("TEST02");
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST02 must not be > 0", ex.toString());
 		}
 
 		try {
-			impl.issueAsString((String) null, 1);
+			numbering.issueAsString((String) null, 1);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: numberName must not be null", ex.toString());
 		}
 		try {
-			impl.issueAsString("TEST00", 0);
+			numbering.issueAsString("TEST00", 0);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: count must not be <= 0", ex.toString());
 		}
 		try {
-			impl.issueAsString("TEST01", 1);
+			numbering.issueAsString("TEST01", 1);
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST01 must not be < 2", ex.toString());
 		}
 		try {
-			impl.issueAsString("TEST02", 1);
+			numbering.issueAsString("TEST02", 1);
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST02 must not be > 0", ex.toString());
@@ -92,59 +109,58 @@ public class NumberingImplTest {
 
 	@Test
 	public void testIssueAsLong_OK() {
-		NumberingImpl impl = create();
+		reset();
 		for (int i = 0; i < 100; i++) {
-			assertEquals(1 + i, impl.issueAsLong("TEST00"));
+			assertEquals(Long.valueOf(1 + i), numbering.issueAsLong("TEST00"));
 		}
-		long[] n100 = impl.issueAsLong("TEST00", 100);
+		List<Long> n100 = numbering.issueAsLong("TEST00", 100);
 		for (int i = 0; i < 100; i++) {
-			assertEquals(101 + i, n100[i]);
+			assertEquals(Long.valueOf(101 + i), n100.get(i));
 		}
 	}
 
 	@Test
 	public void testIssueAsLong_NG() {
-		NumberingImpl impl = create();
-
+		reset();
 		try {
-			impl.issueAsLong((String) null);
+			numbering.issueAsLong((String) null);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: numberName must not be null", ex.toString());
 		}
 		try {
-			impl.issueAsLong("TEST01");
+			numbering.issueAsLong("TEST01");
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST01 must not be < 2", ex.toString());
 		}
 		try {
-			impl.issueAsLong("TEST02");
+			numbering.issueAsLong("TEST02");
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST02 must not be > 0", ex.toString());
 		}
 
 		try {
-			impl.issueAsLong((String) null, 1);
+			numbering.issueAsLong((String) null, 1);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: numberName must not be null", ex.toString());
 		}
 		try {
-			impl.issueAsLong("TEST00", 0);
+			numbering.issueAsLong("TEST00", 0);
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: count must not be <= 0", ex.toString());
 		}
 		try {
-			impl.issueAsLong("TEST01", 1);
+			numbering.issueAsLong("TEST01", 1);
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST01 must not be < 2", ex.toString());
 		}
 		try {
-			impl.issueAsLong("TEST02", 1);
+			numbering.issueAsLong("TEST02", 1);
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {
 			assertEquals("java.lang.IllegalStateException: TEST02 must not be > 0", ex.toString());
@@ -153,16 +169,16 @@ public class NumberingImplTest {
 
 	@Test
 	public void testNoName() {
-		NumberingImpl impl = create();
+		reset();
 		try {
-			impl.issueAsString("NONE");
+			numbering.issueAsString("NONE");
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("java.lang.IllegalArgumentException: NONE must be defined", ex.toString());
 		}
 	}
 
-	private NumberingImpl create() {
+	private void reset() {
 
 		Map<String, Definition> map = new HashMap<>();
 
@@ -184,7 +200,7 @@ public class NumberingImplTest {
 		dto2.setMaxValue(0L);
 		map.put("TEST02", dto2);
 
-		return new NumberingImpl(new SimpleNumberingStore(map));
+		simpleNumberingStoreConfiguration.reset(map);
 	}
 
 }

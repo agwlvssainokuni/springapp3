@@ -24,15 +24,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.test.context.junit4.SpringRunner;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = SimpleNumberingStoreTest.class)
+@SpringBootApplication
+@ImportResource(locations = "classpath:spring/appctx-trace.xml")
 public class SimpleNumberingStoreTest {
+
+	@Autowired
+	private NumberingStore numberingStore;
+
+	@Autowired
+	private SimpleNumberingStoreConfiguration simpleNumberingStoreConfiguration;
 
 	@Test
 	public void testGetDefinition() {
-		SimpleNumberingStore store = create();
-		assertNotNull(store.getDefinition("TEST00"));
+		reset();
+		assertNotNull(numberingStore.getDefinition("TEST00"));
 		try {
-			store.getDefinition("NONE");
+			numberingStore.getDefinition("NONE");
 			fail("Exception must be thrown");
 		} catch (IllegalArgumentException ex) {
 			assertEquals("NONE must be defined", ex.getMessage());
@@ -41,25 +57,25 @@ public class SimpleNumberingStoreTest {
 
 	@Test
 	public void testLoadSave() {
-		SimpleNumberingStore store = create();
+		reset();
 		for (long i = 0L; i < 100L; i++) {
-			long current = store.loadAndLock("TEST00");
+			long current = numberingStore.loadAndLock("TEST00");
 			try {
 				assertEquals(i, current);
 			} finally {
-				store.saveAndUnlock("TEST00", current + 1L);
+				numberingStore.saveAndUnlock("TEST00", current + 1L);
 			}
 		}
 	}
 
-	private SimpleNumberingStore create() {
+	private void reset() {
 		Definition dto = new Definition();
 		dto.setTemplate("0000");
 		dto.setMinValue(1L);
 		dto.setMaxValue(9999L);
 		Map<String, Definition> map = new HashMap<>();
 		map.put("TEST00", dto);
-		return new SimpleNumberingStore(map);
+		simpleNumberingStoreConfiguration.reset(map);
 	}
 
 }
