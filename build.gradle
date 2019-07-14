@@ -16,6 +16,7 @@ buildscript {
 		versionCommonsLang3 = "3.9"
 		versionCommonsCollections4 = "4.3"
 		versionCommonsCodec = "1.12"
+		versionFreemarker = "2.3.28"
 		versionSpringBoot = "2.1.6.RELEASE"
 		versionSlf4j = "1.7.26"
 		versionLogback = "1.2.3"
@@ -115,17 +116,22 @@ subprojects {
 
 		// fundamental
 		if (project.name == "fundamental-appinfo") {
-			testRuntime "org.springframework.boot:spring-boot-starter-aop"
+			// なし。
 		}
 		if (project.name == "fundamental-bizcal") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			testRuntime "org.springframework.boot:spring-boot-starter-aop"
+		}
+		if (project.name == "fundamental-mail") {
+			implementation project(":corelib:fundamental:fundamental-bizcal")
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.freemarker:freemarker:${versionFreemarker}"
+			implementation "org.springframework.boot:spring-boot-starter-jdbc"
+			implementation "org.springframework.boot:spring-boot-starter-mail"
 		}
 		if (project.name == "fundamental-numbering") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			implementation "org.springframework.boot:spring-boot-starter"
-			testRuntime "org.springframework.boot:spring-boot-starter-aop"
 		}
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"
@@ -133,6 +139,7 @@ subprojects {
 		testImplementation "org.mockito:mockito-core:${versionMockito}"
 		if (project.name.startsWith("fundamental-")) {
 			testImplementation "org.springframework.boot:spring-boot-starter-test"
+			testRuntime "org.springframework.boot:spring-boot-starter-aop"
 		}
 	}
 }

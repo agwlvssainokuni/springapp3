@@ -1,0 +1,81 @@
+/*
+ * Copyright 2014,2019 agwlvssainokuni
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cherry.fundamental.mail;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import cherry.fundamental.bizcal.Bizcal;
+
+public class MailFacadeImpl implements MailFacade {
+
+	private Bizcal bizcal;
+
+	private MailDataHandler mailDataHandler;
+
+	private MailSendHandler mailSendHandler;
+
+	public void setBizcal(Bizcal bizcal) {
+		this.bizcal = bizcal;
+	}
+
+	public void setMailDataHandler(MailDataHandler mailDataHandler) {
+		this.mailDataHandler = mailDataHandler;
+	}
+
+	public void setMailSendHandler(MailSendHandler mailSendHandler) {
+		this.mailSendHandler = mailSendHandler;
+	}
+
+	@Override
+	public MailData createMailData(String templateName, String to, MailModel mailModel) {
+		return mailDataHandler.createMailData(templateName, to, mailModel);
+	}
+
+	@Override
+	public MailData createMailData(String fromAddr, List<String> toAddr, List<String> ccAddr, List<String> bccAddr,
+			String replyToAddr, String subject, String body, MailModel mailModel) {
+		return mailDataHandler.createMailData(fromAddr, toAddr, ccAddr, bccAddr, replyToAddr, subject, body, mailModel);
+	}
+
+	@Override
+	public long send(String launcherId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body) {
+		return mailSendHandler.sendLater(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body,
+				bizcal.now());
+	}
+
+	@Override
+	public long sendLater(String launcherId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt) {
+		return mailSendHandler.sendLater(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body,
+				scheduledAt);
+	}
+
+	@Override
+	public long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body) {
+		return mailSendHandler.sendNow(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body);
+	}
+
+	@Override
+	public long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, AttachmentPreparator preparator) {
+		return mailSendHandler.sendNow(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body, preparator);
+	}
+
+}
