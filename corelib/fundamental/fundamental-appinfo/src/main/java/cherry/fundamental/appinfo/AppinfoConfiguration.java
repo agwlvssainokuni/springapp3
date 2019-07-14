@@ -18,9 +18,11 @@ package cherry.fundamental.appinfo;
 
 import java.io.File;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
@@ -33,6 +35,8 @@ public class AppinfoConfiguration {
 	private File baseDirectory;
 
 	@Bean
+	@Primary
+	@ConditionalOnMissingBean
 	public InstanceInformation instanceInformation() {
 		return new InstanceInformationImpl(id, environmentName, baseDirectory);
 	}
