@@ -116,7 +116,7 @@ subprojects {
 
 		// fundamental
 		if (project.name == "fundamental-appinfo") {
-			// なし。
+			implementation "org.springframework.boot:spring-boot-starter"
 		}
 		if (project.name == "fundamental-bizcal") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
