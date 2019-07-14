@@ -20,6 +20,7 @@ buildscript {
 		versionSpringBoot = "2.1.6.RELEASE"
 		versionSlf4j = "1.7.26"
 		versionLogback = "1.2.3"
+		versionJanino = "3.0.14"
 		versionFluentLogger = "0.3.4"
 		versionJunit = "4.12"
 		versionHamcrest = "1.3"
@@ -102,6 +103,11 @@ subprojects {
 		}
 		if (project.name == "elemental-log") {
 			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
+		}
+		if (project.name == "elemental-logback") {
+			implementation "ch.qos.logback:logback-classic:${versionLogback}"
+			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			testRuntime "org.codehaus.janino:janino:${versionJanino}"
 		}
 		if (project.name == "elemental-paginate") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"

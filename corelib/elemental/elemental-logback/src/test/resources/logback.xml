@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+	<property resource="logback.properties" />
+	<define name="propfile.exists" class="ch.qos.logback.core.property.FileExistsPropertyDefiner">
+		<path>logback.properties</path>
+	</define>
+	<if condition='property("propfile.exists") == "true"'>
+		<then>
+			<property file="logback.properties" />
+		</then>
+	</if>
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${logback.pattern}</pattern>
+		</encoder>
+	</appender>
+	<appender name="onmemory" class="cherry.elemental.logback.OnMemoryAppender" />
+	<root level="${logback.level.root}">
+		<appender-ref ref="stdout" />
+		<appender-ref ref="onmemory" />
+	</root>
+</configuration>
