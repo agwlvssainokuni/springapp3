@@ -24,11 +24,15 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BizcalConfiguration.class)
+@SpringBootTest(classes = BizcalDateTimeTest.class)
+@SpringBootApplication
+@ImportResource(locations = "classpath:spring/appctx-trace.xml")
 public class BizcalDateTimeTest {
 
 	@Autowired

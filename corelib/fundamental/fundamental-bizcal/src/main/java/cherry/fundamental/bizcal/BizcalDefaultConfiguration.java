@@ -16,28 +16,41 @@
 
 package cherry.fundamental.bizcal;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 
-@SpringBootApplication
-@ImportResource(locations = "classpath:spring/appctx-trace.xml")
+@Configuration
+@PropertySource({ "classpath:cherry/fundamental/bizcal/Bizcal.properties" })
 @ConfigurationProperties(prefix = "fundamental.bizcal")
-public class BizcalConfiguration {
+public class BizcalDefaultConfiguration {
 
 	private int yearOfFirstOffset;
-
 	private int monthOfFirst;
-
 	private int dayOfFirst;
 
-	private String stdCalName;
+	@Bean
+	@Primary
+	@ConditionalOnMissingBean
+	public DateTimeStrategy dateTimeStrategy() {
+		return new SimpleDateTimeStrategy();
+	}
 
 	@Bean
-	public Bizcal bizcal() {
-		return new BizcalImpl(new SimpleDateTimeStrategy(), new SimpleYearStrategy(yearOfFirstOffset, monthOfFirst,
-				dayOfFirst), new SimpleWorkdayStrategy(), stdCalName);
+	@Primary
+	@ConditionalOnMissingBean
+	public YearStrategy yearStrategy() {
+		return new SimpleYearStrategy(yearOfFirstOffset, monthOfFirst, dayOfFirst);
+	}
+
+	@Bean
+	@Primary
+	@ConditionalOnMissingBean
+	public WorkdayStrategy workdayStrategy() {
+		return new SimpleWorkdayStrategy();
 	}
 
 	public void setYearOfFirstOffset(int yearOfFirstOffset) {
@@ -50,10 +63,6 @@ public class BizcalConfiguration {
 
 	public void setDayOfFirst(int dayOfFirst) {
 		this.dayOfFirst = dayOfFirst;
-	}
-
-	public void setStdCalName(String stdCalName) {
-		this.stdCalName = stdCalName;
 	}
 
 }

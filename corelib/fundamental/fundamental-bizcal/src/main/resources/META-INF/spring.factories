@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cherry.fundamental.bizcal.BizcalConfiguration,\
+cherry.fundamental.bizcal.BizcalDefaultConfiguration
