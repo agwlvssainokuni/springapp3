@@ -1,5 +1,5 @@
 /*
- * Copyright 2016,2019 agwlvssainokuni
+ * Copyright 2014,2019 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package cherry.elemental.crypto;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertThat;
 
 import java.security.AlgorithmParameters;
 import java.security.KeyPair;
@@ -33,42 +34,42 @@ import javax.crypto.spec.PBEParameterSpec;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-public class RSASignatureTest {
+public class RsaCryptoTest {
 
 	@Test
-	public void testSignVerify() throws Exception {
-		RSASignature impl = create1();
+	public void testEncDec() throws Exception {
+		RsaCrypto impl = create1();
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(245);
-			byte[] signed = impl.sign(plain);
-			assertNotEquals(plain, signed);
-			assertTrue(impl.verify(plain, signed));
+			byte[] crypto = impl.encrypt(plain);
+			assertThat(crypto, is(not(plain)));
+			assertThat(impl.decrypt(crypto), is(plain));
 		}
 	}
 
 	@Test
-	public void testSignVerifyWithPbeKey() throws Exception {
-		RSASignature impl = create2("password".toCharArray());
+	public void testEncDecWithPbeKey() throws Exception {
+		RsaCrypto impl = create2("password".toCharArray());
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(245);
-			byte[] signed = impl.sign(plain);
-			assertNotEquals(plain, signed);
-			assertTrue(impl.verify(plain, signed));
+			byte[] crypto = impl.encrypt(plain);
+			assertThat(crypto, is(not(plain)));
+			assertThat(impl.decrypt(crypto), is(plain));
 		}
 	}
 
-	private RSASignature create1() throws Exception {
+	private RsaCrypto create1() throws Exception {
 		KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
 		keygen.initialize(2048);
 		KeyPair key = keygen.generateKeyPair();
-		RSASignature impl = new RSASignature();
-		impl.setAlgorithm("SHA256withRSA");
+		RsaCrypto impl = new RsaCrypto();
+		impl.setAlgorithm("RSA/ECB/PKCS1Padding");
 		impl.setPublicKeyBytes(key.getPublic().getEncoded());
 		impl.setPrivateKeyBytes(key.getPrivate().getEncoded());
 		return impl;
 	}
 
-	private RSASignature create2(char[] password) throws Exception {
+	private RsaCrypto create2(char[] password) throws Exception {
 
 		KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
 		keygen.initialize(2048);
@@ -85,8 +86,8 @@ public class RSASignatureTest {
 		EncryptedPrivateKeyInfo encryptedKeyInfo = new EncryptedPrivateKeyInfo(pbeParam, cipher.doFinal(key
 				.getPrivate().getEncoded()));
 
-		RSASignature impl = new RSASignature();
-		impl.setAlgorithm("SHA256withRSA");
+		RsaCrypto impl = new RsaCrypto();
+		impl.setAlgorithm("RSA/ECB/PKCS1Padding");
 		impl.setPublicKeyBytes(key.getPublic().getEncoded());
 		impl.setPrivateKeyBytes(encryptedKeyInfo.getEncoded(), password);
 		return impl;

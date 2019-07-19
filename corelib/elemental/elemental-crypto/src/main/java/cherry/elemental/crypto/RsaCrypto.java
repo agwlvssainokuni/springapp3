@@ -31,7 +31,7 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * RSA暗号アルゴリズムによる暗号化/復号化の機能を提供する。
  */
-public class RSACrypto implements Crypto {
+public class RsaCrypto implements Crypto {
 
 	/** RSA暗号アルゴリズムを使用するためのアルゴリズム名を保持する。 */
 	private String algorithm = "RSA/ECB/PKCS1Padding";

@@ -27,12 +27,12 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-public class AESCryptoTest {
+public class AesCryptoTest {
 
 	@Test
 	public void testDefault() throws Exception {
 
-		AESCrypto crypto = new AESCrypto();
+		AesCrypto crypto = new AesCrypto();
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 
 		for (int i = 0; i < 100; i++) {
@@ -46,7 +46,7 @@ public class AESCryptoTest {
 	@Test
 	public void testCBC() throws Exception {
 
-		AESCrypto crypto = new AESCrypto();
+		AesCrypto crypto = new AesCrypto();
 		crypto.setAlgorithm("AES/CBC/PKCS5Padding");
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 
@@ -63,13 +63,13 @@ public class AESCryptoTest {
 
 		byte[] key = RandomUtils.nextBytes(16);
 
-		AESCrypto crypto0 = new AESCrypto();
+		AesCrypto crypto0 = new AesCrypto();
 		crypto0.setSecretKeyBytes(key);
 
-		AESCrypto keyCrypto = new AESCrypto();
+		AesCrypto keyCrypto = new AesCrypto();
 		keyCrypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 
-		AESCrypto crypto1 = new AESCrypto();
+		AesCrypto crypto1 = new AesCrypto();
 		crypto1.setKeyCrypto(keyCrypto);
 		crypto1.setSecretKeyBytes(keyCrypto.encrypt(key));
 
@@ -92,7 +92,7 @@ public class AESCryptoTest {
 
 			byte[] key = RandomUtils.nextBytes(16);
 			byte[] plain = RandomUtils.nextBytes(1024);
-			AESCrypto crypto = new AESCrypto();
+			AesCrypto crypto = new AesCrypto();
 			crypto.setSecretKeyBytes(key);
 
 			Set<String> set = new HashSet<>();

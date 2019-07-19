@@ -22,12 +22,12 @@ import static org.junit.Assert.assertThat;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 
-public class AESDeterministicCryptoTest {
+public class AesDeterministicCryptoTest {
 
 	@Test
 	public void testDefault() throws Exception {
 
-		AESDeterministicCrypto crypto = new AESDeterministicCrypto();
+		AesDeterministicCrypto crypto = new AesDeterministicCrypto();
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 		crypto.setInitVectorBytes(RandomUtils.nextBytes(16));
 
@@ -42,7 +42,7 @@ public class AESDeterministicCryptoTest {
 	@Test
 	public void testCBC() throws Exception {
 
-		AESDeterministicCrypto crypto = new AESDeterministicCrypto();
+		AesDeterministicCrypto crypto = new AesDeterministicCrypto();
 		crypto.setAlgorithm("AES/CBC/PKCS5Padding");
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 		crypto.setInitVectorBytes(RandomUtils.nextBytes(16));
@@ -58,7 +58,7 @@ public class AESDeterministicCryptoTest {
 	@Test
 	public void testECB() throws Exception {
 
-		AESDeterministicCrypto crypto = new AESDeterministicCrypto();
+		AesDeterministicCrypto crypto = new AesDeterministicCrypto();
 		crypto.setAlgorithm("AES/ECB/PKCS5Padding");
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 
@@ -76,15 +76,15 @@ public class AESDeterministicCryptoTest {
 		byte[] key = RandomUtils.nextBytes(16);
 		byte[] iv = RandomUtils.nextBytes(16);
 
-		AESDeterministicCrypto crypto0 = new AESDeterministicCrypto();
+		AesDeterministicCrypto crypto0 = new AesDeterministicCrypto();
 		crypto0.setSecretKeyBytes(key);
 		crypto0.setInitVectorBytes(iv);
 
-		AESDeterministicCrypto keyCrypto = new AESDeterministicCrypto();
+		AesDeterministicCrypto keyCrypto = new AesDeterministicCrypto();
 		keyCrypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 		keyCrypto.setInitVectorBytes(RandomUtils.nextBytes(16));
 
-		AESDeterministicCrypto crypto1 = new AESDeterministicCrypto();
+		AesDeterministicCrypto crypto1 = new AesDeterministicCrypto();
 		crypto1.setKeyCrypto(keyCrypto);
 		crypto1.setSecretKeyBytes(keyCrypto.encrypt(key));
 		crypto1.setInitVectorBytes(keyCrypto.encrypt(iv));

@@ -29,7 +29,7 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * RSA暗号アルゴリズムによる電子署名の機能を提供する。
  */
-public class RSASignature implements Signature {
+public class RsaSignature implements Signature {
 
 	/** RSA電子署名アルゴリズムを使用するためのアルゴリズム名を保持する。 */
 	private String algorithm = "SHA256withRSA";

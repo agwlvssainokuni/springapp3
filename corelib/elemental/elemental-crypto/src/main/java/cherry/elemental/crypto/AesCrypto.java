@@ -31,7 +31,7 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * AES暗号アルゴリズムによる暗号化/復号化の機能を提供する。
  */
-public class AESCrypto implements Crypto {
+public class AesCrypto implements Crypto {
 
 	/** AES暗号アルゴリズムを使用するためのアルゴリズム名を保持する。 */
 	private String algorithm = "AES/CBC/PKCS5Padding";

@@ -122,7 +122,7 @@ public class VersionedCryptoTest {
 	}
 
 	private Crypto createAESCrypto() throws IOException {
-		AESCrypto crypto = new AESCrypto();
+		AesCrypto crypto = new AesCrypto();
 		crypto.setSecretKeyBytes(RandomUtils.nextBytes(16));
 		return crypto;
 	}

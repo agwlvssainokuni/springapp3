@@ -121,11 +121,11 @@ public class VersionedSignatureTest {
 		return map;
 	}
 
-	private RSASignature createRSASignature() throws Exception {
+	private RsaSignature createRSASignature() throws Exception {
 		KeyPairGenerator keygen = KeyPairGenerator.getInstance("RSA");
 		keygen.initialize(2048);
 		KeyPair key = keygen.generateKeyPair();
-		RSASignature impl = new RSASignature();
+		RsaSignature impl = new RsaSignature();
 		impl.setAlgorithm("SHA256withRSA");
 		impl.setPublicKeyBytes(key.getPublic().getEncoded());
 		impl.setPrivateKeyBytes(key.getPrivate().getEncoded());
