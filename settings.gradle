@@ -9,5 +9,6 @@ include ":corelib:elemental:elemental-core",
 	":corelib:elemental:elemental-fluent",
 	":corelib:fundamental:fundamental-appinfo",
 	":corelib:fundamental:fundamental-bizcal",
+	":corelib:fundamental:fundamental-crypto",
 	":corelib:fundamental:fundamental-mail",
 	":corelib:fundamental:fundamental-numbering"

@@ -128,6 +128,11 @@ subprojects {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
+		if (project.name == "fundamental-crypto") {
+			implementation project(":corelib:elemental:elemental-crypto")
+			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.springframework.boot:spring-boot-starter"
+		}
 		if (project.name == "fundamental-mail") {
 			implementation project(":corelib:fundamental:fundamental-bizcal")
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
