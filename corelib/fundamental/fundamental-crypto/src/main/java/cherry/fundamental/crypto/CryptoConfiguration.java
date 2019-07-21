@@ -33,6 +33,7 @@ import java.util.Properties;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.collections4.map.LazyMap;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -82,10 +83,14 @@ public class CryptoConfiguration implements ApplicationContextAware {
 
 	private String hmacAlgorithm;
 
+	private int encryptVersion;
+
+	private int signVersion;
+
 	@Bean
 	@Primary
 	@ConditionalOnProperty("fundamental.crypto.aeskeytop")
-	public Crypto aesCrypto() {
+	public Crypto crypto() {
 		Map<Integer, Crypto> map = LazyMap.lazyMap(new LinkedHashMap<>(), v -> {
 			AesCrypto impl = new AesCrypto();
 			impl.setAlgorithm(aesAlgorithm);
@@ -93,9 +98,10 @@ public class CryptoConfiguration implements ApplicationContextAware {
 			impl.setSecretKeyBytes(getBytes(aeskeytop, v.intValue(), aeskey).get());
 			return impl;
 		});
+		encryptVersion = getDefaultVersion(aeskeytop, aeskey, current).get().intValue();
 		VersionedCrypto impl = new VersionedCrypto();
 		impl.setCryptoMap(map);
-		impl.setDefaultVersion(getDefaultVersion(aeskeytop, aeskey, current).orElse(0));
+		impl.setEncryptVersion(() -> encryptVersion);
 		impl.setVersionStrategy(new DefaultVersionStrategy());
 		return impl;
 	}
@@ -103,7 +109,7 @@ public class CryptoConfiguration implements ApplicationContextAware {
 	@Bean
 	@Primary
 	@ConditionalOnProperty("fundamental.crypto.hmackeytop")
-	public Signature hmacSignature() {
+	public Signature signature() {
 		Map<Integer, Signature> map = LazyMap.lazyMap(new LinkedHashMap<>(), v -> {
 			HmacSignature impl = new HmacSignature();
 			impl.setAlgorithm(hmacAlgorithm);
@@ -111,11 +117,58 @@ public class CryptoConfiguration implements ApplicationContextAware {
 			impl.setSecretKeyBytes(getBytes(hmackeytop, v.intValue(), hmackey).get(), hmacAlgorithm);
 			return impl;
 		});
+		signVersion = getDefaultVersion(hmackeytop, hmackey, current).get().intValue();
 		VersionedSignature impl = new VersionedSignature();
 		impl.setSignatureMap(map);
-		impl.setDefaultVersion(getDefaultVersion(hmackeytop, hmackey, current).orElse(0));
+		impl.setSignVersion(() -> signVersion);
 		impl.setVersionStrategy(new DefaultVersionStrategy());
 		return impl;
+	}
+
+	@Bean
+	@ConditionalOnProperty("fundamental.crypto.aeskeytop")
+	@ConditionalOnBean(value = Crypto.class, name = "crypto")
+	public VersionInfo cryptoVersionInfo() {
+		return new VersionInfo() {
+
+			@Override
+			public int getVersion() {
+				return encryptVersion;
+			}
+
+			@Override
+			public void setVersion(int version) {
+				encryptVersion = version;
+			}
+
+			@Override
+			public void resetVersion() {
+				encryptVersion = getDefaultVersion(aeskeytop, aeskey, current).get().intValue();
+			}
+		};
+	}
+
+	@Bean
+	@ConditionalOnProperty("fundamental.crypto.hmackeytop")
+	@ConditionalOnBean(value = Signature.class, name = "signature")
+	public VersionInfo signatureVersionInfo() {
+		return new VersionInfo() {
+
+			@Override
+			public int getVersion() {
+				return signVersion;
+			}
+
+			@Override
+			public void setVersion(int version) {
+				signVersion = version;
+			}
+
+			@Override
+			public void resetVersion() {
+				signVersion = getDefaultVersion(hmackeytop, hmackey, current).get().intValue();
+			}
+		};
 	}
 
 	private Optional<Integer> getDefaultVersion(String topdir, String keyfile, String curfile) {
@@ -197,7 +250,7 @@ public class CryptoConfiguration implements ApplicationContextAware {
 
 	private Optional<char[]> getPasswd(String topdir, int version, String filename) {
 
-		Resource res = applicationContext.getResource(topdir + "/" + version + "/" + filename);
+		Resource res = applicationContext.getResource(topdir + "/" + filename);
 		if (!res.exists()) {
 			return Optional.empty();
 		}

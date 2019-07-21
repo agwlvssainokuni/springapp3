@@ -17,19 +17,24 @@
 package cherry.elemental.crypto;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import cherry.elemental.crypto.VersionStrategy.VersionedData;
 
 public class VersionedCrypto implements Crypto {
 
-	private Integer defaultVersion;
+	private Supplier<Integer> encryptVersion;
 
 	private Map<Integer, Crypto> cryptoMap;
 
 	private VersionStrategy<byte[], Integer> versionStrategy = new DefaultVersionStrategy();
 
-	public void setDefaultVersion(Integer defaultVersion) {
-		this.defaultVersion = defaultVersion;
+	public void setEncryptVersion(Integer encryptVersion) {
+		setEncryptVersion(() -> encryptVersion);
+	}
+
+	public void setEncryptVersion(Supplier<Integer> encryptVersion) {
+		this.encryptVersion = encryptVersion;
 	}
 
 	public void setCryptoMap(Map<Integer, Crypto> cryptoMap) {
@@ -42,12 +47,13 @@ public class VersionedCrypto implements Crypto {
 
 	@Override
 	public byte[] encrypt(byte[] in) {
-		Crypto crypto = cryptoMap.get(defaultVersion);
+		Integer v = encryptVersion.get();
+		Crypto crypto = cryptoMap.get(v);
 		if (crypto == null) {
-			throw new IllegalStateException("No matching Crypto for version " + defaultVersion);
+			throw new IllegalStateException("No matching Crypto for version " + v);
 		}
 		byte[] b = crypto.encrypt(in);
-		return versionStrategy.encode(b, defaultVersion);
+		return versionStrategy.encode(b, v);
 	}
 
 	@Override

@@ -17,19 +17,24 @@
 package cherry.elemental.crypto;
 
 import java.util.Map;
+import java.util.function.Supplier;
 
 import cherry.elemental.crypto.VersionStrategy.VersionedData;
 
 public class VersionedSignature implements Signature {
 
-	private Integer defaultVersion;
+	private Supplier<Integer> signVersion;
 
 	private Map<Integer, Signature> signatureMap;
 
 	private VersionStrategy<byte[], Integer> versionStrategy = new DefaultVersionStrategy();
 
-	public void setDefaultVersion(Integer defaultVersion) {
-		this.defaultVersion = defaultVersion;
+	public void setSignVersion(Integer signVersion) {
+		setSignVersion(() -> signVersion);
+	}
+
+	public void setSignVersion(Supplier<Integer> signVersion) {
+		this.signVersion = signVersion;
 	}
 
 	public void setSignatureMap(Map<Integer, Signature> signatureMap) {
@@ -42,12 +47,13 @@ public class VersionedSignature implements Signature {
 
 	@Override
 	public byte[] sign(byte[] in) {
-		Signature signature = signatureMap.get(defaultVersion);
+		Integer v = signVersion.get();
+		Signature signature = signatureMap.get(v);
 		if (signature == null) {
-			throw new IllegalStateException("No matching Signature for version " + defaultVersion);
+			throw new IllegalStateException("No matching Signature for version " + v);
 		}
 		byte[] b = signature.sign(in);
-		return versionStrategy.encode(b, defaultVersion);
+		return versionStrategy.encode(b, v);
 	}
 
 	@Override

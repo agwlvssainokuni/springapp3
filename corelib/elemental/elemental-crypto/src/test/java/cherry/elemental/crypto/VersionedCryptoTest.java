@@ -36,7 +36,7 @@ public class VersionedCryptoTest {
 		Map<Integer, Crypto> map = createCryptoMap(1);
 
 		VersionedCrypto helper = new VersionedCrypto();
-		helper.setDefaultVersion(0);
+		helper.setEncryptVersion(0);
 		helper.setCryptoMap(map);
 		helper.setVersionStrategy(new DefaultVersionStrategy());
 
@@ -54,11 +54,11 @@ public class VersionedCryptoTest {
 		Map<Integer, Crypto> map = createCryptoMap(2);
 
 		VersionedCrypto helper0 = new VersionedCrypto();
-		helper0.setDefaultVersion(0);
+		helper0.setEncryptVersion(0);
 		helper0.setCryptoMap(map);
 
 		VersionedCrypto helper1 = new VersionedCrypto();
-		helper1.setDefaultVersion(1);
+		helper1.setEncryptVersion(1);
 		helper1.setCryptoMap(map);
 
 		for (int i = 0; i < 100; i++) {
@@ -75,7 +75,7 @@ public class VersionedCryptoTest {
 	public void errorNoMatchingCryptoToEncrypt() throws Exception {
 		Map<Integer, Crypto> map = createCryptoMap(1);
 		VersionedCrypto helper0 = new VersionedCrypto();
-		helper0.setDefaultVersion(1);
+		helper0.setEncryptVersion(1);
 		helper0.setCryptoMap(map);
 		try {
 			byte[] plain = RandomUtils.nextBytes(1024);
@@ -94,11 +94,11 @@ public class VersionedCryptoTest {
 		map0.put(0, map1.get(0));
 
 		VersionedCrypto crypto0 = new VersionedCrypto();
-		crypto0.setDefaultVersion(0);
+		crypto0.setEncryptVersion(0);
 		crypto0.setCryptoMap(map0);
 
 		VersionedCrypto crypto1 = new VersionedCrypto();
-		crypto1.setDefaultVersion(1);
+		crypto1.setEncryptVersion(1);
 		crypto1.setCryptoMap(map1);
 
 		try {

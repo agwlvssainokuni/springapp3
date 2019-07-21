@@ -36,7 +36,7 @@ public class VersionedSignatureTest {
 		Map<Integer, Signature> map = createSignatureMap(1);
 
 		VersionedSignature impl = new VersionedSignature();
-		impl.setDefaultVersion(0);
+		impl.setSignVersion(0);
 		impl.setSignatureMap(map);
 		impl.setVersionStrategy(new DefaultVersionStrategy());
 
@@ -54,11 +54,11 @@ public class VersionedSignatureTest {
 		Map<Integer, Signature> map = createSignatureMap(2);
 
 		VersionedSignature impl0 = new VersionedSignature();
-		impl0.setDefaultVersion(0);
+		impl0.setSignVersion(0);
 		impl0.setSignatureMap(map);
 
 		VersionedSignature impl1 = new VersionedSignature();
-		impl1.setDefaultVersion(1);
+		impl1.setSignVersion(1);
 		impl1.setSignatureMap(map);
 
 		for (int i = 0; i < 100; i++) {
@@ -75,7 +75,7 @@ public class VersionedSignatureTest {
 	public void errorNoMatchingSignatureToSign() throws Exception {
 		Map<Integer, Signature> map = createSignatureMap(1);
 		VersionedSignature impl0 = new VersionedSignature();
-		impl0.setDefaultVersion(1);
+		impl0.setSignVersion(1);
 		impl0.setSignatureMap(map);
 		try {
 			byte[] plain = RandomUtils.nextBytes(1024);
@@ -94,11 +94,11 @@ public class VersionedSignatureTest {
 		map0.put(0, map1.get(0));
 
 		VersionedSignature impl0 = new VersionedSignature();
-		impl0.setDefaultVersion(0);
+		impl0.setSignVersion(0);
 		impl0.setSignatureMap(map0);
 
 		VersionedSignature impl1 = new VersionedSignature();
-		impl1.setDefaultVersion(1);
+		impl1.setSignVersion(1);
 		impl1.setSignatureMap(map1);
 
 		try {
