@@ -1,0 +1,5 @@
+ジョブ名  : @JOB_NAME@
+ビルド番号: @BUILD_NUMBER@
+ビルド日時: @BUILD_TIMESTAMP@
+コミットID: @GIT_COMMIT@
+ブランチ名: @GIT_BRANCH@

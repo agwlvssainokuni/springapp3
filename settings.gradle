@@ -11,4 +11,5 @@ include ":corelib:elemental-core",
 	":corelib:fundamental-bizcal",
 	":corelib:fundamental-crypto",
 	":corelib:fundamental-mail",
-	":corelib:fundamental-numbering"
+	":corelib:fundamental-numbering",
+	":release:buildinfo"

@@ -84,6 +84,16 @@ subprojects {
 		rename("\\.template\$", "")
 	}
 
+	processResources {
+		if (project.name == "buildinfo") {
+			def props = new Properties()
+			["BUILD_NUMBER", "BUILD_ID", "BUILD_TIMESTAMP", "JOB_NAME", "BUILD_TAG", "GIT_COMMIT", "GIT_BRANCH"].each {
+				props.setProperty(it, System.getenv(it) == null ? "N/A" : System.getenv(it))
+			}
+			filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
+		}
+	}
+
 	repositories { mavenCentral() }
 	dependencies {
 		// elemental
