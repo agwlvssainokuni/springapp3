@@ -129,13 +129,13 @@ subprojects {
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
 		if (project.name == "fundamental-crypto") {
-			implementation project(":corelib:elemental:elemental-crypto")
+			implementation project(":corelib:elemental-crypto")
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			implementation "org.springframework.boot:spring-boot-starter"
-			testImplementation project(":corelib:elemental:elemental-crypto")
+			testImplementation project(":corelib:elemental-crypto")
 		}
 		if (project.name == "fundamental-mail") {
-			implementation project(":corelib:fundamental:fundamental-bizcal")
+			implementation project(":corelib:fundamental-bizcal")
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.freemarker:freemarker:${versionFreemarker}"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
