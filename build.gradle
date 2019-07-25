@@ -1,5 +1,6 @@
 buildscript {
 	ext {
+
 		// リリース物件ビルド構成。
 		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
 		propInstid = getProjectProperty("instid", "00")
@@ -12,10 +13,14 @@ buildscript {
 		propBatchdir = getProjectProperty("batchdir", "${propInstdir}/batch")
 		propBatchconfdir = getProjectProperty("batchconfdir", "${propBatchdir}/conf")
 		propBatchlogdir = getProjectProperty("batchlogdir", "${propBatchdir}/log")
+
 		// 依存ライブラリのバージョン。
+		versionJavaxEl = "3.0.0"
+		versionJavaxValidation = "2.0.1.Final"
 		versionCommonsLang3 = "3.9"
 		versionCommonsCollections4 = "4.3"
 		versionCommonsCodec = "1.12"
+		versionHibernateValidator = "6.0.17.Final"
 		versionFreemarker = "2.3.28"
 		versionSpringBoot = "2.1.6.RELEASE"
 		versionSlf4j = "1.7.26"
@@ -117,7 +122,7 @@ subprojects {
 		if (project.name == "elemental-logback") {
 			implementation "ch.qos.logback:logback-classic:${versionLogback}"
 			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
-			testRuntime "org.codehaus.janino:janino:${versionJanino}"
+			testRuntimeOnly "org.codehaus.janino:janino:${versionJanino}"
 		}
 		if (project.name == "elemental-paginate") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
@@ -131,6 +136,15 @@ subprojects {
 		}
 
 		// fundamental
+		if (project.name == "fundamental-core") {
+			implementation project(":corelib:elemental-core")
+			runtimeOnly "javax.el:javax.el-api:${versionJavaxEl}"
+			implementation "javax.validation:validation-api:${versionJavaxValidation}"
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			runtimeOnly "org.glassfish:javax.el:${versionJavaxEl}"
+			runtimeOnly "org.hibernate.validator:hibernate-validator:${versionHibernateValidator}"
+			implementation "org.springframework.boot:spring-boot-starter"
+		}
 		if (project.name == "fundamental-appinfo") {
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
@@ -165,7 +179,7 @@ subprojects {
 		testImplementation "org.mockito:mockito-core:${versionMockito}"
 		if (project.name.startsWith("fundamental-")) {
 			testImplementation "org.springframework.boot:spring-boot-starter-test"
-			testRuntime "org.springframework.boot:spring-boot-starter-aop"
+			testRuntimeOnly "org.springframework.boot:spring-boot-starter-aop"
 		}
 	}
 }

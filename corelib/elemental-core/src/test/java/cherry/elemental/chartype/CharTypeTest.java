@@ -36,9 +36,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (win31j <= 0x007F) {
-				assertThat(CharTypeValidator.isBasicLatin(unicode), is(true));
+				assertThat(CharType.isBasicLatin(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isBasicLatin(unicode), is(false));
+				assertThat(CharType.isBasicLatin(unicode), is(false));
 			}
 		}
 	}
@@ -49,11 +49,11 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (win31j <= 0x007F) {
-				assertThat(CharTypeValidator.isHalfWidth(unicode), is(true));
+				assertThat(CharType.isHalfWidth(unicode), is(true));
 			} else if (win31j >= 0x00A1 && win31j <= 0x00DF) {
-				assertThat(CharTypeValidator.isHalfWidth(unicode), is(true));
+				assertThat(CharType.isHalfWidth(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isHalfWidth(unicode), is(false));
+				assertThat(CharType.isHalfWidth(unicode), is(false));
 			}
 		}
 	}
@@ -64,11 +64,11 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (win31j <= 0x007F) {
-				assertThat(CharTypeValidator.isFullWidth(unicode), is(false));
+				assertThat(CharType.isFullWidth(unicode), is(false));
 			} else if (win31j >= 0x00A1 && win31j <= 0x00DF) {
-				assertThat(CharTypeValidator.isFullWidth(unicode), is(false));
+				assertThat(CharType.isFullWidth(unicode), is(false));
 			} else {
-				assertThat(CharTypeValidator.isFullWidth(unicode), is(true));
+				assertThat(CharType.isFullWidth(unicode), is(true));
 			}
 		}
 	}
@@ -89,10 +89,10 @@ public class CharTypeTest {
 			case 0x001E: // RS
 			case 0x001F: // US
 			case 0x0020: // SPC
-				assertThat(CharTypeValidator.isSpace(unicode), is(true));
+				assertThat(CharType.isSpace(unicode), is(true));
 				break;
 			default:
-				assertThat(CharTypeValidator.isSpace(unicode), is(false));
+				assertThat(CharType.isSpace(unicode), is(false));
 				break;
 			}
 		}
@@ -114,10 +114,10 @@ public class CharTypeTest {
 			case 0x0037: // '7'
 			case 0x0038: // '8'
 			case 0x0039: // '9'
-				assertThat(CharTypeValidator.isNumeric(unicode), is(true));
+				assertThat(CharType.isNumeric(unicode), is(true));
 				break;
 			default:
-				assertThat(CharTypeValidator.isNumeric(unicode), is(false));
+				assertThat(CharType.isNumeric(unicode), is(false));
 				break;
 			}
 		}
@@ -129,11 +129,11 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x0041 <= win31j && 0x005A >= win31j) {// A-Z
-				assertThat(CharTypeValidator.isAlpha(unicode), is(true));
+				assertThat(CharType.isAlpha(unicode), is(true));
 			} else if (0x0061 <= win31j && 0x007A >= win31j) {// a-z
-				assertThat(CharTypeValidator.isAlpha(unicode), is(true));
+				assertThat(CharType.isAlpha(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isAlpha(unicode), is(false));
+				assertThat(CharType.isAlpha(unicode), is(false));
 			}
 		}
 	}
@@ -144,9 +144,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x0041 <= win31j && 0x005A >= win31j) {// A-Z
-				assertThat(CharTypeValidator.isUpper(unicode), is(true));
+				assertThat(CharType.isUpper(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isUpper(unicode), is(false));
+				assertThat(CharType.isUpper(unicode), is(false));
 			}
 		}
 	}
@@ -157,9 +157,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x0061 <= win31j && 0x007A >= win31j) {// a-z
-				assertThat(CharTypeValidator.isLower(unicode), is(true));
+				assertThat(CharType.isLower(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isLower(unicode), is(false));
+				assertThat(CharType.isLower(unicode), is(false));
 			}
 		}
 	}
@@ -171,10 +171,10 @@ public class CharTypeTest {
 			int unicode = entry.getUnicode();
 			switch (win31j) {
 			case 0x8140: // IDEOGRAPHIC SPACE "　"
-				assertThat(CharTypeValidator.isFullSpace(unicode), is(true));
+				assertThat(CharType.isFullSpace(unicode), is(true));
 				break;
 			default:
-				assertThat(CharTypeValidator.isFullSpace(unicode), is(false));
+				assertThat(CharType.isFullSpace(unicode), is(false));
 				break;
 			}
 		}
@@ -196,10 +196,10 @@ public class CharTypeTest {
 			case 0x8256: // FULLWIDTH DIGIT ZERO "７"
 			case 0x8257: // FULLWIDTH DIGIT ZERO "８"
 			case 0x8258: // FULLWIDTH DIGIT ZERO "９"
-				assertThat(CharTypeValidator.isFullNumeric(unicode), is(true));
+				assertThat(CharType.isFullNumeric(unicode), is(true));
 				break;
 			default:
-				assertThat(CharTypeValidator.isFullNumeric(unicode), is(false));
+				assertThat(CharType.isFullNumeric(unicode), is(false));
 				break;
 			}
 		}
@@ -211,11 +211,11 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x8260 <= win31j && 0x8279 >= win31j) {// Ａ-Ｚ
-				assertThat(CharTypeValidator.isFullAlpha(unicode), is(true));
+				assertThat(CharType.isFullAlpha(unicode), is(true));
 			} else if (0x8281 <= win31j && 0x829A >= win31j) {// ａ-ｚ
-				assertThat(CharTypeValidator.isFullAlpha(unicode), is(true));
+				assertThat(CharType.isFullAlpha(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isFullAlpha(unicode), is(false));
+				assertThat(CharType.isFullAlpha(unicode), is(false));
 			}
 		}
 	}
@@ -226,9 +226,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x8260 <= win31j && 0x8279 >= win31j) {// Ａ-Ｚ
-				assertThat(CharTypeValidator.isFullUpper(unicode), is(true));
+				assertThat(CharType.isFullUpper(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isFullUpper(unicode), is(false));
+				assertThat(CharType.isFullUpper(unicode), is(false));
 			}
 		}
 	}
@@ -239,9 +239,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x8281 <= win31j && 0x829A >= win31j) {// ａ-ｚ
-				assertThat(CharTypeValidator.isFullLower(unicode), is(true));
+				assertThat(CharType.isFullLower(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isFullLower(unicode), is(false));
+				assertThat(CharType.isFullLower(unicode), is(false));
 			}
 		}
 	}
@@ -252,7 +252,7 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x829F <= win31j && 0x82F1 >= win31j) {
-				assertThat(CharTypeValidator.isFullHiragana(unicode), is(true));
+				assertThat(CharType.isFullHiragana(unicode), is(true));
 			} else {
 				switch (win31j) {
 				case 0x8145: // '・'
@@ -267,10 +267,10 @@ public class CharTypeTest {
 				case 0x8176: // '」'
 				case 0x8177: // '『'
 				case 0x8178: // '』'
-					assertThat(CharTypeValidator.isFullHiragana(unicode), is(true));
+					assertThat(CharType.isFullHiragana(unicode), is(true));
 					break;
 				default:
-					assertThat(CharTypeValidator.isFullHiragana(unicode), is(false));
+					assertThat(CharType.isFullHiragana(unicode), is(false));
 					break;
 				}
 			}
@@ -283,7 +283,7 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x8340 <= win31j && 0x8396 >= win31j) {
-				assertThat(CharTypeValidator.isFullKatakana(unicode), is(true));
+				assertThat(CharType.isFullKatakana(unicode), is(true));
 			} else {
 				switch (win31j) {
 				case 0x8145: // '・'
@@ -298,10 +298,10 @@ public class CharTypeTest {
 				case 0x8176: // '」'
 				case 0x8177: // '『'
 				case 0x8178: // '』'
-					assertThat(CharTypeValidator.isFullKatakana(unicode), is(true));
+					assertThat(CharType.isFullKatakana(unicode), is(true));
 					break;
 				default:
-					assertThat(CharTypeValidator.isFullKatakana(unicode), is(false));
+					assertThat(CharType.isFullKatakana(unicode), is(false));
 					break;
 				}
 			}
@@ -314,9 +314,9 @@ public class CharTypeTest {
 			int win31j = entry.getWin31j();
 			int unicode = entry.getUnicode();
 			if (0x00A1 <= win31j && 0x00DF >= win31j) {
-				assertThat(CharTypeValidator.isHalfKatakana(unicode), is(true));
+				assertThat(CharType.isHalfKatakana(unicode), is(true));
 			} else {
-				assertThat(CharTypeValidator.isHalfKatakana(unicode), is(false));
+				assertThat(CharType.isHalfKatakana(unicode), is(false));
 			}
 		}
 	}
@@ -329,9 +329,9 @@ public class CharTypeTest {
 		}
 		for (int i = 0; i <= 0xFFFF; i++) {
 			if (map.containsKey(Integer.valueOf(i))) {
-				assertThat(CharTypeValidator.isCp932(i), is(true));
+				assertThat(CharType.isCp932(i), is(true));
 			} else {
-				assertThat(CharTypeValidator.isCp932(i), is(false));
+				assertThat(CharType.isCp932(i), is(false));
 			}
 		}
 	}

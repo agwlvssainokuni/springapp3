@@ -52,45 +52,45 @@ import java.util.function.Predicate;
  * <li>CP932 ({@link #CP932}, {@link #isCp932(int)})</li>
  * </ul>
  */
-public enum CharTypeValidator {
+public enum CharType {
 	/** 文字種指定「半角文字(半角カナ含まず)」。 */
-	BASIC_LATIN(CharTypeValidator::isBasicLatin),
+	BASIC_LATIN(CharType::isBasicLatin),
 	/** 文字種指定「半角文字(半角カナ含む)」。 */
-	HALF_WIDTH(CharTypeValidator::isHalfWidth),
+	HALF_WIDTH(CharType::isHalfWidth),
 	/** 文字種指定「全角文字」。 */
-	FULL_WIDTH(CharTypeValidator::isFullWidth),
+	FULL_WIDTH(CharType::isFullWidth),
 	/** 文字種指定「半角空白」。 */
-	SPACE(CharTypeValidator::isSpace),
+	SPACE(CharType::isSpace),
 	/** 文字種指定「半角数字」。 */
-	NUMERIC(CharTypeValidator::isNumeric),
+	NUMERIC(CharType::isNumeric),
 	/** 文字種指定「半角英字」。 */
-	ALPHA(CharTypeValidator::isAlpha),
+	ALPHA(CharType::isAlpha),
 	/** 文字種指定「半角英字大文字」。 */
-	UPPER(CharTypeValidator::isUpper),
+	UPPER(CharType::isUpper),
 	/** 文字種指定「半角英字小文字」。 */
-	LOWER(CharTypeValidator::isLower),
+	LOWER(CharType::isLower),
 	/** 文字種指定「全角空白」。 */
-	FULL_SPACE(CharTypeValidator::isFullSpace),
+	FULL_SPACE(CharType::isFullSpace),
 	/** 文字種指定「全角数字」。 */
-	FULL_NUMERIC(CharTypeValidator::isFullNumeric),
+	FULL_NUMERIC(CharType::isFullNumeric),
 	/** 文字種指定「全角英字」。 */
-	FULL_ALPHA(CharTypeValidator::isFullAlpha),
+	FULL_ALPHA(CharType::isFullAlpha),
 	/** 文字種指定「全角英字大文字」。 */
-	FULL_UPPER(CharTypeValidator::isFullUpper),
+	FULL_UPPER(CharType::isFullUpper),
 	/** 文字種指定「全角英字小文字」。 */
-	FULL_LOWER(CharTypeValidator::isFullLower),
+	FULL_LOWER(CharType::isFullLower),
 	/** 文字種指定「全角ひらがな」。 */
-	FULL_HIRAGANA(CharTypeValidator::isFullHiragana),
+	FULL_HIRAGANA(CharType::isFullHiragana),
 	/** 文字種指定「全角カタカナ」。 */
-	FULL_KATAKANA(CharTypeValidator::isFullKatakana),
+	FULL_KATAKANA(CharType::isFullKatakana),
 	/** 文字種指定「半角カタカナ」。 */
-	HALF_KATAKANA(CharTypeValidator::isHalfKatakana),
+	HALF_KATAKANA(CharType::isHalfKatakana),
 	/** 文字種指定「CP932 (Windows-31J)」。 */
-	CP932(CharTypeValidator::isCp932);
+	CP932(CharType::isCp932);
 
 	private Predicate<Integer> validator;
 
-	private CharTypeValidator(Predicate<Integer> validator) {
+	private CharType(Predicate<Integer> validator) {
 		this.validator = validator;
 	}
 
@@ -106,7 +106,7 @@ public enum CharTypeValidator {
 
 	/**
 	 * 文字の種類を判別する機能を提供する。<br />
-	 * 実態は{@link CharTypeValidator}が提供するメソッドへの振分けである (ファサードとして位置付ける)。
+	 * 実態は{@link CharType}が提供するメソッドへの振分けである (ファサードとして位置付ける)。
 	 * 
 	 * @param codePoint 対象文字 (コードポイントで指定すること)。
 	 * @param mode 文字種指定。文字種は複数指定可能であり、下記の組合せで指定することとする。
@@ -131,7 +131,7 @@ public enum CharTypeValidator {
 	 *            </ul>
 	 * @return 対象文字が文字種指定で指定された文字種のいずれかであれば真(true)、さもなくば、偽(false)。
 	 */
-	public static boolean isValid(int codePoint, List<CharTypeValidator> mode) {
+	public static boolean isValid(int codePoint, List<CharType> mode) {
 		return mode.stream().anyMatch(m -> m.isValid(codePoint));
 	}
 
@@ -164,7 +164,7 @@ public enum CharTypeValidator {
 	 * @param acceptable 許容文字。文字種指定で指定した文字種に加えて、当引数に指定した文字も文字種が合致したものとして判定する。
 	 * @return 対象文字が、文字種指定で指定された文字種のいずれか、または、許容文字に含まれるならば真(true)、さもなくば、偽(false)。
 	 */
-	public static boolean isValid(int codePoint, List<CharTypeValidator> mode, int[] acceptable) {
+	public static boolean isValid(int codePoint, List<CharType> mode, int[] acceptable) {
 		if (isValid(codePoint, mode)) {
 			return true;
 		}
@@ -205,7 +205,7 @@ public enum CharTypeValidator {
 	 * @param acceptable 許容文字。文字種指定で指定した文字種に加えて、当引数に指定した文字も文字種が合致したものとして判定する。
 	 * @return 対象文字列を構成する全ての文字が、文字種指定で指定された文字種のいずれか、または、許容文字に含まれるならば真(true)、 さもなくば、偽 (false )。
 	 */
-	public static CharTypeResult validate(CharSequence seq, List<CharTypeValidator> mode, int[] acceptable) {
+	public static CharTypeResult validate(CharSequence seq, List<CharType> mode, int[] acceptable) {
 		for (int i = 0; i < seq.length(); i++) {
 			if (isLowSurrogate(seq.charAt(i))) {
 				continue;
