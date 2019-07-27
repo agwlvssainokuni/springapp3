@@ -16,11 +16,17 @@
 
 package cherry.fundamental.numbering;
 
+import java.util.Properties;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
+import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
 
 @Configuration
 @ConditionalOnBean(NumberingStore.class)
@@ -29,10 +35,29 @@ public class NumberingConfiguration {
 	@Autowired
 	private NumberingStore numberingStore;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	@Bean
 	@Primary
-	public Numbering numbering() {
-		return new NumberingImpl(numberingStore);
+	public TransactionProxyFactoryBean numbering() {
+		return createNumberingFactoryBean(Propagation.REQUIRES_NEW);
+	}
+
+	@Bean
+	public TransactionProxyFactoryBean numberingInTx() {
+		return createNumberingFactoryBean(Propagation.REQUIRED);
+	}
+
+	private TransactionProxyFactoryBean createNumberingFactoryBean(Propagation propagation) {
+		Properties attr = new Properties();
+		attr.setProperty("*", DefaultTransactionAttribute.PREFIX_PROPAGATION + propagation);
+		TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
+		bean.setTarget(new NumberingImpl(numberingStore));
+		bean.setProxyInterfaces(new Class[] { Numbering.class });
+		bean.setTransactionManager(transactionManager);
+		bean.setTransactionAttributes(attr);
+		return bean;
 	}
 
 }

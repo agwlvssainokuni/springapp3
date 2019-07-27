@@ -33,14 +33,6 @@ public interface Numbering {
 	String issueAsString(String numberName);
 
 	/**
-	 * 文字列形式で番号を発行する。
-	 * 
-	 * @param numberName 番号を識別する名前。
-	 * @return 発行した番号 (文字列)。
-	 */
-	String issueAsStringInTx(String numberName);
-
-	/**
 	 * 文字列形式で番号を発行する。<br />
 	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
 	 * 
@@ -51,30 +43,12 @@ public interface Numbering {
 	List<String> issueAsString(String numberName, int count);
 
 	/**
-	 * 文字列形式で番号を発行する。<br />
-	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
-	 * 
-	 * @param numberName 番号を識別する名前。
-	 * @param count 発行する番号の数。
-	 * @return 発行した番号 (文字列) のリスト。
-	 */
-	List<String> issueAsStringInTx(String numberName, int count);
-
-	/**
 	 * 整数値形式で番号を発行する。
 	 * 
 	 * @param numberName 番号を識別する名前。
 	 * @return 発行した番号 (整数値)。
 	 */
 	Long issueAsLong(String numberName);
-
-	/**
-	 * 整数値形式で番号を発行する。
-	 * 
-	 * @param numberName 番号を識別する名前。
-	 * @return 発行した番号 (整数値)。
-	 */
-	Long issueAsLongInTx(String numberName);
 
 	/**
 	 * 整数値形式で番号を発行する。<br />
@@ -85,15 +59,5 @@ public interface Numbering {
 	 * @return 発行した番号 (整数値) のリスト。
 	 */
 	List<Long> issueAsLong(String numberName, int count);
-
-	/**
-	 * 整数値形式で番号を発行する。<br />
-	 * 発行する番号の数を指定する。返却値は番号のリストであり、要素数は、引数に指定した数と同じである。
-	 * 
-	 * @param numberName 番号を識別する名前。
-	 * @param count 発行する番号の数。
-	 * @return 発行した番号 (整数値) のリスト。
-	 */
-	List<Long> issueAsLongInTx(String numberName, int count);
 
 }

@@ -23,9 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 public class NumberingImpl implements Numbering {
 
 	private final NumberingStore numberingStore;
@@ -34,7 +31,6 @@ public class NumberingImpl implements Numbering {
 		this.numberingStore = numberingStore;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public String issueAsString(String numberName) {
 		return doIssueAsT(numberName, 1, def -> {
@@ -43,16 +39,6 @@ public class NumberingImpl implements Numbering {
 		}).get(0);
 	}
 
-	@Transactional()
-	@Override
-	public String issueAsStringInTx(String numberName) {
-		return doIssueAsT(numberName, 1, def -> {
-			MessageFormat fmt = new MessageFormat(def.getTemplate());
-			return v -> fmt.format(new Object[] { v });
-		}).get(0);
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public List<String> issueAsString(String numberName, int count) {
 		return doIssueAsT(numberName, count, def -> {
@@ -61,36 +47,13 @@ public class NumberingImpl implements Numbering {
 		});
 	}
 
-	@Transactional()
-	@Override
-	public List<String> issueAsStringInTx(String numberName, int count) {
-		return doIssueAsT(numberName, count, def -> {
-			MessageFormat fmt = new MessageFormat(def.getTemplate());
-			return v -> fmt.format(new Object[] { v });
-		});
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public Long issueAsLong(String numberName) {
 		return doIssueAsT(numberName, 1, def -> Function.identity()).get(0);
 	}
 
-	@Transactional()
-	@Override
-	public Long issueAsLongInTx(String numberName) {
-		return doIssueAsT(numberName, 1, def -> Function.identity()).get(0);
-	}
-
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public List<Long> issueAsLong(String numberName, int count) {
-		return doIssueAsT(numberName, count, def -> Function.identity());
-	}
-
-	@Transactional()
-	@Override
-	public List<Long> issueAsLongInTx(String numberName, int count) {
 		return doIssueAsT(numberName, count, def -> Function.identity());
 	}
 
