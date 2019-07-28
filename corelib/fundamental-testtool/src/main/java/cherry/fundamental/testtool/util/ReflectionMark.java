@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.elemental.util;
+package cherry.fundamental.testtool.util;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

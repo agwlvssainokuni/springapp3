@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.elemental.util;
+package cherry.fundamental.testtool.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

@@ -175,6 +175,13 @@ subprojects {
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			testImplementation "com.h2database:h2:${versionH2}"
 		}
+		if (project.name == "fundamental-testtool") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			implementation "org.springframework.boot:spring-boot-starter-json"
+			testImplementation "org.springframework.boot:spring-boot-starter-json"
+		}
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"

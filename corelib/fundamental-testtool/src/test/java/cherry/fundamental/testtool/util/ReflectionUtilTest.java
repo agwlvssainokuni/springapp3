@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.elemental.util;
+package cherry.fundamental.testtool.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
