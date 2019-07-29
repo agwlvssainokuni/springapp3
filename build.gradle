@@ -181,6 +181,7 @@ subprojects {
 		if (project.name == "fundamental-testtool") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-json"
 			testImplementation "org.springframework.boot:spring-boot-starter-json"
