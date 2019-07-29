@@ -16,7 +16,6 @@
 
 package cherry.fundamental.bizcal;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -31,19 +30,10 @@ public class BizcalConfiguration {
 
 	private String stdCalName;
 
-	@Autowired
-	private DateTimeStrategy dateTimeStrategy;
-
-	@Autowired
-	private YearStrategy yearStrategy;
-
-	@Autowired
-	private WorkdayStrategy workdayStrategy;
-
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean
-	public Bizcal bizcal() {
+	public Bizcal bizcal(DateTimeStrategy dateTimeStrategy, YearStrategy yearStrategy, WorkdayStrategy workdayStrategy) {
 		return new BizcalImpl(dateTimeStrategy, yearStrategy, workdayStrategy, stdCalName);
 	}
 

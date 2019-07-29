@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StubConfigServiceTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
-@ImportResource(locations = "classpath:spring/appctx-trace.xml")
+@ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
 public class StubConfigServiceTest {
 
 	@Autowired

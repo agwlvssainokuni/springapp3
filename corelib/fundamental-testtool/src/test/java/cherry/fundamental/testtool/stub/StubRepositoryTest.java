@@ -38,7 +38,7 @@ import cherry.fundamental.testtool.ToolTester;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = StubRepositoryTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
-@ImportResource(locations = "classpath:spring/appctx-trace.xml")
+@ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
 public class StubRepositoryTest {
 
 	@Autowired

@@ -16,7 +16,6 @@
 
 package cherry.fundamental.validator;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,14 +28,8 @@ import org.springframework.validation.Validator;
 @ConfigurationProperties(prefix = "fundamental.validator")
 public class ValidatorConfiguration {
 
-	@Autowired
-	private ConversionService conversionService;
-
-	@Autowired
-	private Validator validator;
-
 	@Bean
-	public DataBinderHelper dataBinderHelper() {
+	public DataBinderHelper dataBinderHelper(ConversionService conversionService, Validator validator) {
 		DataBinderHelperImpl impl = new DataBinderHelperImpl();
 		impl.setConversionService(conversionService);
 		impl.setValidator(validator);
