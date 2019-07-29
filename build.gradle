@@ -149,6 +149,9 @@ subprojects {
 		if (project.name == "fundamental-appinfo") {
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
+		if (project.name == "fundamental-batch") {
+			implementation "org.springframework.boot:spring-boot-starter"
+		}
 		if (project.name == "fundamental-bizcal") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.springframework.boot:spring-boot-starter"
