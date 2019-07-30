@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cherry.fundamental.testtool.TesttoolConfiguration
+cherry.fundamental.testtool.TesttoolConfiguration,\
+cherry.fundamental.testtool.web.TesttoolWebConfiguration

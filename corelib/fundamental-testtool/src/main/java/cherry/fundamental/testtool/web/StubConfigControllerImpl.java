@@ -47,6 +47,11 @@ public class StubConfigControllerImpl implements StubConfigController {
 	}
 
 	@Override
+	public void page() {
+		// 何もしない。
+	}
+
+	@Override
 	public String alwaysReturnJson(String className, String methodName, int methodIndex, String value, String valueType) {
 		if (StringUtils.isEmpty(value)) {
 			return jsonStubConfigService.clear(className, methodName, methodIndex);

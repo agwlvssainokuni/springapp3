@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/testtool/stubconfig")
 public interface StubConfigController {
 
-	@RequestMapping({ "", "json" })
+	@RequestMapping()
+	void page();
+
+	@RequestMapping({ "json" })
 	@ResponseBody()
 	String alwaysReturnJson(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
@@ -37,7 +40,7 @@ public interface StubConfigController {
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
 			@RequestParam("value") String value, @RequestParam("valueType") String valueType);
 
-	@RequestMapping(value = { "", "json" }, params = { "peek" })
+	@RequestMapping(value = { "json" }, params = { "peek" })
 	@ResponseBody()
 	List<String> peekStubJson(@RequestParam("className") String className,
 			@RequestParam("methodName") String methodName,
@@ -49,16 +52,16 @@ public interface StubConfigController {
 			@RequestParam("methodName") String methodName,
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex);
 
-	@RequestMapping(value = { "", "json", "yaml" }, params = { "bean" })
+	@RequestMapping(value = { "json", "yaml" }, params = { "bean" })
 	@ResponseBody()
 	List<String> resolveBeanName(@RequestParam("className") String className);
 
-	@RequestMapping(value = { "", "json", "yaml" }, params = { "method" })
+	@RequestMapping(value = { "json", "yaml" }, params = { "method" })
 	@ResponseBody()
 	List<String> resolveMethod(@RequestParam("className") String className,
 			@RequestParam("methodName") String methodName);
 
-	@RequestMapping(value = { "", "json", "yaml" }, params = { "list" })
+	@RequestMapping(value = { "json", "yaml" }, params = { "list" })
 	@ResponseBody()
 	List<String> getStubbedMethod(@RequestParam(value = "className", required = false) String className);
 

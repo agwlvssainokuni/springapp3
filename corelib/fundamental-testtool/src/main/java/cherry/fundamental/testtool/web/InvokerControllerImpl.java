@@ -41,6 +41,11 @@ public class InvokerControllerImpl implements InvokerController {
 	}
 
 	@Override
+	public void page() {
+		// 何もしない。
+	}
+
+	@Override
 	public String invokeJson(String beanName, String className, String methodName, int methodIndex, String args,
 			String argTypes) {
 		return jsonInvokerService.invoke(beanName, className, methodName, methodIndex, args, argTypes);

@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/testtool/invoker")
 public interface InvokerController {
 
-	@RequestMapping({ "", "json" })
+	@RequestMapping()
+	void page();
+
+	@RequestMapping({ "json" })
 	@ResponseBody()
 	String invokeJson(@RequestParam(value = "beanName", required = false) String beanName,
 			@RequestParam("className") String className, @RequestParam("methodName") String methodName,
@@ -39,11 +42,11 @@ public interface InvokerController {
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
 			@RequestParam("args") String args, @RequestParam("argTypes") String argTypes);
 
-	@RequestMapping(value = { "", "json", "yaml" }, params = { "bean" })
+	@RequestMapping(value = { "json", "yaml" }, params = { "bean" })
 	@ResponseBody()
 	List<String> resolveBeanName(@RequestParam("className") String className);
 
-	@RequestMapping(value = { "", "json", "yaml" }, params = { "method" })
+	@RequestMapping(value = { "json", "yaml" }, params = { "method" })
 	@ResponseBody()
 	List<String> resolveMethod(@RequestParam("className") String className,
 			@RequestParam("methodName") String methodName);
