@@ -16,6 +16,7 @@ buildscript {
 
 		// 依存ライブラリのバージョン。
 		versionJavaxEl = "3.0.0"
+		versionJavaxServlet = "4.0.1"
 		versionJavaxValidation = "2.0.1.Final"
 		versionCommonsLang3 = "3.9"
 		versionCommonsCollections4 = "4.3"
@@ -177,6 +178,13 @@ subprojects {
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			testImplementation "com.h2database:h2:${versionH2}"
+		}
+		if (project.name == "fundamental-servlet") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			compileOnly "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
+			testImplementation "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
 		}
 		if (project.name == "fundamental-testtool") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
