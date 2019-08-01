@@ -36,7 +36,9 @@ public class CommandLauncherTest {
 		try {
 			CommandResult result = launcher.launch("java", "-version");
 			assertEquals(0, result.getExitValue());
-			assertTrue(result.getStdout().startsWith("java version"));
+			System.out.println(result.getStdout());
+			assertTrue(result.getStdout().startsWith("java version")
+					|| result.getStdout().startsWith("openjdk version"));
 			assertNull(result.getStderr());
 			assertTrue(result.toString().startsWith("CommandResult[exitValue=0,"));
 		} catch (IOException | InterruptedException ex) {
@@ -52,7 +54,8 @@ public class CommandLauncherTest {
 		try {
 			CommandResult result = launcher.launch("java", "-version");
 			assertEquals(0, result.getExitValue());
-			assertTrue(result.getStderr().startsWith("java version"));
+			assertTrue(result.getStderr().startsWith("java version")
+					|| result.getStderr().startsWith("openjdk version"));
 			assertEquals("", result.getStdout());
 			assertTrue(result.toString().startsWith("CommandResult[exitValue=0,"));
 		} catch (IOException | InterruptedException ex) {

@@ -36,7 +36,7 @@ public class StubInterceptor implements MethodInterceptor {
 			Stub<?> stub = repository.get(method);
 			if (stub.hasNext()) {
 				if (stub.isThrowable()) {
-					throw stub.nextThrowable().newInstance();
+					throw stub.nextThrowable().getDeclaredConstructor().newInstance();
 				} else if (stub.isMock()) {
 					return method.invoke(stub.nextMock(), invocation.getArguments());
 				} else {
