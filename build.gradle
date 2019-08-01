@@ -21,6 +21,7 @@ buildscript {
 		versionCommonsLang3 = "3.9"
 		versionCommonsCollections4 = "4.3"
 		versionCommonsCodec = "1.12"
+		versionGuava = "28.0-jre"
 		versionHibernateValidator = "6.0.17.Final"
 		versionFreemarker = "2.3.28"
 		versionSpringBoot = "2.1.6.RELEASE"
@@ -125,6 +126,11 @@ subprojects {
 			implementation "ch.qos.logback:logback-classic:${versionLogback}"
 			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
 			testRuntimeOnly "org.codehaus.janino:janino:${versionJanino}"
+		}
+		if (project.name == "elemental-loop") {
+			implementation "com.google.guava:guava:${versionGuava}"
+			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			testRuntimeOnly "ch.qos.logback:logback-classic:${versionLogback}"
 		}
 		if (project.name == "elemental-paginate") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
