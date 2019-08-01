@@ -43,6 +43,7 @@ public class StartBatchTest {
 	private BatchStatusStore batchStatusStore;
 
 	@Before
+	@SuppressWarnings("unchecked")
 	public void before() {
 		currentDateTime = mock(Supplier.class);
 		batchStatusStore = mock(BatchStatusStore.class);
