@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2016 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,8 @@
 
 package cherry.fundamental.mail;
 
-import javax.mail.MessagingException;
+public interface SendMailService {
 
-/**
- * メール送信機能。<br />
- * 添付ファイルを構成する処理を表す。
- */
-@FunctionalInterface
-public interface AttachmentPreparator {
-
-	/**
-	 * 添付ファイルを構成する処理を定義する。<br />
-	 * 
-	 * @param attachment 添付ファイルを指定する対象を表す。
-	 * @throws MessagingException メールデータを構成する処理で異常が発生したことを表す。
-	 */
-	void prepare(Attachment attachment) throws MessagingException;
+	void sendMail();
 
 }

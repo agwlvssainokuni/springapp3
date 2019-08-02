@@ -25,12 +25,12 @@ import java.util.List;
  * 基本的な運用方法としては、キューを介して、非同期的にメールを送信する方式を想定する。<br />
  * 特殊な運用方法として、実際のメール送信処理まで実行する方法も提供する。
  */
-public interface MailSendHandler {
+public interface MailQueue {
 
 	/**
 	 * 送信するメールデータを、キューに蓄積する。<br />
-	 * 
-	 * @param launcherId 当メソッドを呼出した利用者のログインID。
+	 *
+	 * @param loginId 当メソッドを呼出した利用者のログインID。
 	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
 	 * @param from 差出人 (From) のメールアドレス。
 	 * @param to 宛先 (To) のメールアドレス。
@@ -40,15 +40,16 @@ public interface MailSendHandler {
 	 * @param subject 件名 (Subject)。
 	 * @param body 本文。
 	 * @param scheduledAt 送信予定日時。
+	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
-	long sendLater(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt);
+	long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+			String replyTo, String subject, String body, LocalDateTime scheduledAt, Attachment... attachments);
 
 	/**
 	 * メールを即時送信する。<br />
-	 * 
-	 * @param launcherId 当メソッドを呼出した利用者のログインID。
+	 *
+	 * @param loginId 当メソッドを呼出した利用者のログインID。
 	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
 	 * @param from 差出人 (From) のメールアドレス。
 	 * @param to 宛先 (To) のメールアドレス。
@@ -57,44 +58,27 @@ public interface MailSendHandler {
 	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject)。
 	 * @param body 本文。
+	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
-	long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body);
-
-	/**
-	 * メールを即時送信する。<br />
-	 * 
-	 * @param launcherId 当メソッドを呼出した利用者のログインID。
-	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
-	 * @param from 差出人 (From) のメールアドレス。
-	 * @param to 宛先 (To) のメールアドレス。
-	 * @param cc 宛先 (Cc) のメールアドレス。
-	 * @param bcc 宛先 (Bcc) のメールアドレス。
-	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
-	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
-	 * @param preparator 添付ファイルを構成する処理を受け渡す。
-	 * @return メールデータの識別番号。
-	 */
-	long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, AttachmentPreparator preparator);
+	long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+			String replyTo, String subject, String body, Attachment... attachments);
 
 	/**
 	 * キューに蓄積されているメールデータの識別番号のリストを取得する。<br />
 	 * キューに蓄積する際に指定された送信予定日時が、当メソッドの引数に指定された日時以降のものを取得する。
-	 * 
+	 *
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> listMessage(LocalDateTime dtm);
+	List<Long> list(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを実際に送信する。
-	 * 
+	 *
 	 * @param messageId メールデータの識別番号。
 	 * @return 指定された識別番号に該当するメールデータを送信したらtrue、該当するメールデータが存在しない場合はfalse。なお、該当するメールデータが存在したのに、メールの送信処理で異常が発生した場合は例外が発生する。
 	 */
-	boolean sendMessage(long messageId);
+	boolean send(long messageId);
 
 }

@@ -16,7 +16,6 @@
 
 package cherry.fundamental.mail;
 
-import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -24,7 +23,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  * メール送信機能。<br />
- * 送信するメールデータ、または、送信するメールデータの元とするメールテンプレートを保持する。以下の項目を持つ。
+ * 送信するメールデータを保持する。以下の項目を持つ。
  * <ul>
  * <li>差出人 (From)</li>
  * <li>宛先 (To, Cc, Bcc)</li>
@@ -33,90 +32,71 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <li>本文</li>
  * </ul>
  */
-public class MailData implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class Message {
 
 	/** 差出人 (From) を保持する。 */
-	private String fromAddr;
+	private final String from;
 
 	/** 宛先 (To) を保持する。 */
-	private List<String> toAddr;
+	private final List<String> to;
 
 	/** 宛先 (Cc) を保持する。 */
-	private List<String> ccAddr;
+	private final List<String> cc;
 
 	/** 宛先 (Bcc) を保持する。 */
-	private List<String> bccAddr;
+	private final List<String> bcc;
 
 	/** 返信先 (Reply-To) を保持する。 */
-	private String replyToAddr;
+	private final String replyTo;
 
 	/** 件名 (Subject) を保持する。 */
-	private String subject;
+	private final String subject;
 
 	/** 本文を保持する。 */
-	private String body;
+	private final String body;
+
+	public Message(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo, String subject,
+			String body) {
+		this.from = from;
+		this.to = to;
+		this.cc = cc;
+		this.bcc = bcc;
+		this.replyTo = replyTo;
+		this.subject = subject;
+		this.body = body;
+	}
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
-	public String getFromAddr() {
-		return fromAddr;
+	public String getFrom() {
+		return from;
 	}
 
-	public void setFromAddr(String fromAddr) {
-		this.fromAddr = fromAddr;
+	public List<String> getTo() {
+		return to;
 	}
 
-	public List<String> getToAddr() {
-		return toAddr;
+	public List<String> getCc() {
+		return cc;
 	}
 
-	public void setToAddr(List<String> toAddr) {
-		this.toAddr = toAddr;
+	public List<String> getBcc() {
+		return bcc;
 	}
 
-	public List<String> getCcAddr() {
-		return ccAddr;
-	}
-
-	public void setCcAddr(List<String> ccAddr) {
-		this.ccAddr = ccAddr;
-	}
-
-	public List<String> getBccAddr() {
-		return bccAddr;
-	}
-
-	public void setBccAddr(List<String> bccAddr) {
-		this.bccAddr = bccAddr;
-	}
-
-	public String getReplyToAddr() {
-		return replyToAddr;
-	}
-
-	public void setReplyToAddr(String replyToAddr) {
-		this.replyToAddr = replyToAddr;
+	public String getReplyTo() {
+		return replyTo;
 	}
 
 	public String getSubject() {
 		return subject;
 	}
 
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-
 	public String getBody() {
 		return body;
-	}
-
-	public void setBody(String body) {
-		this.body = body;
 	}
 
 }

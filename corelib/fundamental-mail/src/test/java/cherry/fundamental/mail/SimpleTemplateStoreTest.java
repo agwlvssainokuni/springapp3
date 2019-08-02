@@ -16,11 +16,11 @@
 
 package cherry.fundamental.mail;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,19 +33,19 @@ public class SimpleTemplateStoreTest {
 
 		TemplateStore templateStore = create("name", "from@addr", "to@addr", "cc@addr", "bcc@addr", "subject", "body");
 
-		MailData mailData = templateStore.getTemplate("name");
-		assertNotNull(mailData);
-		assertEquals("from@addr", mailData.getFromAddr());
-		assertEquals(1, mailData.getToAddr().size());
-		assertEquals("to@addr", mailData.getToAddr().get(0));
-		assertEquals(1, mailData.getCcAddr().size());
-		assertEquals("cc@addr", mailData.getCcAddr().get(0));
-		assertEquals(1, mailData.getBccAddr().size());
-		assertEquals("bcc@addr", mailData.getBccAddr().get(0));
-		assertEquals("subject", mailData.getSubject());
-		assertEquals("body", mailData.getBody());
+		Template template = templateStore.get("name");
+		assertNotNull(template);
+		assertEquals("from@addr", template.getFrom());
+		assertEquals(1, template.getTo().size());
+		assertEquals("to@addr", template.getTo().get(0));
+		assertEquals(1, template.getCc().size());
+		assertEquals("cc@addr", template.getCc().get(0));
+		assertEquals(1, template.getBcc().size());
+		assertEquals("bcc@addr", template.getBcc().get(0));
+		assertEquals("subject", template.getSubject());
+		assertEquals("body", template.getBody());
 
-		assertNull(templateStore.getTemplate("none"));
+		assertNull(templateStore.get("none"));
 	}
 
 	@Test
@@ -53,46 +53,44 @@ public class SimpleTemplateStoreTest {
 
 		TemplateStore templateStore = create("name", "from@addr", "to@addr", "cc@addr", "bcc@addr", "subject", "body");
 
-		MailData mailData = new MailData();
-		mailData.setFromAddr("from2@addr");
-		mailData.setToAddr(Arrays.asList("to2@addr"));
-		mailData.setCcAddr(Arrays.asList("cc2@addr"));
-		mailData.setBccAddr(Arrays.asList("bcc2@addr"));
-		mailData.setSubject("subject2");
-		mailData.setBody("body2");
+		Template template = new Template();
+		template.setFrom("from2@addr");
+		template.setTo(asList("to2@addr"));
+		template.setCc(asList("cc2@addr"));
+		template.setBcc(asList("bcc2@addr"));
+		template.setSubject("subject2");
+		template.setBody("body2");
 
-		templateStore.putTemplate("name2", mailData);
+		templateStore.put("name2", template);
 
-		MailData mailData2 = templateStore.getTemplate("name2");
-		assertNotNull(mailData2);
-		assertEquals("from2@addr", mailData2.getFromAddr());
-		assertEquals(1, mailData2.getToAddr().size());
-		assertEquals("to2@addr", mailData2.getToAddr().get(0));
-		assertEquals(1, mailData2.getCcAddr().size());
-		assertEquals("cc2@addr", mailData2.getCcAddr().get(0));
-		assertEquals(1, mailData2.getBccAddr().size());
-		assertEquals("bcc2@addr", mailData2.getBccAddr().get(0));
-		assertEquals("subject2", mailData2.getSubject());
-		assertEquals("body2", mailData2.getBody());
+		Template template2 = templateStore.get("name2");
+		assertNotNull(template2);
+		assertEquals("from2@addr", template2.getFrom());
+		assertEquals(1, template2.getTo().size());
+		assertEquals("to2@addr", template2.getTo().get(0));
+		assertEquals(1, template2.getCc().size());
+		assertEquals("cc2@addr", template2.getCc().get(0));
+		assertEquals(1, template2.getBcc().size());
+		assertEquals("bcc2@addr", template2.getBcc().get(0));
+		assertEquals("subject2", template2.getSubject());
+		assertEquals("body2", template2.getBody());
 	}
 
 	private TemplateStore create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr,
 			String subject, String body) {
 
-		MailData mailData = new MailData();
-		mailData.setFromAddr(fromAddr);
-		mailData.setToAddr(Arrays.asList(toAddr));
-		mailData.setCcAddr(Arrays.asList(ccAddr));
-		mailData.setBccAddr(Arrays.asList(bccAddr));
-		mailData.setSubject(subject);
-		mailData.setBody(body);
+		Template template = new Template();
+		template.setFrom(fromAddr);
+		template.setTo(asList(toAddr));
+		template.setCc(asList(ccAddr));
+		template.setBcc(asList(bccAddr));
+		template.setSubject(subject);
+		template.setBody(body);
 
-		Map<String, MailData> map = new HashMap<>();
-		map.put(name, mailData);
+		Map<String, Template> map = new HashMap<>();
+		map.put(name, template);
 
-		SimpleTemplateStore store = new SimpleTemplateStore();
-		store.setMailDataMap(map);
-		return store;
+		return new SimpleTemplateStore(map);
 	}
 
 }

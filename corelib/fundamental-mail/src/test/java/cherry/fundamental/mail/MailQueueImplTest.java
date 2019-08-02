@@ -29,49 +29,60 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
-import javax.activation.DataSource;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.internet.MimeMultipart;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.core.io.ByteArrayResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import cherry.fundamental.bizcal.Bizcal;
 
-public class MailSendHandlerImplTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = MailQueueImplTest.class)
+@SpringBootApplication
+@ImportResource(locations = "classpath:spring/appctx-trace.xml")
+public class MailQueueImplTest {
+
+	@Autowired
+	private AttachmentStore attachmentStore;
 
 	private JavaMailSender mailSender;
 
 	@Test
 	public void testSendLater() {
 		LocalDateTime now = LocalDateTime.now();
-		MailSendHandler handler = create(now);
+		MailQueue handler = create(now);
 
 		long messageId = handler.sendLater("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
 		assertEquals(0L, messageId);
 
-		List<Long> list = handler.listMessage(now);
+		List<Long> list = handler.list(now);
 		assertEquals(1, list.size());
 		assertEquals(0L, list.get(0).longValue());
 
 		ArgumentCaptor<SimpleMailMessage> message = ArgumentCaptor.forClass(SimpleMailMessage.class);
 		doNothing().when(mailSender).send(message.capture());
-		boolean first = handler.sendMessage(0L);
+		boolean first = handler.send(0L);
 
 		assertTrue(first);
 		assertEquals("from@addr", message.getValue().getFrom());
@@ -85,14 +96,14 @@ public class MailSendHandlerImplTest {
 		assertEquals("subject", message.getValue().getSubject());
 		assertEquals("body", message.getValue().getText());
 
-		boolean second = handler.sendMessage(0L);
+		boolean second = handler.send(0L);
 		assertFalse(second);
 	}
 
 	@Test
 	public void testSendNow() {
 		LocalDateTime now = LocalDateTime.now();
-		MailSendHandler handler = create(now);
+		MailQueue handler = create(now);
 
 		ArgumentCaptor<SimpleMailMessage> message = ArgumentCaptor.forClass(SimpleMailMessage.class);
 		doNothing().when(mailSender).send(message.capture());
@@ -112,19 +123,20 @@ public class MailSendHandlerImplTest {
 		assertEquals("subject", message.getValue().getSubject());
 		assertEquals("body", message.getValue().getText());
 
-		boolean result = handler.sendMessage(0L);
+		boolean result = handler.send(0L);
 		assertFalse(result);
 	}
 
 	@Test
 	public void testSendNowAttached() throws Exception {
 		LocalDateTime now = LocalDateTime.now();
-		MailSendHandler handler = create(now);
+		MailQueue handler = create(now);
 
 		ArgumentCaptor<MimeMessagePreparator> preparator = ArgumentCaptor.forClass(MimeMessagePreparator.class);
 		doNothing().when(mailSender).send(preparator.capture());
 
-		final File file = File.createTempFile("test_", ".txt", new File("."));
+		long messageId = 0L;
+		File file = File.createTempFile("test_", ".txt", new File("."));
 		file.deleteOnExit();
 		try {
 
@@ -132,40 +144,12 @@ public class MailSendHandlerImplTest {
 				out.write("attach2".getBytes());
 			}
 
-			final DataSource dataSource = new DataSource() {
-				@Override
-				public OutputStream getOutputStream() throws IOException {
-					return null;
-				}
-
-				@Override
-				public String getName() {
-					return "name3.txt";
-				}
-
-				@Override
-				public InputStream getInputStream() throws IOException {
-					return new ByteArrayInputStream("attach3".getBytes());
-				}
-
-				@Override
-				public String getContentType() {
-					return "text/plain";
-				}
-			};
-
-			long messageId = handler.sendNow("loginId", "messageName", "from@addr", asList("to@addr"),
-					asList("cc@addr"), asList("bcc@addr"), "replyTo@addr", "subject", "body",
-					new AttachmentPreparator() {
-						@Override
-						public void prepare(Attachment attachment) throws MessagingException {
-							attachment.add("name0.txt", new ByteArrayResource("attach0".getBytes()));
-							attachment.add("name1.bin", new ByteArrayResource("attach1".getBytes()),
-									"application/octet-stream");
-							attachment.add("name2.txt", file);
-							attachment.add("name3.txt", dataSource);
-						}
-					});
+			messageId = handler.sendNow("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+					asList("bcc@addr"), "replyTo@addr", "subject", "body", //
+					new Attachment("name0.txt", new ByteArrayInputStream("attach0".getBytes()), "text/plain"), //
+					new Attachment("name1.bin", new ByteArrayInputStream("attach1".getBytes()),
+							"application/octet-stream"), //
+					new Attachment("name2.txt", file));
 
 			Session session = Session.getDefaultInstance(new Properties());
 			MimeMessage message = new MimeMessage(session);
@@ -184,7 +168,7 @@ public class MailSendHandlerImplTest {
 			assertEquals("subject", message.getSubject());
 
 			MimeMultipart mm = (MimeMultipart) message.getContent();
-			assertEquals(5, mm.getCount());
+			assertEquals(4, mm.getCount());
 			assertEquals("body", ((MimeMultipart) mm.getBodyPart(0).getContent()).getBodyPart(0).getContent());
 
 			assertEquals("name0.txt", mm.getBodyPart(1).getFileName());
@@ -200,7 +184,6 @@ public class MailSendHandlerImplTest {
 				int len;
 				while ((len = in.read(buff)) > 0) {
 					out.write(buff, 0, len);
-					;
 				}
 				out.flush();
 				attach1 = out.toByteArray();
@@ -210,28 +193,37 @@ public class MailSendHandlerImplTest {
 			assertEquals("name2.txt", mm.getBodyPart(3).getFileName());
 			assertEquals("text/plain", mm.getBodyPart(3).getContentType());
 			assertEquals("attach2", mm.getBodyPart(3).getContent());
-
-			assertEquals("name3.txt", mm.getBodyPart(4).getFileName());
-			assertEquals("text/plain", mm.getBodyPart(4).getContentType());
-			assertEquals("attach3", mm.getBodyPart(4).getContent());
 		} finally {
+			attachmentStore.delete(messageId);
 			file.delete();
 		}
 	}
 
-	private MailSendHandler create(LocalDateTime now) {
+	private MailQueue create(LocalDateTime now) {
+
 		Bizcal bizcal = mock(Bizcal.class);
 		when(bizcal.now()).thenReturn(now);
 
-		MessageStore messageStore = new SimpleMessageStore();
-
 		mailSender = mock(JavaMailSender.class);
 
-		MailSendHandlerImpl impl = new MailSendHandlerImpl();
-		impl.setBizcal(bizcal);
-		impl.setMessageStore(messageStore);
-		impl.setMailSender(mailSender);
-		return impl;
+		SimpleQueueStore queueStore = new SimpleQueueStore();
+		return new MailQueueImpl(bizcal, queueStore, new AttachmentStore() {
+			@Override
+			public boolean save(long messageId, Attachment... attachments) throws UncheckedIOException {
+				return attachmentStore.save(messageId, attachments);
+			}
+
+			@Override
+			public Optional<List<AttachedEntry>> load(long messageId) throws UncheckedIOException {
+				return attachmentStore.load(messageId);
+			}
+
+			@Override
+			public void delete(long messageId) throws UncheckedIOException {
+				// 何もしない。
+				// 削除タイミングをずらす。
+			}
+		}, mailSender);
 	}
 
 }

@@ -25,32 +25,32 @@ import java.util.List;
  * のメールアドレス、テンプレートに埋め込むデータを指定する。<br />
  * 特殊な運用方法として、DBに保管されていないメールテンプレートのデータを元に、送信するメールデータを生成することにも対応する。
  */
-public interface MailDataHandler {
+public interface MessageHandler {
 
 	/**
 	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
-	 * 
+	 *
 	 * @param templateName テンプレート名称。
 	 * @param to 宛先 (To) のメールアドレス。
-	 * @param mailModel テンプレートに埋め込むデータ。
+	 * @param model テンプレートに埋め込むデータ。
 	 * @return 送信するメールデータ。
 	 */
-	MailData createMailData(String templateName, String to, MailModel mailModel);
+	Message evaluate(String templateName, List<String> to, Object model);
 
 	/**
 	 * DBに保管されていないメールテンプレートを元に、送信するメールデータを生成する。<br />
-	 * 
-	 * @param fromAddr 差出人 (From) のメールアドレス。
-	 * @param toAddr 宛先 (To) のメールアドレス。
-	 * @param ccAddr 宛先 (Cc) のメールアドレス。
-	 * @param bccAddr 宛先 (Bcc) のメールアドレス。
-	 * @param replyToAddr 返信先 (Reply-To) のメールアドレス。
+	 *
+	 * @param from 差出人 (From) のメールアドレス。
+	 * @param to 宛先 (To) のメールアドレス。
+	 * @param cc 宛先 (Cc) のメールアドレス。
+	 * @param bcc 宛先 (Bcc) のメールアドレス。
+	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject) のテンプレート。
 	 * @param body 本文のテンプレート。
-	 * @param mailModel テンプレートに埋め込むデータ。
+	 * @param model テンプレートに埋め込むデータ。
 	 * @return 送信するメールデータ。
 	 */
-	MailData createMailData(String fromAddr, List<String> toAddr, List<String> ccAddr, List<String> bccAddr,
-			String replyToAddr, String subject, String body, MailModel mailModel);
+	Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo, String subject,
+			String body, Object model);
 
 }

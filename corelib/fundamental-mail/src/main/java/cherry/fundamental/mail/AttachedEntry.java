@@ -16,9 +16,7 @@
 
 package cherry.fundamental.mail;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.InputStream;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,41 +25,25 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * メール送信機能。<br />
  * 添付ファイルを表す。
  */
-public class Attachment {
+public class AttachedEntry {
 
+	/** 添付時ファイル名。 */
 	private final String filename;
 
+	/** 添付ファイルデータ実態。 */
 	private final File file;
 
-	private final InputStream stream;
-
+	/** Content-Type */
 	private final String contentType;
 
-	public Attachment(String filename, File file) {
-		this(filename, file, null, null);
-	}
+	/** 元データがストリームか否か。 */
+	private final boolean stream;
 
-	public Attachment(String filename, byte[] array, String contentType) {
-		this(filename, null, new ByteArrayInputStream(array), contentType);
-	}
-
-	public Attachment(String filename, InputStream stream, String contentType) {
-		this(filename, null, stream, contentType);
-	}
-
-	private Attachment(String filename, File file, InputStream stream, String contentType) {
+	public AttachedEntry(String filename, File file, String contentType, boolean stream) {
 		this.filename = filename;
 		this.file = file;
-		this.stream = stream;
 		this.contentType = contentType;
-	}
-
-	public boolean isFile() {
-		return file != null;
-	}
-
-	public boolean isStream() {
-		return stream != null;
+		this.stream = stream;
 	}
 
 	@Override
@@ -77,12 +59,12 @@ public class Attachment {
 		return file;
 	}
 
-	public InputStream getStream() {
-		return stream;
-	}
-
 	public String getContentType() {
 		return contentType;
+	}
+
+	public boolean isStream() {
+		return stream;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2019 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@
 
 package cherry.fundamental.mail;
 
-/**
- * メール送信機能。<br />
- * メールテンプレートの件名、本文に埋め込むデータを表す。
- */
-public interface MailModel {
+import java.io.UncheckedIOException;
+import java.util.List;
+import java.util.Optional;
+
+public interface AttachmentStore {
+
+	boolean save(long messageId, Attachment... attachments) throws UncheckedIOException;
+
+	Optional<List<AttachedEntry>> load(long messageId) throws UncheckedIOException;
+
+	void delete(long messageId) throws UncheckedIOException;
+
 }

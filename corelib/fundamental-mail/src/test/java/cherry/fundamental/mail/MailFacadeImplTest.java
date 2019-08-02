@@ -32,31 +32,29 @@ public class MailFacadeImplTest {
 
 	private Bizcal bizcal;
 
-	private MailDataHandler mailDataHandler;
+	private MessageHandler messageHandler;
 
-	private MailSendHandler mailSendHandler;
+	private MailQueue mailQueue;
 
 	@Test
-	public void testCreateMailDataByName() {
+	public void testEvaluateByName() {
 		LocalDateTime now = LocalDateTime.now();
 		MailFacade mailFacade = create(now);
 
-		MailModel model = new MailModel() {
-		};
-		mailFacade.createMailData("templateName", "to@addr", model);
-		verify(mailDataHandler).createMailData(eq("templateName"), eq("to@addr"), eq(model));
+		Object model = new Object();
+		mailFacade.evaluate("templateName", asList("to@addr"), model);
+		verify(messageHandler).evaluate(eq("templateName"), eq(asList("to@addr")), eq(model));
 	}
 
 	@Test
-	public void testCreateMailDataByValue() {
+	public void testEvaluateByValue() {
 		LocalDateTime now = LocalDateTime.now();
 		MailFacade mailFacade = create(now);
 
-		MailModel model = new MailModel() {
-		};
-		mailFacade.createMailData("from@addr", asList("to@addr"), asList("cc@addr"), asList("bcc@addr"),
-				"replyTo@addr", "subject", "body", model);
-		verify(mailDataHandler).createMailData(eq("from@addr"), eq(asList("to@addr")), eq(asList("cc@addr")),
+		Object model = new Object();
+		mailFacade.evaluate("from@addr", asList("to@addr"), asList("cc@addr"), asList("bcc@addr"), "replyTo@addr",
+				"subject", "body", model);
+		verify(messageHandler).evaluate(eq("from@addr"), eq(asList("to@addr")), eq(asList("cc@addr")),
 				eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(model));
 	}
 
@@ -67,7 +65,7 @@ public class MailFacadeImplTest {
 
 		mailFacade.send("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body");
-		verify(mailSendHandler).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+		verify(mailQueue).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
 				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(now));
 	}
 
@@ -78,7 +76,7 @@ public class MailFacadeImplTest {
 
 		mailFacade.sendLater("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
-		verify(mailSendHandler).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+		verify(mailQueue).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
 				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(now));
 	}
 
@@ -89,33 +87,16 @@ public class MailFacadeImplTest {
 
 		mailFacade.sendNow("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body");
-		verify(mailSendHandler).sendNow(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+		verify(mailQueue).sendNow(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
 				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"));
-	}
-
-	@Test
-	public void testSendNowAttached() {
-		LocalDateTime now = LocalDateTime.now();
-		MailFacade mailFacade = create(now);
-
-		AttachmentPreparator preparator = mock(AttachmentPreparator.class);
-		mailFacade.sendNow("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
-				asList("bcc@addr"), "replyTo@addr", "subject", "body", preparator);
-		verify(mailSendHandler).sendNow(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
-				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"),
-				eq(preparator));
 	}
 
 	private MailFacade create(LocalDateTime now) {
 		bizcal = mock(Bizcal.class);
 		when(bizcal.now()).thenReturn(now);
-		mailDataHandler = mock(MailDataHandler.class);
-		mailSendHandler = mock(MailSendHandler.class);
-		MailFacadeImpl impl = new MailFacadeImpl();
-		impl.setBizcal(bizcal);
-		impl.setMailDataHandler(mailDataHandler);
-		impl.setMailSendHandler(mailSendHandler);
-		return impl;
+		messageHandler = mock(MessageHandler.class);
+		mailQueue = mock(MailQueue.class);
+		return new MailFacadeImpl(bizcal, messageHandler, mailQueue);
 	}
 
 }

@@ -173,11 +173,15 @@ subprojects {
 			testImplementation project(":corelib:elemental-crypto")
 		}
 		if (project.name == "fundamental-mail") {
+			implementation project(":corelib:elemental-loop")
 			implementation project(":corelib:fundamental-bizcal")
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			implementation "org.freemarker:freemarker:${versionFreemarker}"
+			implementation "org.yaml:snakeyaml"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			implementation "org.springframework.boot:spring-boot-starter-mail"
+			testImplementation "com.google.guava:guava:${versionGuava}"
+			testImplementation "com.h2database:h2:${versionH2}"
 		}
 		if (project.name == "fundamental-numbering") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"

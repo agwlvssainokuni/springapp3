@@ -20,20 +20,20 @@ import java.util.Map;
 
 public class SimpleTemplateStore implements TemplateStore {
 
-	private Map<String, MailData> mailDataMap;
+	private Map<String, Template> templateMap;
 
-	public void setMailDataMap(Map<String, MailData> mailDataMap) {
-		this.mailDataMap = mailDataMap;
+	public SimpleTemplateStore(Map<String, Template> templateMap) {
+		this.templateMap = templateMap;
 	}
 
 	@Override
-	public MailData getTemplate(String templateName) {
-		return mailDataMap.get(templateName);
+	public Template get(String templateName) {
+		return templateMap.get(templateName);
 	}
 
 	@Override
-	public void putTemplate(String templateName, MailData mailData) {
-		mailDataMap.put(templateName, mailData);
+	public void put(String templateName, Template template) {
+		templateMap.put(templateName, template);
 	}
 
 }

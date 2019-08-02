@@ -23,59 +23,48 @@ import cherry.fundamental.bizcal.Bizcal;
 
 public class MailFacadeImpl implements MailFacade {
 
-	private Bizcal bizcal;
+	private final Bizcal bizcal;
 
-	private MailDataHandler mailDataHandler;
+	private final MessageHandler messageHandler;
 
-	private MailSendHandler mailSendHandler;
+	private final MailQueue mailQueue;
 
-	public void setBizcal(Bizcal bizcal) {
+	public MailFacadeImpl(Bizcal bizcal, MessageHandler messageHandler, MailQueue mailQueue) {
 		this.bizcal = bizcal;
-	}
-
-	public void setMailDataHandler(MailDataHandler mailDataHandler) {
-		this.mailDataHandler = mailDataHandler;
-	}
-
-	public void setMailSendHandler(MailSendHandler mailSendHandler) {
-		this.mailSendHandler = mailSendHandler;
+		this.messageHandler = messageHandler;
+		this.mailQueue = mailQueue;
 	}
 
 	@Override
-	public MailData createMailData(String templateName, String to, MailModel mailModel) {
-		return mailDataHandler.createMailData(templateName, to, mailModel);
+	public Message evaluate(String templateName, List<String> to, Object model) {
+		return messageHandler.evaluate(templateName, to, model);
 	}
 
 	@Override
-	public MailData createMailData(String fromAddr, List<String> toAddr, List<String> ccAddr, List<String> bccAddr,
-			String replyToAddr, String subject, String body, MailModel mailModel) {
-		return mailDataHandler.createMailData(fromAddr, toAddr, ccAddr, bccAddr, replyToAddr, subject, body, mailModel);
+	public Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo,
+			String subject, String body, Object model) {
+		return messageHandler.evaluate(from, to, cc, bcc, replyTo, subject, body, model);
 	}
 
 	@Override
-	public long send(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body) {
-		return mailSendHandler.sendLater(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body,
-				bizcal.now());
+	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, bizcal.now(),
+				attachments);
 	}
 
 	@Override
-	public long sendLater(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt) {
-		return mailSendHandler.sendLater(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body,
-				scheduledAt);
+	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
+			Attachment... attachments) {
+		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, scheduledAt,
+				attachments);
 	}
 
 	@Override
-	public long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body) {
-		return mailSendHandler.sendNow(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body);
-	}
-
-	@Override
-	public long sendNow(String launcherId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, AttachmentPreparator preparator) {
-		return mailSendHandler.sendNow(launcherId, messageName, from, to, cc, bcc, replyTo, subject, body, preparator);
+	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+		return mailQueue.sendNow(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, attachments);
 	}
 
 }
