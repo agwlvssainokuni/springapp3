@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Optional;
+
+import cherry.fundamental.mail.Attachment;
 
 public interface AttachmentStore {
 

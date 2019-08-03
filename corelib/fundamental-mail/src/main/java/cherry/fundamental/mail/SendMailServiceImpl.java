@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2016 agwlvssainokuni
+ * Copyright 2014,2019 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.mail.MailException;
 
 import cherry.elemental.loop.Loop;
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.queue.MailQueue;
 
 public class SendMailServiceImpl implements SendMailService {
 

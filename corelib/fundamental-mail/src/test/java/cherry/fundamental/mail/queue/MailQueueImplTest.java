@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import static java.util.Arrays.asList;
 import static javax.mail.internet.InternetAddress.parse;
@@ -55,6 +55,7 @@ import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.Attachment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = MailQueueImplTest.class)

@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.message.MessageHandler;
+import cherry.fundamental.mail.queue.MailQueue;
 
 public class MailFacadeImpl implements MailFacade {
 

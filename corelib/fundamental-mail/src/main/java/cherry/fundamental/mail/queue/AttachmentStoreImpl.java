@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +36,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.DumperOptions.FlowStyle;
+import org.yaml.snakeyaml.DumperOptions.LineBreak;
 import org.yaml.snakeyaml.Yaml;
+
+import cherry.fundamental.mail.Attachment;
 
 public class AttachmentStoreImpl implements AttachmentStore {
 
@@ -93,7 +98,10 @@ public class AttachmentStoreImpl implements AttachmentStore {
 			}
 		}
 
-		Yaml yaml = new Yaml();
+		DumperOptions opts = new DumperOptions();
+		opts.setDefaultFlowStyle(FlowStyle.BLOCK);
+		opts.setLineBreak(LineBreak.WIN);
+		Yaml yaml = new Yaml(opts);
 		try (OutputStream out = new FileOutputStream(new File(destdir, listname));
 				Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
 			yaml.dump(list, writer);

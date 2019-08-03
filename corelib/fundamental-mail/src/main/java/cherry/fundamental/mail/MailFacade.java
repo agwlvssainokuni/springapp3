@@ -19,6 +19,9 @@ package cherry.fundamental.mail;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import cherry.fundamental.mail.message.MessageHandler;
+import cherry.fundamental.mail.queue.MailQueue;
+
 /**
  * メール送信機能。<br />
  * 業務アプリケーションが直接的に使用する機能を集めたインタフェース。

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.message;
 
 import java.io.Reader;
 import java.io.StringReader;

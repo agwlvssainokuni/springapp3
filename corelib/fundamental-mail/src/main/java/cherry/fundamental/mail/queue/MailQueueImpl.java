@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
@@ -29,6 +29,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.transaction.annotation.Transactional;
 
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.Attachment;
 
 public class MailQueueImpl implements MailQueue {
 

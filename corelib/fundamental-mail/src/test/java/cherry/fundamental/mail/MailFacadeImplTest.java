@@ -27,6 +27,8 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.message.MessageHandler;
+import cherry.fundamental.mail.queue.MailQueue;
 
 public class MailFacadeImplTest {
 

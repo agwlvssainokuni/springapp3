@@ -181,7 +181,7 @@ subprojects {
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			implementation "org.springframework.boot:spring-boot-starter-mail"
 			testImplementation "com.google.guava:guava:${versionGuava}"
-			testImplementation "com.h2database:h2:${versionH2}"
+			testRuntimeOnly "com.h2database:h2:${versionH2}"
 		}
 		if (project.name == "fundamental-numbering") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"

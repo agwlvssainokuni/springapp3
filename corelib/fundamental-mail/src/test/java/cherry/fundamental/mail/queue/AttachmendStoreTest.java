@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -36,6 +36,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.google.common.io.Files;
+
+import cherry.fundamental.mail.Attachment;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = AttachmendStoreTest.class)

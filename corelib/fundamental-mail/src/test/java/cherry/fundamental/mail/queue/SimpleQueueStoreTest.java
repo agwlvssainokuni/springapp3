@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.queue;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -30,6 +30,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import cherry.fundamental.mail.queue.QueuedEntry;
+import cherry.fundamental.mail.queue.SimpleQueueStore;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SimpleQueueStoreTest.class)

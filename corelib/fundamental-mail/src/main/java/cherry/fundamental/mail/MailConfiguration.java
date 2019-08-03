@@ -28,6 +28,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import cherry.fundamental.bizcal.Bizcal;
+import cherry.fundamental.mail.message.MessageHandler;
+import cherry.fundamental.mail.message.MessageHandlerImpl;
+import cherry.fundamental.mail.message.PassthroughTemplateLoader;
+import cherry.fundamental.mail.message.SimpleTemplateStore;
+import cherry.fundamental.mail.message.TemplateStore;
+import cherry.fundamental.mail.queue.AttachmentStore;
+import cherry.fundamental.mail.queue.AttachmentStoreImpl;
+import cherry.fundamental.mail.queue.MailQueue;
+import cherry.fundamental.mail.queue.MailQueueImpl;
+import cherry.fundamental.mail.queue.QueueStore;
+import cherry.fundamental.mail.queue.SimpleQueueStore;
 import freemarker.template.TemplateExceptionHandler;
 
 @Configuration

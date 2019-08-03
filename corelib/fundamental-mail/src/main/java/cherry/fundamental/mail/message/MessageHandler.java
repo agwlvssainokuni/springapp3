@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.message;
 
 import java.util.List;
+
+import cherry.fundamental.mail.Message;
 
 /**
  * メール送信機能。<br />

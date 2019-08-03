@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail;
+package cherry.fundamental.mail.message;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+import cherry.fundamental.mail.Message;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
