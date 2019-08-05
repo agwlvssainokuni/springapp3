@@ -25,12 +25,12 @@ import java.time.LocalDateTime;
 public class SimpleDateTimeStrategy implements DateTimeStrategy {
 
 	@Override
-	public LocalDate today() {
+	public LocalDate today(String name) {
 		return LocalDate.now();
 	}
 
 	@Override
-	public LocalDateTime now() {
+	public LocalDateTime now(String name) {
 		return LocalDateTime.now();
 	}
 

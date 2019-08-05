@@ -33,12 +33,55 @@ public class BizcalConfiguration {
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean
-	public Bizcal bizcal(DateTimeStrategy dateTimeStrategy, YearStrategy yearStrategy, WorkdayStrategy workdayStrategy) {
+	public Bizcal bizcal(DateTimeStrategy dateTimeStrategy, YearStrategy yearStrategy,
+			WorkdayStrategy workdayStrategy) {
 		return new BizcalImpl(dateTimeStrategy, yearStrategy, workdayStrategy, stdCalName);
 	}
 
 	public void setStdCalName(String stdCalName) {
 		this.stdCalName = stdCalName;
+	}
+
+	@ConfigurationProperties(prefix = "fundamental.bizcal")
+	public static class DefaultConfiguration {
+
+		private int yearOfFirstOffset;
+		private int monthOfFirst;
+		private int dayOfFirst;
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public DateTimeStrategy dateTimeStrategy() {
+			return new SimpleDateTimeStrategy();
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public YearStrategy yearStrategy() {
+			return new SimpleYearStrategy(yearOfFirstOffset, monthOfFirst, dayOfFirst);
+		}
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public WorkdayStrategy workdayStrategy() {
+			return new SimpleWorkdayStrategy();
+		}
+
+		public void setYearOfFirstOffset(int yearOfFirstOffset) {
+			this.yearOfFirstOffset = yearOfFirstOffset;
+		}
+
+		public void setMonthOfFirst(int monthOfFirst) {
+			this.monthOfFirst = monthOfFirst;
+		}
+
+		public void setDayOfFirst(int dayOfFirst) {
+			this.dayOfFirst = dayOfFirst;
+		}
+
 	}
 
 }

@@ -37,123 +37,253 @@ public interface Bizcal {
 
 	/**
 	 * 業務日付(「業務上の本日」の日付)を照会する。<br />
-	 * 
+	 *
 	 * @return 業務日付。
 	 */
 	LocalDate today();
 
 	/**
+	 * 業務日付(「業務上の本日」の日付)を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務日付。
+	 */
+	LocalDate today(String name);
+
+	/**
 	 * 業務日時(「業務上の現在」の日時)を照会する。<br />
-	 * 
+	 *
 	 * @return 業務日時。
 	 */
 	LocalDateTime now();
 
 	/**
+	 * 業務日時(「業務上の現在」の日時)を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務日時。
+	 */
+	LocalDateTime now(String name);
+
+	/**
 	 * 「業務上の本日」の営業年度を照会する。<br />
-	 * 
+	 *
 	 * @return 業務上の本日の営業年度。
 	 */
 	int getBizYear();
 
 	/**
+	 * 「業務上の本日」の営業年度を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務上の本日の営業年度。
+	 */
+	int getBizYear(String name);
+
+	/**
 	 * 指定した日付の営業年度を照会する。<br />
-	 * 
+	 *
 	 * @param dt 日付指定。
 	 * @return 指定した日付の営業年度。
 	 */
 	int getBizYear(LocalDate dt);
 
 	/**
+	 * 指定した日付の営業年度を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 指定した日付の営業年度。
+	 */
+	int getBizYear(String name, LocalDate dt);
+
+	/**
 	 * 「業務上の本日」の営業年度の初日を照会する。<br />
-	 * 
+	 *
 	 * @return 業務上の本日の営業年度の初日。
 	 */
 	LocalDate getFirstOfBizYear();
 
 	/**
+	 * 「業務上の本日」の営業年度の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務上の本日の営業年度の初日。
+	 */
+	LocalDate getFirstOfBizYear(String name);
+
+	/**
 	 * 指定した日付の営業年度の初日を照会する。<br />
-	 * 
+	 *
 	 * @param dt 日付指定。
 	 * @return 指定した日付の営業年度の初日。
 	 */
 	LocalDate getFirstOfBizYear(LocalDate dt);
 
 	/**
+	 * 指定した日付の営業年度の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 指定した日付の営業年度の初日。
+	 */
+	LocalDate getFirstOfBizYear(String name, LocalDate dt);
+
+	/**
 	 * 指定した営業年度の初日を照会する。<br />
-	 * 
+	 *
 	 * @param bizYear 営業年度指定。
 	 * @return 指定した営業年度の初日。
 	 */
 	LocalDate getFirstOfBizYear(int bizYear);
 
 	/**
+	 * 指定した営業年度の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param bizYear 営業年度指定。
+	 * @return 指定した営業年度の初日。
+	 */
+	LocalDate getFirstOfBizYear(String name, int bizYear);
+
+	/**
 	 * 「業務上の本日」の営業年度の末日を照会する。<br />
-	 * 
+	 *
 	 * @return 業務上の本日の営業年度の末日。
 	 */
 	LocalDate getLastOfBizYear();
 
 	/**
+	 * 「業務上の本日」の営業年度の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務上の本日の営業年度の末日。
+	 */
+	LocalDate getLastOfBizYear(String name);
+
+	/**
 	 * 指定した日付の営業年度の末日を照会する。<br />
-	 * 
+	 *
 	 * @param dt 日付指定。
 	 * @return 指定した日付の営業年度の末日。
 	 */
 	LocalDate getLastOfBizYear(LocalDate dt);
 
 	/**
+	 * 指定した日付の営業年度の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 指定した日付の営業年度の末日。
+	 */
+	LocalDate getLastOfBizYear(String name, LocalDate dt);
+
+	/**
 	 * 指定した営業年度の末日を照会する。<br />
-	 * 
+	 *
 	 * @param bizYear 営業年度指定。
 	 * @return 指定した営業年度の末日。
 	 */
 	LocalDate getLastOfBizYear(int bizYear);
 
 	/**
+	 * 指定した営業年度の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param bizYear 営業年度指定。
+	 * @return 指定した営業年度の末日。
+	 */
+	LocalDate getLastOfBizYear(String name, int bizYear);
+
+	/**
 	 * 「業務上の本日」の営業年度の日数を照会する。<br />
-	 * 
+	 *
 	 * @return 「業務上の本日」の営業年度の日数。
 	 */
 	int getNumberOfDaysOfBizYear();
 
 	/**
+	 * 「業務上の本日」の営業年度の日数を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 「業務上の本日」の営業年度の日数。
+	 */
+	int getNumberOfDaysOfBizYear(String name);
+
+	/**
 	 * 指定した日付の営業年度の日数を照会する。<br />
-	 * 
+	 *
 	 * @param dt 日付指定。
 	 * @return 指定した日付の営業年度の日数。
 	 */
 	int getNumberOfDaysOfBizYear(LocalDate dt);
 
 	/**
+	 * 指定した日付の営業年度の日数を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 指定した日付の営業年度の日数。
+	 */
+	int getNumberOfDaysOfBizYear(String name, LocalDate dt);
+
+	/**
 	 * 指定した営業年度の日数を照会する。<br />
-	 * 
+	 *
 	 * @param bizYear 営業年度指定。
 	 * @return 指定した営業年度の日数。
 	 */
 	int getNumberOfDaysOfBizYear(int bizYear);
 
 	/**
+	 * 指定した営業年度の日数を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param bizYear 営業年度指定。
+	 * @return 指定した営業年度の日数。
+	 */
+	int getNumberOfDaysOfBizYear(String name, int bizYear);
+
+	/**
 	 * 営業年度の初日から「業務上の本日」までの日数(何日目か)を照会する。<br />
 	 * 営業年度の初日は「1」。
-	 * 
+	 *
 	 * @return 営業年度の初日から「業務上の本日」までの日数(何日目か)。
 	 */
 	int getNthDayOfBizYear();
 
 	/**
+	 * 営業年度の初日から「業務上の本日」までの日数(何日目か)を照会する。<br />
+	 * 営業年度の初日は「1」。
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 営業年度の初日から「業務上の本日」までの日数(何日目か)。
+	 */
+	int getNthDayOfBizYear(String name);
+
+	/**
 	 * 営業年度の初日から指定した日付までの日数(何日目か)を照会する。<br />
 	 * 営業年度の初日は「1」。
-	 * 
+	 *
 	 * @param dt 日付指定。
 	 * @return 営業年度の初日から指定した日付までの日数(何日目か)。
 	 */
 	int getNthDayOfBizYear(LocalDate dt);
 
 	/**
+	 * 営業年度の初日から指定した日付までの日数(何日目か)を照会する。<br />
+	 * 営業年度の初日は「1」。
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 営業年度の初日から指定した日付までの日数(何日目か)。
+	 */
+	int getNthDayOfBizYear(String name, LocalDate dt);
+
+	/**
 	 * 標準のカレンダーに基づき、「業務上の本日」から指定した終点日までの営業日数を算出する。<br />
 	 * 終点日が起点日と同じならば「1」。
-	 * 
+	 *
 	 * @param to 終点日指定。
 	 * @return 業務上の本日から指定した終点日までの営業日数。
 	 */
@@ -162,7 +292,7 @@ public interface Bizcal {
 	/**
 	 * 指定したカレンダーに基づき、「業務上の本日」から指定した終点日までの営業日数を算出する。<br />
 	 * 終点日が起点日と同じならば「1」。
-	 * 
+	 *
 	 * @param name カレンダーの識別名。
 	 * @param to 終点日指定。
 	 * @return 業務上の本日から指定した終点日までの営業日数。
@@ -172,7 +302,7 @@ public interface Bizcal {
 	/**
 	 * 標準のカレンダーに基づき、指定した起点日から終点日までの営業日数を算出する。<br />
 	 * 終点日が起点日と同じならば「1」。
-	 * 
+	 *
 	 * @param from 起点日指定。
 	 * @param to 終点日指定。
 	 * @return 指定した起点日から終点日までの営業日数。
@@ -182,7 +312,7 @@ public interface Bizcal {
 	/**
 	 * 指定したカレンダーに基づき、指定した起点日から終点日までの営業日数を算出する。<br />
 	 * 終点日が起点日と同じならば「1」。
-	 * 
+	 *
 	 * @param name カレンダーの識別名。
 	 * @param from 起点日指定。
 	 * @param to 終点日指定。
@@ -193,7 +323,7 @@ public interface Bizcal {
 	/**
 	 * 標準のカレンダーに基づき、「業務上の本日」から指定の営業日後の営業日を算出する。<br />
 	 * 「1」を指定すると起点日と同じ。
-	 * 
+	 *
 	 * @param numberOfWorkday 営業日数指定。
 	 * @return <code>numberOfWorkday</code>営業日後の営業日。
 	 */
@@ -202,7 +332,7 @@ public interface Bizcal {
 	/**
 	 * 指定したカレンダーに基づき、「業務上の本日」から指定の営業日後の営業日を算出する。<br />
 	 * 「1」を指定すると起点日と同じ。
-	 * 
+	 *
 	 * @param name カレンダーの識別名。
 	 * @param numberOfWorkday 営業日数指定。
 	 * @return <code>numberOfWorkday</code>営業日後の営業日。
@@ -212,7 +342,7 @@ public interface Bizcal {
 	/**
 	 * 標準のカレンダーに基づき、指定した起点日から指定の営業日後の営業日を算出する。<br />
 	 * 「1」を指定すると起点日と同じ。
-	 * 
+	 *
 	 * @param from 起点日指定。
 	 * @param numberOfWorkday 営業日数指定。
 	 * @return <code>numberOfWorkday</code>営業日後の営業日。
@@ -222,7 +352,7 @@ public interface Bizcal {
 	/**
 	 * 指定したカレンダーに基づき、指定した起点日から指定の営業日後の営業日を算出する。<br />
 	 * 「1」を指定すると起点日と同じ。
-	 * 
+	 *
 	 * @param name カレンダーの識別名。
 	 * @param from 起点日指定。
 	 * @param numberOfWorkday 営業日数指定。

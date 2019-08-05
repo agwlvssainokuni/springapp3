@@ -25,13 +25,15 @@ import java.time.LocalDateTime;
 public interface DateTimeStrategy {
 
 	/**
+	 * @param name カレンダーの識別名。
 	 * @return 業務日付。
 	 */
-	LocalDate today();
+	LocalDate today(String name);
 
 	/**
+	 * @param name カレンダーの識別名。
 	 * @return 業務日時。
 	 */
-	LocalDateTime now();
+	LocalDateTime now(String name);
 
 }

@@ -38,7 +38,7 @@ public class SimpleYearStrategy implements YearStrategy {
 	}
 
 	@Override
-	public Range<LocalDate> rangeOfBizYear(int bizYear) {
+	public Range<LocalDate> rangeOfBizYear(String name, int bizYear) {
 		LocalDate firstDate = LocalDate.of(bizYear + yearOfFirstOffset, monthOfFirst, dayOfFirst);
 		LocalDate lastDate = firstDate.plusYears(1).minusDays(1);
 		return Range.between(firstDate, lastDate, (o1, o2) -> o1.compareTo(o2));

@@ -43,90 +43,165 @@ public class BizcalImpl implements Bizcal {
 
 	@Override
 	public LocalDate today() {
-		return dateTimeStrategy.today();
+		return today(stdCalName);
+	}
+
+	@Override
+	public LocalDate today(String name) {
+		return dateTimeStrategy.today(name);
 	}
 
 	@Override
 	public LocalDateTime now() {
-		return dateTimeStrategy.now();
+		return now(stdCalName);
+	}
+
+	@Override
+	public LocalDateTime now(String name) {
+		return dateTimeStrategy.now(name);
 	}
 
 	@Override
 	public int getBizYear() {
-		return getBizYear(dateTimeStrategy.today());
+		return getBizYear(stdCalName);
+	}
+
+	@Override
+	public int getBizYear(String name) {
+		return getBizYear(name, today(name));
 	}
 
 	@Override
 	public int getBizYear(LocalDate dt) {
-		return bizYearByDate(dt).getLeft().intValue();
+		return getBizYear(stdCalName, dt);
+	}
+
+	@Override
+	public int getBizYear(String name, LocalDate dt) {
+		return bizYearByDate(name, dt).getLeft().intValue();
 	}
 
 	@Override
 	public LocalDate getFirstOfBizYear() {
-		return getFirstOfBizYear(dateTimeStrategy.today());
+		return getFirstOfBizYear(stdCalName);
+	}
+
+	@Override
+	public LocalDate getFirstOfBizYear(String name) {
+		return getFirstOfBizYear(name, today(name));
 	}
 
 	@Override
 	public LocalDate getFirstOfBizYear(LocalDate dt) {
-		return bizYearByDate(dt).getRight().getMinimum();
+		return getFirstOfBizYear(stdCalName, dt);
+	}
+
+	@Override
+	public LocalDate getFirstOfBizYear(String name, LocalDate dt) {
+		return bizYearByDate(name, dt).getRight().getMinimum();
 	}
 
 	@Override
 	public LocalDate getFirstOfBizYear(int bizYear) {
-		return yearStrategy.rangeOfBizYear(bizYear).getMinimum();
+		return getFirstOfBizYear(stdCalName, bizYear);
+	}
+
+	@Override
+	public LocalDate getFirstOfBizYear(String name, int bizYear) {
+		return yearStrategy.rangeOfBizYear(name, bizYear).getMinimum();
 	}
 
 	@Override
 	public LocalDate getLastOfBizYear() {
-		return getLastOfBizYear(dateTimeStrategy.today());
+		return getLastOfBizYear(stdCalName);
+	}
+
+	@Override
+	public LocalDate getLastOfBizYear(String name) {
+		return getLastOfBizYear(name, today(name));
 	}
 
 	@Override
 	public LocalDate getLastOfBizYear(LocalDate dt) {
-		return bizYearByDate(dt).getRight().getMaximum();
+		return getLastOfBizYear(stdCalName, dt);
+	}
+
+	@Override
+	public LocalDate getLastOfBizYear(String name, LocalDate dt) {
+		return bizYearByDate(name, dt).getRight().getMaximum();
 	}
 
 	@Override
 	public LocalDate getLastOfBizYear(int bizYear) {
-		return yearStrategy.rangeOfBizYear(bizYear).getMaximum();
+		return getLastOfBizYear(stdCalName, bizYear);
+	}
+
+	@Override
+	public LocalDate getLastOfBizYear(String name, int bizYear) {
+		return yearStrategy.rangeOfBizYear(name, bizYear).getMaximum();
 	}
 
 	@Override
 	public int getNumberOfDaysOfBizYear() {
-		return getNumberOfDaysOfBizYear(dateTimeStrategy.today());
+		return getNumberOfDaysOfBizYear(stdCalName);
+	}
+
+	@Override
+	public int getNumberOfDaysOfBizYear(String name) {
+		return getNumberOfDaysOfBizYear(name, today(name));
 	}
 
 	@Override
 	public int getNumberOfDaysOfBizYear(LocalDate dt) {
-		Range<LocalDate> range = bizYearByDate(dt).getRight();
+		return getNumberOfDaysOfBizYear(stdCalName, dt);
+	}
+
+	@Override
+	public int getNumberOfDaysOfBizYear(String name, LocalDate dt) {
+		Range<LocalDate> range = bizYearByDate(name, dt).getRight();
 		return (int) range.getMinimum().until(range.getMaximum().plusDays(1), ChronoUnit.DAYS);
 	}
 
 	@Override
 	public int getNumberOfDaysOfBizYear(int bizYear) {
-		Range<LocalDate> range = yearStrategy.rangeOfBizYear(bizYear);
+		return getNumberOfDaysOfBizYear(stdCalName, bizYear);
+	}
+
+	@Override
+	public int getNumberOfDaysOfBizYear(String name, int bizYear) {
+		Range<LocalDate> range = yearStrategy.rangeOfBizYear(name, bizYear);
 		return (int) range.getMinimum().until(range.getMaximum().plusDays(1), ChronoUnit.DAYS);
 	}
 
 	@Override
 	public int getNthDayOfBizYear() {
-		return getNthDayOfBizYear(dateTimeStrategy.today());
+		return getNthDayOfBizYear(stdCalName);
+	}
+
+	@Override
+	public int getNthDayOfBizYear(String name) {
+		return getNthDayOfBizYear(name, today(name));
 	}
 
 	@Override
 	public int getNthDayOfBizYear(LocalDate dt) {
-		Range<LocalDate> range = bizYearByDate(dt).getRight();
+		return getNthDayOfBizYear(stdCalName, dt);
+	}
+
+	@Override
+	public int getNthDayOfBizYear(String name, LocalDate dt) {
+		Range<LocalDate> range = bizYearByDate(name, dt).getRight();
 		return (int) range.getMinimum().until(dt.plusDays(1), ChronoUnit.DAYS);
 	}
 
 	@Override
 	public int getNumberOfWorkday(LocalDate to) {
-		return getNumberOfWorkday(stdCalName, dateTimeStrategy.today(), to);
+		return getNumberOfWorkday(stdCalName, to);
 	}
 
 	@Override
 	public int getNumberOfWorkday(String name, LocalDate to) {
-		return getNumberOfWorkday(name, dateTimeStrategy.today(), to);
+		return getNumberOfWorkday(name, today(name), to);
 	}
 
 	@Override
@@ -141,12 +216,12 @@ public class BizcalImpl implements Bizcal {
 
 	@Override
 	public LocalDate getNextWorkday(int numberOfWorkday) {
-		return getNextWorkday(stdCalName, dateTimeStrategy.today(), numberOfWorkday);
+		return getNextWorkday(stdCalName, numberOfWorkday);
 	}
 
 	@Override
 	public LocalDate getNextWorkday(String name, int numberOfWorkday) {
-		return getNextWorkday(name, dateTimeStrategy.today(), numberOfWorkday);
+		return getNextWorkday(name, today(name), numberOfWorkday);
 	}
 
 	@Override
@@ -159,17 +234,17 @@ public class BizcalImpl implements Bizcal {
 		return workdayStrategy.getNextWorkday(name, from, numberOfWorkday);
 	}
 
-	private Pair<Integer, Range<LocalDate>> bizYearByDate(LocalDate dt) {
-		return bizYearByDate(dt.getYear(), dt);
+	private Pair<Integer, Range<LocalDate>> bizYearByDate(String name, LocalDate dt) {
+		return bizYearByDate(name, dt.getYear(), dt);
 	}
 
-	private Pair<Integer, Range<LocalDate>> bizYearByDate(int year, LocalDate dt) {
-		Range<LocalDate> range = yearStrategy.rangeOfBizYear(year);
+	private Pair<Integer, Range<LocalDate>> bizYearByDate(String name, int year, LocalDate dt) {
+		Range<LocalDate> range = yearStrategy.rangeOfBizYear(name, year);
 		if (range.isAfter(dt)) {
-			return bizYearByDate(year - 1, dt);
+			return bizYearByDate(name, year - 1, dt);
 		}
 		if (range.isBefore(dt)) {
-			return bizYearByDate(year + 1, dt);
+			return bizYearByDate(name, year + 1, dt);
 		}
 		return Pair.of(year, range);
 	}
