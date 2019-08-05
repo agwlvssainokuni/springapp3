@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="tool-uri" th:content="@{/testtool/stubconfig}" />
 <title>スタブ設定ツール</title>
 <link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 <link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" />
@@ -12,8 +13,14 @@
 <script type="text/javascript">
 	$(function() {
 
+		const uri = (function(root) {
+			return function() {
+				return root + $("#format").val();
+			};
+		})($("meta[name='tool-uri']").attr("content"));
+
 		$("#registerBtn").click(function(event) {
-			$.ajax($("#toolUri").val(), {
+			$.ajax(uri(), {
 				method : "POST",
 				data : {
 					className : $("#className").val(),
@@ -32,7 +39,7 @@
 		});
 
 		$("#peekBtn").click(function(event) {
-			$.ajax($("#toolUri").val() + "?peek", {
+			$.ajax(uri() + "?peek", {
 				method : "POST",
 				data : {
 					className : $("#className").val(),
@@ -61,7 +68,7 @@
 			if ("" == $(this).val()) {
 				return;
 			}
-			$.ajax($("#toolUri").val() + "?bean", {
+			$.ajax(uri() + "?bean", {
 				method : "POST",
 				data : {
 					className : $("#className").val()
@@ -90,7 +97,7 @@
 			if ("" == $(this).val() || "" == $("#className").val()) {
 				return;
 			}
-			$.ajax($("#toolUri").val() + "?method", {
+			$.ajax(uri() + "?method", {
 				method : "POST",
 				data : {
 					className : $("#className").val(),
@@ -117,7 +124,7 @@
 		});
 
 		$("#listBtn").click(function(event) {
-			$.ajax($("#toolUri").val() + "?list", {
+			$.ajax(uri() + "?list", {
 				method : "POST",
 				data : {
 					className : $("#className").val()
@@ -146,9 +153,12 @@
 		<h2 class="page-header">スタブ設定ツール</h2>
 		<div role="form" class="form-horizontal">
 			<div class="form-group">
-				<label for="toolUri" class="col-sm-1 control-label">ツールURI</label>
+				<label for="format" class="col-sm-1 control-label">電文書式</label>
 				<div class="col-sm-11">
-					<input type="text" id="toolUri" name="toolUri" class="form-control" placeholder="ツールのURIを指定してください" th:value="@{/testtool/stubconfig/yaml}" />
+					<select id="format" name="format" class="form-control">
+						<option value="/yaml">YAML</option>
+						<option value="/json">JSON</option>
+					</select>
 				</div>
 			</div>
 			<div class="form-group">
