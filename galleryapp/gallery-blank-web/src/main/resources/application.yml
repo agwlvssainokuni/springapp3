@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: 'off'
+logging:
+  pattern:
+    console: '%d{yyyy-MM-dd-HH:mm:ss.SSS} [%-5level] [%X{loginId}] %logger - %msg%n'
+  level:
+    root: WARN
+    operation: INFO
+    cherry: TRACE
+    org:
+      springframework: INFO

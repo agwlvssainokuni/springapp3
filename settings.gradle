@@ -18,4 +18,7 @@ include ":corelib:elemental-core",
 	":corelib:fundamental-numbering",
 	":corelib:fundamental-servlet",
 	":corelib:fundamental-testtool",
+	":galleryapp:gallery-blank-web",
+	":galleryapp:gallery-login-inmem-web",
+	":galleryapp:gallery-login-jdbc-web",
 	":release:buildinfo"

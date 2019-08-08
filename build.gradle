@@ -49,10 +49,16 @@ subprojects {
 	apply plugin: "java-library"
 	apply plugin: "eclipse"
 	apply plugin: "io.spring.dependency-management"
+
 	if (project.name.startsWith("fundamental-")) {
 		dependencyManagement {
 			imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}") }
 		}
+	}
+
+	if (project.name.startsWith("gallery-")) {
+		apply plugin: "org.springframework.boot"
+		springBoot { mainClassName = "cherry.gallery.Main" }
 	}
 
 	sourceSets {
@@ -207,6 +213,42 @@ subprojects {
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			testImplementation "org.springframework.boot:spring-boot-starter-json"
 		}
+
+		// galleryapp
+		if (project.name == "gallery-blank-web") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			implementation "org.springframework.boot:spring-boot-starter-web"
+			implementation "org.springframework.boot:spring-boot-starter-security"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+		}
+		if (project.name == "gallery-login-inmem-web") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			implementation "org.springframework.boot:spring-boot-starter-web"
+			implementation "org.springframework.boot:spring-boot-starter-security"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+		}
+		if (project.name == "gallery-login-jdbc-web") {
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.springframework.boot:spring-boot-starter"
+			implementation "org.springframework.boot:spring-boot-starter-web"
+			implementation "org.springframework.boot:spring-boot-starter-security"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+			runtimeOnly "org.springframework.boot:spring-boot-starter-jdbc"
+			runtimeOnly "org.flywaydb:flyway-core"
+			runtimeOnly "com.h2database:h2:${versionH2}"
+		}
+
 		// テストライブラリ。
 		testImplementation "junit:junit:${versionJunit}"
 		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
