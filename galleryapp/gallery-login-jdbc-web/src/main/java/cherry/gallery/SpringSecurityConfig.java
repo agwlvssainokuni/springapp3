@@ -25,13 +25,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import cherry.fundamental.spring.security.OperationLogHandlerInterceptor;
 
 @EnableWebSecurity
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private DataSource dataSource;
@@ -56,11 +52,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implement
 		http.logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")).permitAll() //
 				.logoutSuccessUrl("/login/start?loggedOut") //
 				.invalidateHttpSession(true);
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new OperationLogHandlerInterceptor());
 	}
 
 }

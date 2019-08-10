@@ -19,23 +19,14 @@ package cherry.gallery;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import cherry.fundamental.spring.security.OperationLogHandlerInterceptor;
 
 @EnableWebSecurity
-public class SpringSecurityConfig extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests() //
 				.anyRequest().permitAll();
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new OperationLogHandlerInterceptor());
 	}
 
 }
