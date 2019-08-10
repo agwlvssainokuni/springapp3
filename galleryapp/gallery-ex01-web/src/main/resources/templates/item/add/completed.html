@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>ギャラリー：基本01：登録</title>
+</head>
+<body>
+	<h1>ギャラリー：基本01：登録</h1>
+	<div>ID: [[${param.id}]]</div>
+	<div th:object="${itemAddForm}">
+		<div>
+			<div>
+				<label for="name">品名</label>
+			</div>
+			<div>
+				<input type="text" th:field="*{name}" readonly>
+			</div>
+		</div>
+		<div>
+			<div>
+				<label for="price">価格</label>
+			</div>
+			<div>
+				<input type="text" th:field="*{price}" readonly>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div>
+			<a th:href="@{/item/edit(id=${param.id})}">修正</a> <a th:href="@{/item/del(id=${param.id})}">削除</a>
+		</div>
+		<div>
+			<a th:href="@{/item/list}">検索</a> <a th:href="@{/item/list/execute}">検索結果</a>
+		</div>
+	</div>
+	<div>
+		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
+	</div>
+</body>
+</html>

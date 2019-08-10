@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>ギャラリー：基本01：更新</title>
+</head>
+<body>
+	<h1>ギャラリー：基本01：更新</h1>
+	<div>ID: [[${param.id}]]</div>
+	<form th:action="@{/item/edit/confirm(id=${param.id})}" method="POST" th:object="${itemEditForm}">
+		<input type="hidden" th:field="*{lockVer}">
+		<div>
+			<div>
+				<label for="name">品名</label>
+			</div>
+			<div>
+				<input type="text" th:field="*{name}">
+			</div>
+		</div>
+		<div>
+			<div>
+				<label for="price">価格</label>
+			</div>
+			<div>
+				<input type="text" th:field="*{price}">
+			</div>
+		</div>
+		<div>
+			<button type="submit">確認</button>
+		</div>
+	</form>
+	<div>
+		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
+	</div>
+</body>
+</html>

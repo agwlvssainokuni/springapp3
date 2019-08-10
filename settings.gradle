@@ -21,4 +21,5 @@ include ":corelib:elemental-core",
 	":galleryapp:gallery-blank-web",
 	":galleryapp:gallery-login-inmem-web",
 	":galleryapp:gallery-login-jdbc-web",
+	":galleryapp:gallery-ex01-web",
 	":release:buildinfo"
