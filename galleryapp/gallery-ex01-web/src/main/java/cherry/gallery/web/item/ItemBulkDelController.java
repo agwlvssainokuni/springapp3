@@ -19,9 +19,7 @@ package cherry.gallery.web.item;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.fromMethodCall;
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
-import java.util.stream.Collectors;
-
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,20 +30,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import cherry.gallery.web.item.ItemBulkForm.Elem;
-
-@RequestMapping("/item/list")
-@SessionAttributes(types = { ItemListForm.class })
+@RequestMapping("/item/bulkdel")
+@SessionAttributes(names = { "itemBulkForm" }, types = { ItemBulkDelForm.class })
 @Controller
-public class ItemListController {
+public class ItemBulkDelController {
 
-	private static final String VIEW_START = "item/list/start";
+	private static final String VIEW_START = "item/bulkdel/start";
 
 	@Autowired
 	private ItemService itemService;
@@ -53,57 +48,59 @@ public class ItemListController {
 	@RequestMapping()
 	public ModelAndView init(@RequestParam(defaultValue = "") String to, SessionStatus status) {
 		status.setComplete();
-
 		UriComponents redirTo;
 		if (StringUtils.isNotEmpty(to)) {
 			redirTo = UriComponentsBuilder.fromPath(to).build();
 		} else {
-			redirTo = fromMethodCall(on(ItemListController.class).start(null, null)).build();
+			redirTo = fromMethodCall(on(ItemListController.class).execute(null, null)).build();
 		}
 		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
 	}
 
 	@RequestMapping("start")
-	public ModelAndView start(ItemListForm form, BindingResult binding) {
-		return new ModelAndView(VIEW_START);
-	}
-
-	@RequestMapping("execute")
-	public ModelAndView execute(@Validated() ItemListForm form, BindingResult binding) {
-		if (hasErrors(form, binding)) {
-			return new ModelAndView(VIEW_START);
+	public ModelAndView start(@Validated() ItemBulkForm idform, BindingResult idbinding, ItemBulkDelForm form,
+			BindingResult binding, SessionStatus status) {
+		if (idbinding.hasErrors()) {
+			status.setComplete();
+			UriComponents redirTo = fromMethodCall(on(ItemListController.class).execute(null, null)).build();
+			return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
 		}
 
-		// 検索処理。
-		Items items = itemService.search(form);
+		List<Long> idlist = idform.getCheckedId();
+		if (idlist.isEmpty()) {
+			status.setComplete();
+			UriComponents redirTo = fromMethodCall(on(ItemListController.class).execute(null, null)).build();
+			return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
+		}
 
-		ItemBulkForm bulkform = new ItemBulkForm();
-		bulkform.setElem(items.getList().stream().map(item -> {
-			Elem e = new Elem();
-			e.setId(item.getId());
-			e.setChecked(false);
-			return e;
-		}).collect(Collectors.toList()));
+		// 照会してFORMにセット。
+		form.setId(idlist);
+		List<Item> list = itemService.findById(idlist);
 
 		ModelAndView mav = new ModelAndView(VIEW_START);
-		mav.addObject(items);
-		mav.addObject(bulkform);
+		mav.addObject(new Items(list));
 		return mav;
 	}
 
-	@RequestMapping(value = "execute", params = "download")
-	public ModelAndView download(@Validated() ItemListForm form, BindingResult binding, NativeWebRequest request) {
+	@RequestMapping("execute")
+	public ModelAndView execute(@Validated() ItemBulkDelForm form, BindingResult binding) {
 		if (hasErrors(form, binding)) {
 			return new ModelAndView(VIEW_START);
 		}
 
-		// 検索＆ダウンロード処理。
-		itemService.download(form, request.getNativeResponse(HttpServletResponse.class));
+		// 削除処理。
+		itemService.delete(form.getId());
 
-		return null;
+		UriComponents redirTo = fromMethodCall(on(ItemBulkDelController.class).completed(null, null)).build();
+		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
 	}
 
-	private boolean hasErrors(ItemListForm form, BindingResult binding) {
+	@RequestMapping("completed")
+	public ModelAndView completed(ItemBulkDelForm form, BindingResult binding) {
+		return new ModelAndView();
+	}
+
+	private boolean hasErrors(ItemBulkDelForm form, BindingResult binding) {
 
 		// 単項目チェック
 		if (binding.hasErrors()) {

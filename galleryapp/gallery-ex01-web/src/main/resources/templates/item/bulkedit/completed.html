@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>ギャラリー：基本01：一括更新</title>
+</head>
+<body>
+	<h1>ギャラリー：基本01：一括更新</h1>
+	<div th:object="${itemBulkEditForm}">
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>品名</th>
+					<th>価格</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="elem, stat : *{item}">
+					<td>[[${elem.id}]]<input type="hidden" th:field="*{item[__${stat.index}__].id}"><input type="hidden"
+						th:field="*{item[__${stat.index}__].lockVer}"></td>
+					<td><input type="text" th:field="*{item[__${stat.index}__].name}" readonly></td>
+					<td><input type="text" th:field="*{item[__${stat.index}__].price}" readonly></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div>
+		<div>
+			<a th:href="@{/item/bulkedit(to=@{/item/list})}">検索</a> <a th:href="@{/item/bulkedit(to=@{/item/list/execute})}">検索結果</a>
+		</div>
+	</div>
+	<div>
+		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
+	</div>
+</body>
+</html>

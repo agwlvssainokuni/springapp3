@@ -38,10 +38,11 @@
 			<button type="submit" name="download">ダウンロード</button>
 		</div>
 	</form>
-	<div th:if="${items != null}">
+	<form th:action="@{/item/bulk}" method="POST" th:if="${items != null}" th:object="${itemBulkForm}">
 		<table>
 			<thead>
 				<tr>
+					<th></th>
 					<th>ID</th>
 					<th>品名</th>
 					<th>価格</th>
@@ -50,16 +51,22 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="item : ${items.list}">
+				<tr th:each="item, stat : ${items.list}">
+					<td><input type="checkbox" th:field="*{elem[__${stat.index}__].checked}"><input type="hidden"
+						th:field="*{elem[__${stat.index}__].id}"></td>
 					<td th:text="${item.id}"></td>
 					<td th:text="${item.name}"></td>
-					<td th:text="${item.price}"></td>
+					<td th:text="${{item.price}}"></td>
 					<td th:text="${item.lockVer}"></td>
 					<td><a th:href="@{/item/edit(id=${item.id})}">修正</a> <a th:href="@{/item/del(id=${item.id})}">削除</a></td>
 				</tr>
 			</tbody>
 		</table>
-	</div>
+		<div>
+			<button type="submit" name="edit">一括更新</button>
+			<button type="submit" name="del">一括削除</button>
+		</div>
+	</form>
 	<div>
 		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
 	</div>

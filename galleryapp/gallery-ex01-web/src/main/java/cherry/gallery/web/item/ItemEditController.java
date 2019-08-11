@@ -88,7 +88,7 @@ public class ItemEditController {
 		item.setName(form.getName());
 		item.setPrice(form.getPrice());
 		item.setLockVer(form.getLockVer());
-		itemService.update(id, item);
+		itemService.update(item);
 
 		UriComponents redirTo = fromMethodCall(on(ItemEditController.class).completed(id)).build();
 		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));

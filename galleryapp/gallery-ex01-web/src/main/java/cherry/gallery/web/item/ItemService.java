@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -60,23 +61,37 @@ public class ItemService {
 	}
 
 	@Transactional()
-	public boolean update(long id, Item item) {
-		MapSqlParameterSource param = new MapSqlParameterSource("id", id);
-		BeanPropertySqlParameterSource src = new BeanPropertySqlParameterSource(item);
-		for (String nm : src.getParameterNames()) {
-			param.addValue(nm, src.getValue(nm), src.getSqlType(nm), src.getTypeName(nm));
-		}
+	public boolean update(Item item) {
 		int count = jdbcOperations.update(
 				"UPDATE item_master SET name=:name, price=:price, lock_ver=lock_ver+1 WHERE id=:id AND lock_ver=:lockVer",
-				param);
+				new BeanPropertySqlParameterSource(item));
 		return count == 1;
 	}
 
 	@Transactional()
+	public int update(List<Item> list) {
+		int count = 0;
+		for (Item item : list) {
+			count += jdbcOperations.update(
+					"UPDATE item_master SET name=:name, price=:price, lock_ver=lock_ver+1 WHERE id=:id AND lock_ver=:lockVer",
+					new BeanPropertySqlParameterSource(item));
+		}
+		return count;
+	}
+
+	@Transactional()
 	public boolean delete(long id) {
-		MapSqlParameterSource param = new MapSqlParameterSource("id", id);
-		int count = jdbcOperations.update("DELETE FROM item_master WHERE id=:id", param);
+		int count = jdbcOperations.update("DELETE FROM item_master WHERE id=:id", new MapSqlParameterSource("id", id));
 		return count == 1;
+	}
+
+	@Transactional()
+	public int delete(List<Long> idlist) {
+		int count = 0;
+		for (Long id : idlist) {
+			count += jdbcOperations.update("DELETE FROM item_master WHERE id=:id", new MapSqlParameterSource("id", id));
+		}
+		return count;
 	}
 
 	@Transactional(readOnly = true)
@@ -84,6 +99,15 @@ public class ItemService {
 		MapSqlParameterSource param = new MapSqlParameterSource("id", id);
 		return jdbcOperations.query("SELECT id, name, price, lock_ver FROM item_master WHERE id=:id", param,
 				new BeanPropertyRowMapper<>(Item.class)).stream().findFirst();
+	}
+
+	@Transactional(readOnly = true)
+	public List<Item> findById(List<Long> idlist) {
+		return idlist.stream().flatMap(id -> {
+			MapSqlParameterSource param = new MapSqlParameterSource("id", id);
+			return jdbcOperations.query("SELECT id, name, price, lock_ver FROM item_master WHERE id=:id", param,
+					new BeanPropertyRowMapper<>(Item.class)).stream();
+		}).collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>ギャラリー：基本01：一括削除</title>
+</head>
+<body>
+	<h1>ギャラリー：基本01：一括削除</h1>
+	<form th:action="@{/item/bulkdel/execute}" method="POST" th:object="${itemBulkDelForm}">
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>品名</th>
+					<th>価格</th>
+					<th>ロック</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="item, stat : ${items.list}">
+					<td>[[${item.id}]]<input type="hidden" th:field="*{id[__${stat.index}__]}"></td>
+					<td th:text="${item.name}"></td>
+					<td th:text="${{item.price}}"></td>
+					<td th:text="${item.lockVer}"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div>
+			<button type="submit">削除</button>
+		</div>
+	</form>
+	<div>
+		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
+	</div>
+</body>
+</html>

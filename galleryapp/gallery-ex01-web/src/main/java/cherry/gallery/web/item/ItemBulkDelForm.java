@@ -16,51 +16,21 @@
 
 package cherry.gallery.web.item;
 
-import java.math.BigDecimal;
+import java.util.List;
 
-import org.springframework.format.annotation.NumberFormat;
+import javax.validation.constraints.NotEmpty;
 
-public class Item {
+public class ItemBulkDelForm {
 
-	private long id;
+	@NotEmpty()
+	private List<Long> id;
 
-	private String name;
-
-	@NumberFormat(pattern = "#,##0.##")
-	private BigDecimal price;
-
-	private long lockVer;
-
-	public long getId() {
+	public List<Long> getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(List<Long> id) {
 		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public BigDecimal getPrice() {
-		return price;
-	}
-
-	public void setPrice(BigDecimal price) {
-		this.price = price;
-	}
-
-	public long getLockVer() {
-		return lockVer;
-	}
-
-	public void setLockVer(long lockVer) {
-		this.lockVer = lockVer;
 	}
 
 }

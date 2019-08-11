@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>ギャラリー：基本01：一括削除</title>
+</head>
+<body>
+	<h1>ギャラリー：基本01：一括削除</h1>
+	<ul th:if="${itemBulkForm != null && itemBulkForm.elem != null && !itemBulkForm.elem.isEmpty()}">
+		<li th:each="elem : ${itemBulkForm.elem}" th:if="${elem.checked}" th:text="${elem.id}"></li>
+	</ul>
+	<div>
+		<div>
+			<a th:href="@{/item/bulkdel(to=@{/item/list})}">検索</a> <a th:href="@{/item/bulkdel(to=@{/item/list/execute})}">検索結果</a>
+		</div>
+	</div>
+	<div>
+		<address>Copyright &copy;, 2019, agwlvssainokuni</address>
+	</div>
+</body>
+</html>
