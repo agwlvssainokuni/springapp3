@@ -22,7 +22,6 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,6 +33,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Controller
 public class ItemDelController {
 
+	private static final String VIEW_START = "item/del/start";
+
 	@Autowired
 	private ItemService itemService;
 
@@ -43,27 +44,20 @@ public class ItemDelController {
 		if (StringUtils.isNotEmpty(to)) {
 			redirTo = UriComponentsBuilder.fromPath(to).build();
 		} else {
-			redirTo = fromMethodCall(on(ItemDelController.class).confirm(id, null, null)).build();
+			redirTo = fromMethodCall(on(ItemDelController.class).start(id)).build();
 		}
 		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
 	}
 
-	@RequestMapping("confirm")
-	public ModelAndView confirm(@RequestParam() long id, ItemEditForm form, BindingResult binding) {
+	@RequestMapping("start")
+	public ModelAndView start(@RequestParam() long id) {
 
 		// 照会してFORMにセット。
 		Item item = itemService.findById(id).get();
-		form.setName(item.getName());
-		form.setPrice(item.getPrice());
-		form.setLockVer(item.getLockVer());
 
-		return new ModelAndView();
-	}
-
-	@RequestMapping(value = "execute", params = "back")
-	public ModelAndView back(@RequestParam() long id) {
-		UriComponents redirTo = fromMethodCall(on(ItemListController.class).execute(null, null)).build();
-		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));
+		ModelAndView mav = new ModelAndView(VIEW_START);
+		mav.addObject(item);
+		return mav;
 	}
 
 	@RequestMapping("execute")

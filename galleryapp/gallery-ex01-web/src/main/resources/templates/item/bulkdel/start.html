@@ -8,7 +8,7 @@
 </head>
 <body>
 	<h1>ギャラリー：基本01：一括削除</h1>
-	<form th:action="@{/item/bulkdel/execute}" method="POST" th:object="${itemBulkDelForm}">
+	<form th:action="@{/item/bulkdel/execute}" method="POST">
 		<table>
 			<thead>
 				<tr>
@@ -19,11 +19,11 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="item, stat : ${items.list}">
-					<td>[[${item.id}]]<input type="hidden" th:field="*{id[__${stat.index}__]}"></td>
-					<td th:text="${item.name}"></td>
-					<td th:text="${{item.price}}"></td>
-					<td th:text="${item.lockVer}"></td>
+				<tr th:each="dummy, stat : ${itemBulkDelForm.id}" th:object="${items}">
+					<td th:object="${itemBulkDelForm}">[[*{id[__${stat.index}__]}]]<input type="hidden" th:field="*{id[__${stat.index}__]}"></td>
+					<td>[[*{list[__${stat.index}__].name}]]</td>
+					<td>[[*{{list[__${stat.index}__].price}}]]</td>
+					<td>[[*{list[__${stat.index}__].lockVer}]]</td>
 				</tr>
 			</tbody>
 		</table>

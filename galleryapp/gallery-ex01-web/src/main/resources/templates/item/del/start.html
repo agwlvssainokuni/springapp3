@@ -8,28 +8,25 @@
 </head>
 <body>
 	<h1>ギャラリー：基本01：削除</h1>
-	<div>ID: [[${param.id}]]</div>
-	<form th:action="@{/item/del/execute(id=${param.id})}" method="POST" th:object="${itemEditForm}">
-		<input type="hidden" th:field="*{lockVer}">
+	<form th:action="@{/item/del/execute(id=${param.id})}" method="POST" th:object="${item}">
 		<div>
-			<div>
-				<label for="name">品名</label>
-			</div>
-			<div>
-				<input type="text" th:field="*{name}" readonly>
-			</div>
+			<div>ID</div>
+			<div>[[${param.id}]]</div>
 		</div>
 		<div>
-			<div>
-				<label for="price">価格</label>
-			</div>
-			<div>
-				<input type="text" th:field="*{price}" readonly>
-			</div>
+			<div>品名</div>
+			<div>[[*{name}]]</div>
+		</div>
+		<div>
+			<div>価格</div>
+			<div>[[*{{price}}]]</div>
+		</div>
+		<div>
+			<div>ロック</div>
+			<div>[[*{lockVer}]]</div>
 		</div>
 		<div>
 			<button type="submit">削除</button>
-			<button type="submit" name="back">戻る</button>
 		</div>
 	</form>
 	<div>

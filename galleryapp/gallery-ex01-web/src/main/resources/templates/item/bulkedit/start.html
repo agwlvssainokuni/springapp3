@@ -8,26 +8,25 @@
 </head>
 <body>
 	<h1>ギャラリー：基本01：一括更新</h1>
-	<form th:action="@{/item/bulkedit/confirm}" method="POST" th:object="${itemBulkEditForm}">
-		<div>
-			<table>
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>品名</th>
-						<th>価格</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr th:each="elem, stat : *{item}">
-						<td>[[${elem.id}]]<input type="hidden" th:field="*{item[__${stat.index}__].id}"><input type="hidden"
-							th:field="*{item[__${stat.index}__].lockVer}"></td>
-						<td><input type="text" th:field="*{item[__${stat.index}__].name}"></td>
-						<td><input type="text" th:field="*{item[__${stat.index}__].price}"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
+	<form th:action="@{/item/bulkedit/confirm}" method="POST">
+		<table>
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>品名</th>
+					<th>価格</th>
+					<th>ロック</th>
+				</tr>
+			</thead>
+			<tbody th:object="${itemBulkEditForm}">
+				<tr th:each="dummy, stat : *{item}">
+					<td>[[*{item[__${stat.index}__].id}]]<input type="hidden" th:field="*{item[__${stat.index}__].id}"></td>
+					<td><input type="text" th:field="*{item[__${stat.index}__].name}"></td>
+					<td><input type="text" th:field="*{item[__${stat.index}__].price}"></td>
+					<td>[[*{item[__${stat.index}__].lockVer}]]<input type="hidden" th:field="*{item[__${stat.index}__].lockVer}"></td>
+				</tr>
+			</tbody>
+		</table>
 		<div>
 			<button type="submit">確認</button>
 		</div>

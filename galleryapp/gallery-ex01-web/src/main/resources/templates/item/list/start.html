@@ -38,7 +38,7 @@
 			<button type="submit" name="download">ダウンロード</button>
 		</div>
 	</form>
-	<form th:action="@{/item/bulk}" method="POST" th:if="${items != null}" th:object="${itemBulkForm}">
+	<form th:action="@{/item/bulk}" method="POST" th:if="${items != null}">
 		<table>
 			<thead>
 				<tr>
@@ -51,14 +51,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="item, stat : ${items.list}">
-					<td><input type="checkbox" th:field="*{elem[__${stat.index}__].checked}"><input type="hidden"
+				<tr th:each="item, stat : ${items.list}" th:object="${item}">
+					<td th:object="${itemBulkForm}"><input type="checkbox" th:field="*{elem[__${stat.index}__].checked}"><input type="hidden"
 						th:field="*{elem[__${stat.index}__].id}"></td>
-					<td th:text="${item.id}"></td>
-					<td th:text="${item.name}"></td>
-					<td th:text="${{item.price}}"></td>
-					<td th:text="${item.lockVer}"></td>
-					<td><a th:href="@{/item/edit(id=${item.id})}">修正</a> <a th:href="@{/item/del(id=${item.id})}">削除</a></td>
+					<td>[[*{id}]]</td>
+					<td>[[*{name}]]</td>
+					<td>[[*{{price}}]]</td>
+					<td>[[*{lockVer}]]</td>
+					<td><a th:href="@{/item/edit(id=*{id})}">修正</a> <a th:href="@{/item/del(id=*{id})}">削除</a></td>
 				</tr>
 			</tbody>
 		</table>

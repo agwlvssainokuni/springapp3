@@ -8,28 +8,27 @@
 </head>
 <body>
 	<h1>ギャラリー：基本01：登録</h1>
-	<div>ID: [[${param.id}]]</div>
-	<div th:object="${itemAddForm}">
+	<div th:object="${item}">
 		<div>
-			<div>
-				<label for="name">品名</label>
-			</div>
-			<div>
-				<input type="text" th:field="*{name}" readonly>
-			</div>
+			<div>ID</div>
+			<div>[[*{id}]]</div>
 		</div>
 		<div>
-			<div>
-				<label for="price">価格</label>
-			</div>
-			<div>
-				<input type="text" th:field="*{price}" readonly>
-			</div>
+			<div>品名</div>
+			<div>[[*{name}]]</div>
+		</div>
+		<div>
+			<div>価格</div>
+			<div>[[*{{price}}]]</div>
+		</div>
+		<div>
+			<div>ロック</div>
+			<div>[[*{lockVer}]]</div>
 		</div>
 	</div>
 	<div>
-		<div>
-			<a th:href="@{/item/edit(id=${param.id})}">修正</a> <a th:href="@{/item/del(id=${param.id})}">削除</a>
+		<div th:object="${item}">
+			<a th:href="@{/item/edit(id=*{id})}">修正</a> <a th:href="@{/item/del(id=*{id})}">削除</a>
 		</div>
 		<div>
 			<a th:href="@{/item/list}">検索</a> <a th:href="@{/item/list/execute}">検索結果</a>

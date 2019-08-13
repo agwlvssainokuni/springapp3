@@ -88,14 +88,11 @@ public class ItemAddController {
 	@RequestMapping("completed")
 	public ModelAndView completed(@RequestParam() long id) {
 
-		// 照会してFORMにセット。
+		// 照会してセット。
 		Item item = itemService.findById(id).get();
-		ItemAddForm form = new ItemAddForm();
-		form.setName(item.getName());
-		form.setPrice(item.getPrice());
 
 		ModelAndView mav = new ModelAndView();
-		mav.addObject(form);
+		mav.addObject(item);
 		return mav;
 	}
 

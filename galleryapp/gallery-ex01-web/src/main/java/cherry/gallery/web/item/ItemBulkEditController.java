@@ -135,18 +135,12 @@ public class ItemBulkEditController {
 			idlist = form.getItem().stream().map(SubForm::getId).collect(Collectors.toList());
 		}
 
-		// 照会してFORMにセット。
-		List<SubForm> list = itemService.findById(idlist).stream().map(item -> {
-			SubForm f = new SubForm();
-			f.setId(item.getId());
-			f.setName(item.getName());
-			f.setPrice(item.getPrice());
-			f.setLockVer(item.getLockVer());
-			return f;
-		}).collect(Collectors.toList());
-		form.setItem(list);
+		// 照会してセット。
+		List<Item> list = itemService.findById(idlist);
 
-		return new ModelAndView();
+		ModelAndView mav = new ModelAndView();
+		mav.addObject(new Items(list));
+		return mav;
 	}
 
 	private boolean hasErrors(ItemBulkEditForm form, BindingResult binding) {

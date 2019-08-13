@@ -8,9 +8,11 @@
 </head>
 <body>
 	<h1>ギャラリー：基本01：更新</h1>
-	<div>ID: [[${param.id}]]</div>
 	<form th:action="@{/item/edit/confirm(id=${param.id})}" method="POST" th:object="${itemEditForm}">
-		<input type="hidden" th:field="*{lockVer}">
+		<div>
+			<div>ID</div>
+			<div>[[${param.id}]]</div>
+		</div>
 		<div>
 			<div>
 				<label for="name">品名</label>
@@ -25,6 +27,12 @@
 			</div>
 			<div>
 				<input type="text" th:field="*{price}">
+			</div>
+		</div>
+		<div>
+			<div>ロック</div>
+			<div>
+				[[*{lockVer}]]<input type="hidden" th:field="*{lockVer}">
 			</div>
 		</div>
 		<div>
