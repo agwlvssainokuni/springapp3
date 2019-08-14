@@ -20,6 +20,7 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 import static org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder.on;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import cherry.gallery.web.item.ItemBulkDelForm.SubForm;
 
 @RequestMapping("/item/bulkdel")
 @SessionAttributes(names = { "itemBulkForm" }, types = { ItemBulkDelForm.class })
@@ -74,8 +77,13 @@ public class ItemBulkDelController {
 		}
 
 		// 照会してFORMにセット。
-		form.setId(idlist);
 		List<Item> list = itemService.findById(idlist);
+		form.setList(list.stream().map(item -> {
+			SubForm f = new SubForm();
+			f.setId(item.getId());
+			f.setLockVer(item.getLockVer());
+			return f;
+		}).collect(Collectors.toList()));
 
 		ModelAndView mav = new ModelAndView(VIEW_START);
 		mav.addObject(new Items(list));
@@ -89,7 +97,13 @@ public class ItemBulkDelController {
 		}
 
 		// 削除処理。
-		itemService.delete(form.getId());
+		List<Item> list = form.getList().stream().map(f -> {
+			Item item = new Item();
+			item.setId(f.getId());
+			item.setLockVer(f.getLockVer());
+			return item;
+		}).collect(Collectors.toList());
+		itemService.delete(list);
 
 		UriComponents redirTo = fromMethodCall(on(ItemBulkDelController.class).completed(null, null)).build();
 		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));

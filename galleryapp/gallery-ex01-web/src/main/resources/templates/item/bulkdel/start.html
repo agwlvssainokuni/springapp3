@@ -18,12 +18,12 @@
 					<th>ロック</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr th:each="dummy, stat : ${itemBulkDelForm.id}" th:object="${items}">
-					<td th:object="${itemBulkDelForm}">[[*{id[__${stat.index}__]}]]<input type="hidden" th:field="*{id[__${stat.index}__]}"></td>
-					<td>[[*{list[__${stat.index}__].name}]]</td>
-					<td>[[*{{list[__${stat.index}__].price}}]]</td>
-					<td>[[*{list[__${stat.index}__].lockVer}]]</td>
+			<tbody th:object="${itemBulkDelForm}">
+				<tr th:each="dummy, stat : *{list}">
+					<td>[[*{list[__${stat.index}__].id}]]<input type="hidden" th:field="*{list[__${stat.index}__].id}"></td>
+					<td>[[${items.list[__${stat.index}__].name}]]</td>
+					<td>[[${{items.list[__${stat.index}__].price}}]]</td>
+					<td>[[*{list[__${stat.index}__].lockVer}]]<input type="hidden" th:field="*{list[__${stat.index}__].lockVer}"></td>
 				</tr>
 			</tbody>
 		</table>

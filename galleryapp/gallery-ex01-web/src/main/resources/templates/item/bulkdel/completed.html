@@ -14,9 +14,9 @@
 				<th>ID</th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr th:each="dummy, stat : ${itemBulkDelForm.id}">
-				<td th:object="${itemBulkDelForm}">[[*{id[__${stat.index}__]}]]</td>
+		<tbody th:object="${itemBulkDelForm}">
+			<tr th:each="dummy, stat : *{list}">
+				<td>[[*{list[__${stat.index}__].id}]]</td>
 			</tr>
 		</tbody>
 	</table>

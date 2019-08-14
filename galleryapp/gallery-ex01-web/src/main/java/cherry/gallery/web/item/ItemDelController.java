@@ -61,10 +61,13 @@ public class ItemDelController {
 	}
 
 	@RequestMapping("execute")
-	public ModelAndView execute(@RequestParam() long id) {
+	public ModelAndView execute(@RequestParam() long id, @RequestParam() long lockVer) {
 
 		// 削除処理。
-		itemService.delete(id);
+		Item item = new Item();
+		item.setId(id);
+		item.setLockVer(lockVer);
+		itemService.delete(item);
 
 		UriComponents redirTo = fromMethodCall(on(ItemDelController.class).completed(id)).build();
 		return new ModelAndView(new RedirectView(redirTo.toUriString(), true));

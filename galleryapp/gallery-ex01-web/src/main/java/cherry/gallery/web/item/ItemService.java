@@ -80,16 +80,18 @@ public class ItemService {
 	}
 
 	@Transactional()
-	public boolean delete(long id) {
-		int count = jdbcOperations.update("DELETE FROM item_master WHERE id=:id", new MapSqlParameterSource("id", id));
+	public boolean delete(Item item) {
+		int count = jdbcOperations.update("DELETE FROM item_master WHERE id=:id AND lock_ver=:lockVer",
+				new BeanPropertySqlParameterSource(item));
 		return count == 1;
 	}
 
 	@Transactional()
-	public int delete(List<Long> idlist) {
+	public int delete(List<Item> list) {
 		int count = 0;
-		for (Long id : idlist) {
-			count += jdbcOperations.update("DELETE FROM item_master WHERE id=:id", new MapSqlParameterSource("id", id));
+		for (Item item : list) {
+			count += jdbcOperations.update("DELETE FROM item_master WHERE id=:id AND lock_ver=:lockVer",
+					new BeanPropertySqlParameterSource(item));
 		}
 		return count;
 	}

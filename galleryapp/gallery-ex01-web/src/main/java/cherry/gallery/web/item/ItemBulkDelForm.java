@@ -18,19 +18,47 @@ package cherry.gallery.web.item;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 public class ItemBulkDelForm {
 
 	@NotEmpty()
-	private List<Long> id;
+	@Valid()
+	private List<SubForm> list;
 
-	public List<Long> getId() {
-		return id;
+	public List<SubForm> getList() {
+		return list;
 	}
 
-	public void setId(List<Long> id) {
-		this.id = id;
+	public void setList(List<SubForm> list) {
+		this.list = list;
+	}
+
+	public static class SubForm {
+
+		@NotNull
+		private Long id;
+
+		@NotNull
+		private Long lockVer;
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public Long getLockVer() {
+			return lockVer;
+		}
+
+		public void setLockVer(Long lockVer) {
+			this.lockVer = lockVer;
+		}
 	}
 
 }
