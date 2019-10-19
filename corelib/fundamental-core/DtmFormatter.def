@@ -1,0 +1,20 @@
+annotation=org.springframework.format.annotation.DateTimeFormat
+type=java.time.LocalDate
+name=YYYY_MM_DD; pattern=yyyy/MM/dd
+name=YYYYMMDD; pattern=yyyyMMdd
+type=java.time.YearMonth; name=
+name=YYYY_MM; pattern=yyyy/MM
+name=YYYYMM; pattern=yyyyMM
+type=java.time.MonthDay; name=
+name=MM_DD; pattern=MM/dd
+name=MMDD; pattern=MMdd
+type=java.time.LocalTime; name=
+name=HH_MM_SS; pattern=HH:mm:ss
+name=HHMMSS; pattern=HHmmss
+name=HH_MM; pattern=HH:mm
+name=HHMM; pattern=HHmm
+type=java.time.LocalDateTime; name=
+name=YYYY_MM_DD_HH_MM_SS; pattern="yyyy/MM/dd HH:mm:ss"
+name=YYYYMMDDHHMMSS; pattern="yyyyMMddHHmmss"
+name=YYYY_MM_DD_HH_MM; pattern="yyyy/MM/dd HH:mm"
+name=YYYYMMDDHHMM; pattern="yyyyMMddHHmm"

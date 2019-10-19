@@ -1,0 +1,23 @@
+annotation=org.springframework.format.annotation.NumberFormat
+type=java.math.BigDecimal
+name=Bigdec1; pattern=#0.#
+name=Bigdec2; pattern=#0.##
+name=Bigdec3; pattern=#0.###
+name=Bigdec01; pattern=#0.0
+name=Bigdec02; pattern=#0.00
+name=Bigdec03; pattern=#0.000
+name=BigdecC1; pattern=#,##0.#
+name=BigdecC2; pattern=#,##0.##
+name=BigdecC3; pattern=#,##0.###
+name=BigdecC01; pattern=#,##0.0
+name=BigdecC02; pattern=#,##0.00
+name=BigdecC03; pattern=#,##0.000
+type=Integer; name=
+name=Integer; pattern=#0
+name=IntegerC; pattern=#,##0
+type=Long; name=
+name=Long; pattern=#0
+name=LongC; pattern=#,##0
+type=java.math.BigInteger; name=
+name=Bigint; pattern=#0
+name=BigintC; pattern=#,##0
