@@ -16,22 +16,25 @@
 
 package cherry.fundamental.bizcal;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 
 /**
  * 営業日。<br />
  */
-public class SimpleWorkdayStrategy implements WorkdayStrategy {
+public class SimpleWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	@Override
-	public int getNumberOfWorkday(String name, LocalDate from, LocalDate to) {
-		return (int) from.until(to.plusDays(1), ChronoUnit.DAYS);
+	protected boolean isOnSpecific(String name, LocalDate ldt) {
+		return false;
 	}
 
-	@Override
-	public LocalDate getNextWorkday(String name, LocalDate from, int numberOfWorkday) {
-		return from.plusDays(numberOfWorkday - 1);
+	protected boolean isOffSpecific(String name, LocalDate ldt) {
+		return false;
+	}
+
+	protected boolean isOnRegular(String name, DayOfWeek dow) {
+		return true;
 	}
 
 }
