@@ -168,6 +168,7 @@ subprojects {
 		}
 		if (project.name == "fundamental-bizcal") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.yaml:snakeyaml"
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
 		if (project.name == "fundamental-buildinfo") {
