@@ -26,7 +26,7 @@ import org.junit.Test;
 public class FileWorkdayStrategyTest {
 
 	@Test
-	public void testOnRegular() {
+	public void testRegularOn() {
 		// regularOn: 月火水木金。
 		FileWorkdayStrategy impl = new FileWorkdayStrategy(new File("src/test/resources/workday"));
 		// 水曜日を起点として営業日数を算出。
@@ -42,6 +42,8 @@ public class FileWorkdayStrategyTest {
 		assertEquals(0, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 5)));
 		assertEquals(1, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 6)));
 		assertEquals(2, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 7)));
+		// ファイル再読込み。
+		new File("src/test/resources/workday/standard/00-regularOn.yaml").setLastModified(System.currentTimeMillis());
 		// 水曜日を起点として翌営業日を算出。
 		assertEquals(LocalDate.of(2020, 1, 1), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 1), 1));
 		assertEquals(LocalDate.of(2020, 1, 2), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 1), 2));
@@ -55,7 +57,7 @@ public class FileWorkdayStrategyTest {
 	}
 
 	@Test
-	public void testOnSpecific() {
+	public void testSpecificOn() {
 		// regularOn: 月火水木金。
 		// specificOn: 2019/01/11(土), 2019/01/12(日)
 		FileWorkdayStrategy impl = new FileWorkdayStrategy(new File("src/test/resources/workday"));
@@ -72,6 +74,8 @@ public class FileWorkdayStrategyTest {
 		assertEquals(2, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 11), LocalDate.of(2020, 1, 12)));
 		assertEquals(3, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 11), LocalDate.of(2020, 1, 13)));
 		assertEquals(4, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 11), LocalDate.of(2020, 1, 14)));
+		// ファイル再読込み。
+		new File("src/test/resources/workday/standard/10-specificOn.yaml").setLastModified(System.currentTimeMillis());
 		// 水曜日を起点として翌営業日を算出。
 		assertEquals(LocalDate.of(2020, 1, 8), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 8), 1));
 		assertEquals(LocalDate.of(2020, 1, 9), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 8), 2));
@@ -87,7 +91,7 @@ public class FileWorkdayStrategyTest {
 	}
 
 	@Test
-	public void testOffSpecific() {
+	public void testSpecificOff() {
 		// regularOn: 月火水木金。
 		// specificOff: 2019/01/20(月), 2019/01/21(火), 2019/01/22(水), 2019/01/23(木), 2019/01/24(金)
 		FileWorkdayStrategy impl = new FileWorkdayStrategy(new File("src/test/resources/workday"));
@@ -118,6 +122,8 @@ public class FileWorkdayStrategyTest {
 		assertEquals(0, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 18), LocalDate.of(2020, 1, 26)));
 		assertEquals(1, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 18), LocalDate.of(2020, 1, 27)));
 		assertEquals(2, impl.getNumberOfWorkday("standard", LocalDate.of(2020, 1, 18), LocalDate.of(2020, 1, 28)));
+		// ファイル再読込み。
+		new File("src/test/resources/workday/standard/20-specificOff.yaml").setLastModified(System.currentTimeMillis());
 		// 水曜日を起点として翌営業日を算出。
 		assertEquals(LocalDate.of(2020, 1, 15), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 15), 1));
 		assertEquals(LocalDate.of(2020, 1, 16), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 15), 2));
@@ -128,6 +134,37 @@ public class FileWorkdayStrategyTest {
 		assertEquals(LocalDate.of(2020, 1, 18), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 18), 0));
 		assertEquals(LocalDate.of(2020, 1, 27), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 18), 1));
 		assertEquals(LocalDate.of(2020, 1, 28), impl.getNextWorkday("standard", LocalDate.of(2020, 1, 18), 2));
+	}
+
+	@Test
+	public void testNoDef() {
+		// カレンダー定義なし。
+		FileWorkdayStrategy impl = new FileWorkdayStrategy(new File("src/test/resources/workday"));
+		assertEquals(1, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 1)));
+		assertEquals(2, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 2)));
+		assertEquals(3, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 3)));
+		assertEquals(4, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 4)));
+		assertEquals(5, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 5)));
+		assertEquals(6, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 6)));
+		assertEquals(7, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 7)));
+		// 土曜日を起点として営業日数を算出。
+		assertEquals(1, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 4)));
+		assertEquals(2, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 5)));
+		assertEquals(3, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 6)));
+		assertEquals(4, impl.getNumberOfWorkday("nodef", LocalDate.of(2020, 1, 4), LocalDate.of(2020, 1, 7)));
+		// 水曜日を起点として翌営業日を算出。
+		assertEquals(LocalDate.of(2020, 1, 1), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 1));
+		assertEquals(LocalDate.of(2020, 1, 2), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 2));
+		assertEquals(LocalDate.of(2020, 1, 3), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 3));
+		assertEquals(LocalDate.of(2020, 1, 4), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 4));
+		assertEquals(LocalDate.of(2020, 1, 5), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 5));
+		assertEquals(LocalDate.of(2020, 1, 6), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 6));
+		assertEquals(LocalDate.of(2020, 1, 7), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 1), 7));
+		// 土曜日を起点として翌営業日を算出。
+		assertEquals(LocalDate.of(2020, 1, 4), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 4), 1));
+		assertEquals(LocalDate.of(2020, 1, 5), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 4), 2));
+		assertEquals(LocalDate.of(2020, 1, 6), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 4), 3));
+		assertEquals(LocalDate.of(2020, 1, 7), impl.getNextWorkday("nodef", LocalDate.of(2020, 1, 4), 4));
 	}
 
 }
