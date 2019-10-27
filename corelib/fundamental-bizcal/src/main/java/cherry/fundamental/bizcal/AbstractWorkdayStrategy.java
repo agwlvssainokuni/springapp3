@@ -53,19 +53,19 @@ public abstract class AbstractWorkdayStrategy implements WorkdayStrategy {
 	}
 
 	protected boolean isWorkday(String name, LocalDate ldt) {
-		if (isOnSpecific(name, ldt)) {
+		if (isSpecificOn(name, ldt)) {
 			return true;
 		}
-		if (isOffSpecific(name, ldt)) {
+		if (isSpecificOff(name, ldt)) {
 			return false;
 		}
-		return isOnRegular(name, ldt.getDayOfWeek());
+		return isRegularOn(name, ldt.getDayOfWeek());
 	}
 
-	protected abstract boolean isOnSpecific(String name, LocalDate ldt);
+	protected abstract boolean isRegularOn(String name, DayOfWeek dow);
 
-	protected abstract boolean isOffSpecific(String name, LocalDate ldt);
+	protected abstract boolean isSpecificOn(String name, LocalDate ldt);
 
-	protected abstract boolean isOnRegular(String name, DayOfWeek dow);
+	protected abstract boolean isSpecificOff(String name, LocalDate ldt);
 
 }

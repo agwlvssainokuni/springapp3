@@ -53,22 +53,22 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 	}
 
 	@Override
-	protected boolean isOnSpecific(String name, LocalDate ldt) {
-		return getConfig(name).stream().map(Config::getSpecificOn).anyMatch(l -> l.contains(ldt));
-	}
-
-	@Override
-	protected boolean isOffSpecific(String name, LocalDate ldt) {
-		return getConfig(name).stream().map(Config::getSpecificOff).anyMatch(l -> l.contains(ldt));
-	}
-
-	@Override
-	protected boolean isOnRegular(String name, DayOfWeek dow) {
+	protected boolean isRegularOn(String name, DayOfWeek dow) {
 		List<Set<DayOfWeek>> s = getConfig(name).stream().map(Config::getRegularOn).collect(Collectors.toList());
 		if (s.stream().allMatch(Set::isEmpty)) {
 			return true;
 		}
 		return s.stream().anyMatch(l -> l.contains(dow));
+	}
+
+	@Override
+	protected boolean isSpecificOn(String name, LocalDate ldt) {
+		return getConfig(name).stream().map(Config::getSpecificOn).anyMatch(l -> l.contains(ldt));
+	}
+
+	@Override
+	protected boolean isSpecificOff(String name, LocalDate ldt) {
+		return getConfig(name).stream().map(Config::getSpecificOff).anyMatch(l -> l.contains(ldt));
 	}
 
 	private List<Config> getConfig(String name) {

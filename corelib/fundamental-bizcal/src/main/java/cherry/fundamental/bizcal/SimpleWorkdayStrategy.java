@@ -25,16 +25,18 @@ import java.time.LocalDate;
 public class SimpleWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	@Override
-	protected boolean isOnSpecific(String name, LocalDate ldt) {
-		return false;
-	}
-
-	protected boolean isOffSpecific(String name, LocalDate ldt) {
-		return false;
-	}
-
-	protected boolean isOnRegular(String name, DayOfWeek dow) {
+	protected boolean isRegularOn(String name, DayOfWeek dow) {
 		return true;
+	}
+
+	@Override
+	protected boolean isSpecificOn(String name, LocalDate ldt) {
+		return false;
+	}
+
+	@Override
+	protected boolean isSpecificOff(String name, LocalDate ldt) {
+		return false;
 	}
 
 }
