@@ -100,6 +100,11 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 		try (InputStream in = new FileInputStream(file)) {
 
 			Map<String, List<?>> map = yaml.load(in);
+			if (map == null) {
+				return new Config(file.getName(), file.lastModified(), Collections.emptySet(), Collections.emptySet(),
+						Collections.emptySet());
+			}
+
 			List<?> ron = (List<?>) map.get("regularOn");
 			List<?> son = (List<?>) map.get("specificOn");
 			List<?> soff = (List<?>) map.get("specificOff");
