@@ -18,6 +18,7 @@ package cherry.fundamental.bizcal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 
 /**
  * 業務カレンダー管理機能。<br />
@@ -70,7 +71,7 @@ public interface Bizcal {
 	 *
 	 * @return 業務年。
 	 */
-	int getBizYear();
+	Year getBizYear();
 
 	/**
 	 * 現在の業務年(現在の業務日付の業務年)を照会する。<br />
@@ -78,7 +79,7 @@ public interface Bizcal {
 	 * @param name カレンダーの識別名。
 	 * @return 業務年。
 	 */
-	int getBizYear(String name);
+	Year getBizYear(String name);
 
 	/**
 	 * 業務年(指定した業務日付の業務年)を照会する。<br />
@@ -86,7 +87,7 @@ public interface Bizcal {
 	 * @param dt 日付指定。
 	 * @return 業務年。
 	 */
-	int getBizYear(LocalDate dt);
+	Year getBizYear(LocalDate dt);
 
 	/**
 	 * 業務年(指定した業務日付の業務年)を照会する。<br />
@@ -95,7 +96,7 @@ public interface Bizcal {
 	 * @param dt 日付指定。
 	 * @return 業務年。
 	 */
-	int getBizYear(String name, LocalDate dt);
+	Year getBizYear(String name, LocalDate dt);
 
 	/**
 	 * 現在の業務年(現在の業務日付の業務年)の初日を照会する。<br />
@@ -135,7 +136,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の初日。
 	 */
-	LocalDate getFirstOfBizYear(int bizYear);
+	LocalDate getFirstOfBizYear(Year bizYear);
 
 	/**
 	 * 指定した業務年の初日を照会する。<br />
@@ -144,7 +145,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の初日。
 	 */
-	LocalDate getFirstOfBizYear(String name, int bizYear);
+	LocalDate getFirstOfBizYear(String name, Year bizYear);
 
 	/**
 	 * 現在の業務年(現在の業務日付の業務年)の末日を照会する。<br />
@@ -184,7 +185,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の末日。
 	 */
-	LocalDate getLastOfBizYear(int bizYear);
+	LocalDate getLastOfBizYear(Year bizYear);
 
 	/**
 	 * 指定した業務年の末日を照会する。<br />
@@ -193,7 +194,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の末日。
 	 */
-	LocalDate getLastOfBizYear(String name, int bizYear);
+	LocalDate getLastOfBizYear(String name, Year bizYear);
 
 	/**
 	 * 現在の業務年(現在の業務日付の業務年)の日数を照会する。<br />
@@ -233,7 +234,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の日数。
 	 */
-	int getNumberOfDaysOfBizYear(int bizYear);
+	int getNumberOfDaysOfBizYear(Year bizYear);
 
 	/**
 	 * 指定した業務年の日数を照会する。<br />
@@ -242,7 +243,7 @@ public interface Bizcal {
 	 * @param bizYear 業務年指定。
 	 * @return 業務年の日数。
 	 */
-	int getNumberOfDaysOfBizYear(String name, int bizYear);
+	int getNumberOfDaysOfBizYear(String name, Year bizYear);
 
 	/**
 	 * 業務年の初日から業務上の「現在の日付」までの日数(何日目か)を照会する。<br />

@@ -17,6 +17,7 @@
 package cherry.fundamental.bizcal;
 
 import java.time.LocalDate;
+import java.time.Year;
 
 import org.apache.commons.lang3.Range;
 
@@ -38,8 +39,8 @@ public class SimpleYearStrategy implements YearStrategy {
 	}
 
 	@Override
-	public Range<LocalDate> rangeOfBizYear(String name, int bizYear) {
-		LocalDate firstDate = LocalDate.of(bizYear + yearOfFirstOffset, monthOfFirst, dayOfFirst);
+	public Range<LocalDate> rangeOfBizYear(String name, Year bizYear) {
+		LocalDate firstDate = bizYear.plusYears(yearOfFirstOffset).atMonth(monthOfFirst).atDay(dayOfFirst);
 		LocalDate lastDate = firstDate.plusYears(1).minusDays(1);
 		return Range.between(firstDate, lastDate, (o1, o2) -> o1.compareTo(o2));
 	}

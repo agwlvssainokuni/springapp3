@@ -19,6 +19,7 @@ package cherry.fundamental.bizcal;
 import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
@@ -47,7 +48,7 @@ public class BizcalYearTest {
 	@Test
 	public void testGetFirstOfBizYear() {
 		for (int year = 1900; year < 3000; year++) {
-			assertEquals(LocalDate.of(year, 4, 1), bizcal.getFirstOfBizYear(year));
+			assertEquals(LocalDate.of(year, 4, 1), bizcal.getFirstOfBizYear(Year.of(year)));
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
 					assertEquals(LocalDate.of(year - 1, 4, 1), bizcal.getFirstOfBizYear(dt));
@@ -61,7 +62,7 @@ public class BizcalYearTest {
 	@Test
 	public void testGetLastOfBizYear() {
 		for (int year = 1900; year < 3000; year++) {
-			assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.getLastOfBizYear(year));
+			assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.getLastOfBizYear(Year.of(year)));
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
 					assertEquals(LocalDate.of(year, 3, 31), bizcal.getLastOfBizYear(dt));
@@ -83,7 +84,7 @@ public class BizcalYearTest {
 	@Test
 	public void testGetNumberOfDaysOfBizYear() {
 		for (int year = 1900; year < 3000; year++) {
-			assertEquals(numberOfDays(year + 1), bizcal.getNumberOfDaysOfBizYear(year));
+			assertEquals(numberOfDays(year + 1), bizcal.getNumberOfDaysOfBizYear(Year.of(year)));
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
 					assertEquals(numberOfDays(year), bizcal.getNumberOfDaysOfBizYear(dt));

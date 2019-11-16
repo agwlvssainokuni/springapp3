@@ -17,6 +17,7 @@
 package cherry.fundamental.bizcal;
 
 import java.time.LocalDate;
+import java.time.Year;
 
 import org.apache.commons.lang3.Range;
 
@@ -25,6 +26,6 @@ import org.apache.commons.lang3.Range;
  */
 public interface YearStrategy {
 
-	Range<LocalDate> rangeOfBizYear(String name, int bizYear);
+	Range<LocalDate> rangeOfBizYear(String name, Year bizYear);
 
 }

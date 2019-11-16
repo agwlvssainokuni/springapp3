@@ -18,6 +18,7 @@ package cherry.fundamental.bizcal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.temporal.ChronoUnit;
 
 import org.apache.commons.lang3.Range;
@@ -62,23 +63,23 @@ public class BizcalImpl implements Bizcal {
 	}
 
 	@Override
-	public int getBizYear() {
+	public Year getBizYear() {
 		return getBizYear(stdCalName);
 	}
 
 	@Override
-	public int getBizYear(String name) {
+	public Year getBizYear(String name) {
 		return getBizYear(name, today(name));
 	}
 
 	@Override
-	public int getBizYear(LocalDate dt) {
+	public Year getBizYear(LocalDate dt) {
 		return getBizYear(stdCalName, dt);
 	}
 
 	@Override
-	public int getBizYear(String name, LocalDate dt) {
-		return bizYearByDate(name, dt).getLeft().intValue();
+	public Year getBizYear(String name, LocalDate dt) {
+		return bizYearByDate(name, dt).getLeft();
 	}
 
 	@Override
@@ -102,12 +103,12 @@ public class BizcalImpl implements Bizcal {
 	}
 
 	@Override
-	public LocalDate getFirstOfBizYear(int bizYear) {
+	public LocalDate getFirstOfBizYear(Year bizYear) {
 		return getFirstOfBizYear(stdCalName, bizYear);
 	}
 
 	@Override
-	public LocalDate getFirstOfBizYear(String name, int bizYear) {
+	public LocalDate getFirstOfBizYear(String name, Year bizYear) {
 		return yearStrategy.rangeOfBizYear(name, bizYear).getMinimum();
 	}
 
@@ -132,12 +133,12 @@ public class BizcalImpl implements Bizcal {
 	}
 
 	@Override
-	public LocalDate getLastOfBizYear(int bizYear) {
+	public LocalDate getLastOfBizYear(Year bizYear) {
 		return getLastOfBizYear(stdCalName, bizYear);
 	}
 
 	@Override
-	public LocalDate getLastOfBizYear(String name, int bizYear) {
+	public LocalDate getLastOfBizYear(String name, Year bizYear) {
 		return yearStrategy.rangeOfBizYear(name, bizYear).getMaximum();
 	}
 
@@ -163,12 +164,12 @@ public class BizcalImpl implements Bizcal {
 	}
 
 	@Override
-	public int getNumberOfDaysOfBizYear(int bizYear) {
+	public int getNumberOfDaysOfBizYear(Year bizYear) {
 		return getNumberOfDaysOfBizYear(stdCalName, bizYear);
 	}
 
 	@Override
-	public int getNumberOfDaysOfBizYear(String name, int bizYear) {
+	public int getNumberOfDaysOfBizYear(String name, Year bizYear) {
 		Range<LocalDate> range = yearStrategy.rangeOfBizYear(name, bizYear);
 		return (int) range.getMinimum().until(range.getMaximum().plusDays(1), ChronoUnit.DAYS);
 	}
@@ -234,17 +235,17 @@ public class BizcalImpl implements Bizcal {
 		return workdayStrategy.getNextWorkday(name, from, numberOfWorkday);
 	}
 
-	private Pair<Integer, Range<LocalDate>> bizYearByDate(String name, LocalDate dt) {
-		return bizYearByDate(name, dt.getYear(), dt);
+	private Pair<Year, Range<LocalDate>> bizYearByDate(String name, LocalDate dt) {
+		return bizYearByDate(name, Year.of(dt.getYear()), dt);
 	}
 
-	private Pair<Integer, Range<LocalDate>> bizYearByDate(String name, int year, LocalDate dt) {
+	private Pair<Year, Range<LocalDate>> bizYearByDate(String name, Year year, LocalDate dt) {
 		Range<LocalDate> range = yearStrategy.rangeOfBizYear(name, year);
 		if (range.isAfter(dt)) {
-			return bizYearByDate(name, year - 1, dt);
+			return bizYearByDate(name, year.minusYears(1L), dt);
 		}
 		if (range.isBefore(dt)) {
-			return bizYearByDate(name, year + 1, dt);
+			return bizYearByDate(name, year.plusYears(1), dt);
 		}
 		return Pair.of(year, range);
 	}
