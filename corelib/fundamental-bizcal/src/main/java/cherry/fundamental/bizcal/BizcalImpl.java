@@ -19,6 +19,7 @@ package cherry.fundamental.bizcal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.YearMonth;
 
 import org.apache.commons.lang3.Range;
 import org.apache.commons.lang3.tuple.Pair;
@@ -27,15 +28,18 @@ public class BizcalImpl implements Bizcal {
 
 	private final DateTimeStrategy dateTimeStrategy;
 
+	private final YearMonthStrategy yearMonthStrategy;
+
 	private final YearStrategy yearStrategy;
 
 	private final WorkdayStrategy workdayStrategy;
 
 	private final String stdCalName;
 
-	public BizcalImpl(DateTimeStrategy dateTimeStrategy, YearStrategy yearStrategy, WorkdayStrategy workdayStrategy,
-			String stdCalName) {
+	public BizcalImpl(DateTimeStrategy dateTimeStrategy, YearMonthStrategy yearMonthStrategy, YearStrategy yearStrategy,
+			WorkdayStrategy workdayStrategy, String stdCalName) {
 		this.dateTimeStrategy = dateTimeStrategy;
+		this.yearMonthStrategy = yearMonthStrategy;
 		this.yearStrategy = yearStrategy;
 		this.workdayStrategy = workdayStrategy;
 		this.stdCalName = stdCalName;
@@ -59,6 +63,86 @@ public class BizcalImpl implements Bizcal {
 	@Override
 	public LocalDateTime now(String name) {
 		return dateTimeStrategy.now(name);
+	}
+
+	@Override
+	public YearMonth yearMonth() {
+		return yearMonth(stdCalName);
+	}
+
+	@Override
+	public YearMonth yearMonth(String name) {
+		return yearMonth(name, today(name));
+	}
+
+	@Override
+	public YearMonth yearMonth(LocalDate dt) {
+		return yearMonth(stdCalName, dt);
+	}
+
+	@Override
+	public YearMonth yearMonth(String name, LocalDate dt) {
+		return yearMonthByDate(name, dt).getLeft();
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth() {
+		return firstDayOfYearMonth(stdCalName);
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth(String name) {
+		return firstDayOfYearMonth(name, today(name));
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth(LocalDate dt) {
+		return firstDayOfYearMonth(stdCalName, dt);
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth(String name, LocalDate dt) {
+		return yearMonthByDate(name, dt).getRight().getMinimum();
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth(YearMonth ym) {
+		return firstDayOfYearMonth(stdCalName, ym);
+	}
+
+	@Override
+	public LocalDate firstDayOfYearMonth(String name, YearMonth ym) {
+		return yearMonthStrategy.rangeOfYearMonth(name, ym).getMinimum();
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth() {
+		return lastDayOfYearMonth(stdCalName);
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth(String name) {
+		return lastDayOfYearMonth(name, today(name));
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth(LocalDate dt) {
+		return lastDayOfYearMonth(stdCalName, dt);
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth(String name, LocalDate dt) {
+		return yearMonthByDate(name, dt).getRight().getMaximum();
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth(YearMonth ym) {
+		return lastDayOfYearMonth(stdCalName, ym);
+	}
+
+	@Override
+	public LocalDate lastDayOfYearMonth(String name, YearMonth ym) {
+		return yearMonthStrategy.rangeOfYearMonth(name, ym).getMaximum();
 	}
 
 	@Override
@@ -181,6 +265,21 @@ public class BizcalImpl implements Bizcal {
 		return workdayStrategy.getNextWorkday(name, from, numberOfWorkday);
 	}
 
+	private Pair<YearMonth, Range<LocalDate>> yearMonthByDate(String name, LocalDate dt) {
+		return yearMonthByDate(name, YearMonth.of(dt.getYear(), dt.getMonthValue()), dt);
+	}
+
+	private Pair<YearMonth, Range<LocalDate>> yearMonthByDate(String name, YearMonth ym, LocalDate dt) {
+		Range<LocalDate> range = yearMonthStrategy.rangeOfYearMonth(name, ym);
+		if (range.isAfter(dt)) {
+			return yearMonthByDate(name, ym.minusMonths(1L), dt);
+		}
+		if (range.isBefore(dt)) {
+			return yearMonthByDate(name, ym.plusMonths(1L), dt);
+		}
+		return Pair.of(ym, range);
+	}
+
 	private Pair<Year, Range<LocalDate>> yearByDate(String name, LocalDate dt) {
 		return yearByDate(name, Year.of(dt.getYear()), dt);
 	}
@@ -191,7 +290,7 @@ public class BizcalImpl implements Bizcal {
 			return yearByDate(name, year.minusYears(1L), dt);
 		}
 		if (range.isBefore(dt)) {
-			return yearByDate(name, year.plusYears(1), dt);
+			return yearByDate(name, year.plusYears(1L), dt);
 		}
 		return Pair.of(year, range);
 	}

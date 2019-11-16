@@ -19,12 +19,16 @@ package cherry.fundamental.bizcal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.YearMonth;
 
 /**
  * 業務カレンダー管理機能。<br />
  * <ul>
  * <li>現在の業務日付(業務上の「現在の日付」)</li>
  * <li>現在の業務日時(業務上の「現在の日時」)</li>
+ * <li>日付の業務年月(業務上の「当日の年月」)</li>
+ * <li>業務年月の初日</li>
+ * <li>業務年月の末日</li>
  * <li>日付の業務年(業務上の「当日の年」)</li>
  * <li>業務年の初日</li>
  * <li>業務年の末日</li>
@@ -63,6 +67,136 @@ public interface Bizcal {
 	 * @return 業務日時。
 	 */
 	LocalDateTime now(String name);
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)を照会する。<br />
+	 *
+	 * @return 業務年月。
+	 */
+	YearMonth yearMonth();
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務年月。
+	 */
+	YearMonth yearMonth(String name);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)を照会する。<br />
+	 *
+	 * @param dt 日付指定。
+	 * @return 業務年月。
+	 */
+	YearMonth yearMonth(LocalDate dt);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 業務年月。
+	 */
+	YearMonth yearMonth(String name, LocalDate dt);
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)の初日を照会する。<br />
+	 *
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth();
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth(String name);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)の初日を照会する。<br />
+	 *
+	 * @param dt 日付指定。
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth(LocalDate dt);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth(String name, LocalDate dt);
+
+	/**
+	 * 指定した業務年月の初日を照会する。<br />
+	 *
+	 * @param ym 業務年月指定。
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth(YearMonth ym);
+
+	/**
+	 * 指定した業務年月の初日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param ym 業務年月指定。
+	 * @return 業務年月の初日。
+	 */
+	LocalDate firstDayOfYearMonth(String name, YearMonth ym);
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)の末日を照会する。<br />
+	 *
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth();
+
+	/**
+	 * 現在の業務年月(現在の業務日付の業務年月)の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth(String name);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)の末日を照会する。<br />
+	 *
+	 * @param dt 日付指定。
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth(LocalDate dt);
+
+	/**
+	 * 業務年月(指定した業務日付の業務年月)の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param dt 日付指定。
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth(String name, LocalDate dt);
+
+	/**
+	 * 指定した業務年月の末日を照会する。<br />
+	 *
+	 * @param ym 業務年月指定。
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth(YearMonth ym);
+
+	/**
+	 * 指定した業務年月の末日を照会する。<br />
+	 *
+	 * @param name カレンダーの識別名。
+	 * @param ym 業務年月指定。
+	 * @return 業務年月の末日。
+	 */
+	LocalDate lastDayOfYearMonth(String name, YearMonth ym);
 
 	/**
 	 * 現在の業務年(現在の業務日付の業務年)を照会する。<br />

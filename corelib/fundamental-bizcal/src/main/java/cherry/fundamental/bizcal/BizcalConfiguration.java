@@ -33,21 +33,17 @@ public class BizcalConfiguration {
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean
-	public Bizcal bizcal(DateTimeStrategy dateTimeStrategy, YearStrategy yearStrategy,
-			WorkdayStrategy workdayStrategy) {
-		return new BizcalImpl(dateTimeStrategy, yearStrategy, workdayStrategy, stdCalName);
+	public Bizcal bizcal(DateTimeStrategy dateTimeStrategy, YearMonthStrategy yearMonthStrategy,
+			YearStrategy yearStrategy, WorkdayStrategy workdayStrategy) {
+		return new BizcalImpl(dateTimeStrategy, yearMonthStrategy, yearStrategy, workdayStrategy, stdCalName);
 	}
 
 	public void setStdCalName(String stdCalName) {
 		this.stdCalName = stdCalName;
 	}
 
-	@ConfigurationProperties(prefix = "fundamental.bizcal")
-	public static class DefaultConfiguration {
-
-		private int yearOfFirstOffset;
-		private int monthOfFirst;
-		private int dayOfFirst;
+	@ConfigurationProperties(prefix = "fundamental.bizcal.datetime")
+	public static class DefaultDateTime {
 
 		@Bean
 		@Primary
@@ -55,13 +51,64 @@ public class BizcalConfiguration {
 		public DateTimeStrategy dateTimeStrategy() {
 			return new SimpleDateTimeStrategy();
 		}
+	}
+
+	@ConfigurationProperties(prefix = "fundamental.bizcal.yearmonth")
+	public static class DefaultYearMonth {
+
+		private long yearOffset = 0L;
+		private long monthOffset = 0L;
+		private long dayOffset = 0L;
+
+		@Bean
+		@Primary
+		@ConditionalOnMissingBean
+		public YearMonthStrategy yearMonthStrategy() {
+			return new SimpleYearMonthStrategy(yearOffset, monthOffset, dayOffset);
+		}
+
+		public void setYearOffset(long yearOffset) {
+			this.yearOffset = yearOffset;
+		}
+
+		public void setMonthOffset(long monthOffset) {
+			this.monthOffset = monthOffset;
+		}
+
+		public void setDayOffset(long dayOffset) {
+			this.dayOffset = dayOffset;
+		}
+	}
+
+	@ConfigurationProperties(prefix = "fundamental.bizcal.year")
+	public static class DefaultYear {
+
+		private long yearOffset = 0L;
+		private long monthOffset = 0L;
+		private long dayOffset = 0L;
 
 		@Bean
 		@Primary
 		@ConditionalOnMissingBean
 		public YearStrategy yearStrategy() {
-			return new SimpleYearStrategy(yearOfFirstOffset, monthOfFirst, dayOfFirst);
+			return new SimpleYearStrategy(yearOffset, monthOffset, dayOffset);
 		}
+
+		public void setYearOffset(long yearOffset) {
+			this.yearOffset = yearOffset;
+		}
+
+		public void setMonthOffset(long monthOffset) {
+			this.monthOffset = monthOffset;
+		}
+
+		public void setDayOffset(long dayOffset) {
+			this.dayOffset = dayOffset;
+		}
+	}
+
+	@ConfigurationProperties(prefix = "fundamental.bizcal.workday")
+	public static class DefaultWorkday {
 
 		@Bean
 		@Primary
@@ -69,19 +116,6 @@ public class BizcalConfiguration {
 		public WorkdayStrategy workdayStrategy() {
 			return new SimpleWorkdayStrategy();
 		}
-
-		public void setYearOfFirstOffset(int yearOfFirstOffset) {
-			this.yearOfFirstOffset = yearOfFirstOffset;
-		}
-
-		public void setMonthOfFirst(int monthOfFirst) {
-			this.monthOfFirst = monthOfFirst;
-		}
-
-		public void setDayOfFirst(int dayOfFirst) {
-			this.dayOfFirst = dayOfFirst;
-		}
-
 	}
 
 }

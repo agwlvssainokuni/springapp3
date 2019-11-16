@@ -28,7 +28,7 @@ public class SimpleYearStrategyTest {
 
 	@Test
 	public void test0101() {
-		YearStrategy strategy = new SimpleYearStrategy(0, 1, 1);
+		YearStrategy strategy = new SimpleYearStrategy(0L, 0L, 0L);
 		for (int year = 1900; year < 3000; year++) {
 			Range<LocalDate> range = strategy.rangeOfYear("", Year.of(year));
 			assertEquals(LocalDate.of(year, 1, 1), range.getMinimum());
@@ -38,7 +38,7 @@ public class SimpleYearStrategyTest {
 
 	@Test
 	public void test0401() {
-		YearStrategy strategy = new SimpleYearStrategy(0, 4, 1);
+		YearStrategy strategy = new SimpleYearStrategy(0L, 3L, 0L);
 		for (int year = 1900; year < 3000; year++) {
 			Range<LocalDate> range = strategy.rangeOfYear("", Year.of(year));
 			assertEquals(LocalDate.of(year, 4, 1), range.getMinimum());
@@ -48,7 +48,7 @@ public class SimpleYearStrategyTest {
 
 	@Test
 	public void test0901() {
-		YearStrategy strategy = new SimpleYearStrategy(-1, 9, 1);
+		YearStrategy strategy = new SimpleYearStrategy(-1L, 8L, 0L);
 		for (int year = 1900; year < 3000; year++) {
 			Range<LocalDate> range = strategy.rangeOfYear("", Year.of(year));
 			assertEquals(LocalDate.of(year - 1, 9, 1), range.getMinimum());

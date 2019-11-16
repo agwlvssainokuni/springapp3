@@ -25,11 +25,11 @@ import org.junit.Test;
 
 public class BizcalYearTest {
 
-	private Bizcal bizcal = new BizcalImpl(new SimpleDateTimeStrategy(), new SimpleYearStrategy(0, 4, 1),
-			new SimpleWorkdayStrategy(), "standard");
+	private Bizcal bizcal = new BizcalImpl(new SimpleDateTimeStrategy(), new SimpleYearMonthStrategy(0L, 0L, 0L),
+			new SimpleYearStrategy(0L, 3L, 0L), new SimpleWorkdayStrategy(), "standard");
 
-	private Bizcal bizcal0901 = new BizcalImpl(new SimpleDateTimeStrategy(), new SimpleYearStrategy(-1, 9, 1),
-			new SimpleWorkdayStrategy(), "standard");
+	private Bizcal bizcal0901 = new BizcalImpl(new SimpleDateTimeStrategy(), new SimpleYearMonthStrategy(0L, 0L, 0L),
+			new SimpleYearStrategy(-1L, 8L, 0L), new SimpleWorkdayStrategy(), "standard");
 
 	@Test
 	public void testYear() {
