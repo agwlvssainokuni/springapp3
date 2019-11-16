@@ -21,7 +21,7 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.Range;
 
 /**
- * 営業年度。<br />
+ * 業務年。<br />
  */
 public class SimpleYearStrategy implements YearStrategy {
 

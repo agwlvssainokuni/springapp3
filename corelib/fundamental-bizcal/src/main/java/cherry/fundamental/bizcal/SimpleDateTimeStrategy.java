@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 業務日付、業務日時。<br />
+ * 現在の業務日付、業務日時。<br />
  */
 public class SimpleDateTimeStrategy implements DateTimeStrategy {
 
