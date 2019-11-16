@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDate;
 import java.time.Year;
-import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
@@ -33,63 +32,41 @@ public class BizcalYearTest {
 			new SimpleWorkdayStrategy(), "standard");
 
 	@Test
-	public void testGetBizYear() {
+	public void testYear() {
 		for (int year = 1900; year < 3000; year++) {
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
-					assertEquals(year - 1, bizcal.getBizYear(dt));
+					assertEquals(Year.of(year).minusYears(1), bizcal.year(dt));
 				} else {
-					assertEquals(year, bizcal.getBizYear(dt));
+					assertEquals(Year.of(year), bizcal.year(dt));
 				}
 			}
 		}
 	}
 
 	@Test
-	public void testGetFirstOfBizYear() {
+	public void testFirstDayOfYear() {
 		for (int year = 1900; year < 3000; year++) {
-			assertEquals(LocalDate.of(year, 4, 1), bizcal.getFirstOfBizYear(Year.of(year)));
+			assertEquals(LocalDate.of(year, 4, 1), bizcal.firstDayOfYear(Year.of(year)));
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
-					assertEquals(LocalDate.of(year - 1, 4, 1), bizcal.getFirstOfBizYear(dt));
+					assertEquals(LocalDate.of(year - 1, 4, 1), bizcal.firstDayOfYear(dt));
 				} else {
-					assertEquals(LocalDate.of(year, 4, 1), bizcal.getFirstOfBizYear(dt));
+					assertEquals(LocalDate.of(year, 4, 1), bizcal.firstDayOfYear(dt));
 				}
 			}
 		}
 	}
 
 	@Test
-	public void testGetLastOfBizYear() {
+	public void testLastDayOfYear() {
 		for (int year = 1900; year < 3000; year++) {
-			assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.getLastOfBizYear(Year.of(year)));
+			assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.lastDayOfYear(Year.of(year)));
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 4) {
-					assertEquals(LocalDate.of(year, 3, 31), bizcal.getLastOfBizYear(dt));
+					assertEquals(LocalDate.of(year, 3, 31), bizcal.lastDayOfYear(dt));
 				} else {
-					assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.getLastOfBizYear(dt));
-				}
-			}
-		}
-	}
-
-	@Test
-	public void testGetNthDayOfBizYear() {
-		for (int year = 1900; year < 3000; year++) {
-			assertEquals(1, bizcal.getNthDayOfBizYear(LocalDate.of(year, 4, 1)));
-			assertEquals(numberOfDays(year + 1), bizcal.getNthDayOfBizYear(LocalDate.of(year + 1, 3, 31)));
-		}
-	}
-
-	@Test
-	public void testGetNumberOfDaysOfBizYear() {
-		for (int year = 1900; year < 3000; year++) {
-			assertEquals(numberOfDays(year + 1), bizcal.getNumberOfDaysOfBizYear(Year.of(year)));
-			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
-				if (dt.getMonthValue() < 4) {
-					assertEquals(numberOfDays(year), bizcal.getNumberOfDaysOfBizYear(dt));
-				} else {
-					assertEquals(numberOfDays(year + 1), bizcal.getNumberOfDaysOfBizYear(dt));
+					assertEquals(LocalDate.of(year + 1, 3, 31), bizcal.lastDayOfYear(dt));
 				}
 			}
 		}
@@ -100,13 +77,13 @@ public class BizcalYearTest {
 		for (int year = 1900; year < 3000; year++) {
 			for (LocalDate dt = LocalDate.of(year, 1, 1); dt.getYear() == year; dt = dt.plusDays(1)) {
 				if (dt.getMonthValue() < 9) {
-					assertEquals(year, bizcal0901.getBizYear(dt));
-					assertEquals(LocalDate.of(year - 1, 9, 1), bizcal0901.getFirstOfBizYear(dt));
-					assertEquals(LocalDate.of(year, 8, 31), bizcal0901.getLastOfBizYear(dt));
+					assertEquals(Year.of(year), bizcal0901.year(dt));
+					assertEquals(LocalDate.of(year - 1, 9, 1), bizcal0901.firstDayOfYear(dt));
+					assertEquals(LocalDate.of(year, 8, 31), bizcal0901.lastDayOfYear(dt));
 				} else {
-					assertEquals(year + 1, bizcal0901.getBizYear(dt));
-					assertEquals(LocalDate.of(year, 9, 1), bizcal0901.getFirstOfBizYear(dt));
-					assertEquals(LocalDate.of(year + 1, 8, 31), bizcal0901.getLastOfBizYear(dt));
+					assertEquals(Year.of(year).plusYears(1), bizcal0901.year(dt));
+					assertEquals(LocalDate.of(year, 9, 1), bizcal0901.firstDayOfYear(dt));
+					assertEquals(LocalDate.of(year + 1, 8, 31), bizcal0901.lastDayOfYear(dt));
 				}
 			}
 		}
@@ -116,21 +93,14 @@ public class BizcalYearTest {
 	public void testForToday() {
 		LocalDate today = LocalDate.now();
 		if (today.getMonthValue() < 4) {
-			assertEquals(today.getYear() - 1, bizcal.getBizYear());
-			assertEquals(LocalDate.of(today.getYear() - 1, 4, 1), bizcal.getFirstOfBizYear());
-			assertEquals(LocalDate.of(today.getYear(), 3, 31), bizcal.getLastOfBizYear());
-			assertEquals(numberOfDays(today.getYear()), bizcal.getNumberOfDaysOfBizYear());
+			assertEquals(Year.of(today.getYear()).minusYears(1), bizcal.year());
+			assertEquals(LocalDate.of(today.getYear() - 1, 4, 1), bizcal.firstDayOfYear());
+			assertEquals(LocalDate.of(today.getYear(), 3, 31), bizcal.lastDayOfYear());
 		} else {
-			assertEquals(today.getYear(), bizcal.getBizYear());
-			assertEquals(LocalDate.of(today.getYear(), 4, 1), bizcal.getFirstOfBizYear());
-			assertEquals(LocalDate.of(today.getYear() + 1, 3, 31), bizcal.getLastOfBizYear());
-			assertEquals(numberOfDays(today.getYear() + 1), bizcal.getNumberOfDaysOfBizYear());
+			assertEquals(Year.of(today.getYear()), bizcal.year());
+			assertEquals(LocalDate.of(today.getYear(), 4, 1), bizcal.firstDayOfYear());
+			assertEquals(LocalDate.of(today.getYear() + 1, 3, 31), bizcal.lastDayOfYear());
 		}
-		assertEquals(bizcal.getFirstOfBizYear().until(today.plusDays(1), ChronoUnit.DAYS), bizcal.getNthDayOfBizYear());
-	}
-
-	private int numberOfDays(int year) {
-		return year % 400 == 0 ? 366 : year % 100 == 0 ? 365 : year % 4 == 0 ? 366 : 365;
 	}
 
 }

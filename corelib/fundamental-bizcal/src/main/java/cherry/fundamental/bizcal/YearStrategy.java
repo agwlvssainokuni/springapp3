@@ -26,6 +26,6 @@ import org.apache.commons.lang3.Range;
  */
 public interface YearStrategy {
 
-	Range<LocalDate> rangeOfBizYear(String name, Year bizYear);
+	Range<LocalDate> rangeOfYear(String name, Year year);
 
 }
