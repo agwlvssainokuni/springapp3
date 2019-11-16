@@ -19,26 +19,20 @@ package cherry.fundamental.bizcal;
 import java.time.LocalDate;
 import java.time.Year;
 
+import org.apache.commons.lang3.Range;
+
 /**
- * 業務年。<br />
+ * 業務年ストラテジの抽象実装。<br />
  */
-public class SimpleYearStrategy extends AbstractYearStrategy {
-
-	private final long yearOffset;
-
-	private final long monthOffset;
-
-	private final long dayOffset;
-
-	public SimpleYearStrategy(long yearOffset, long monthOffset, long dayOffset) {
-		this.yearOffset = yearOffset;
-		this.monthOffset = monthOffset;
-		this.dayOffset = dayOffset;
-	}
+public abstract class AbstractYearStrategy implements YearStrategy {
 
 	@Override
-	protected LocalDate resolveFirstDate(String name, Year year) {
-		return year.atMonth(1).atDay(1).plusYears(yearOffset).plusMonths(monthOffset).plusDays(dayOffset);
+	public Range<LocalDate> rangeOfYear(String name, Year year) {
+		LocalDate firstDate = resolveFirstDate(name, year);
+		LocalDate lastDate = resolveFirstDate(name, year.plusYears(1L)).minusDays(1L);
+		return Range.between(firstDate, lastDate, (o1, o2) -> o1.compareTo(o2));
 	}
+
+	protected abstract LocalDate resolveFirstDate(String name, Year year);
 
 }

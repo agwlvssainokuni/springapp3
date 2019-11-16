@@ -19,12 +19,10 @@ package cherry.fundamental.bizcal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
-import org.apache.commons.lang3.Range;
-
 /**
  * 業務年月。<br />
  */
-public class SimpleYearMonthStrategy implements YearMonthStrategy {
+public class SimpleYearMonthStrategy extends AbstractYearMonthStrategy {
 
 	private final long yearOffset;
 
@@ -39,13 +37,7 @@ public class SimpleYearMonthStrategy implements YearMonthStrategy {
 	}
 
 	@Override
-	public Range<LocalDate> rangeOfYearMonth(String name, YearMonth ym) {
-		LocalDate firstDate = resolveOffsert(ym);
-		LocalDate lastDate = resolveOffsert(ym.plusMonths(1L)).minusDays(1L);
-		return Range.between(firstDate, lastDate, (o1, o2) -> o1.compareTo(o2));
-	}
-
-	private LocalDate resolveOffsert(YearMonth ym) {
+	protected LocalDate resolveFirstDate(String name, YearMonth ym) {
 		return ym.atDay(1).plusYears(yearOffset).plusMonths(monthOffset).plusDays(dayOffset);
 	}
 
