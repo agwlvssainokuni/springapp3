@@ -16,10 +16,6 @@
 
 package cherry.fundamental.bizcal;
 
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,32 +23,23 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.yaml.snakeyaml.Yaml;
 
+import cherry.fundamental.bizcal.FileConfig.IConfig;
+
 public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 
-	private final Map<String, List<Config>> configCache = new HashMap<>();
-
-	private final File basedir;
-
-	private final String subdir;
+	private final WorkdayConfig workdayConfig;
 
 	public FileWorkdayStrategy(File basedir, String subdir) {
-		this.basedir = basedir;
-		this.subdir = subdir;
+		this.workdayConfig = new WorkdayConfig(basedir, subdir);
 	}
 
 	public FileWorkdayStrategy(File basedir) {
@@ -61,7 +48,8 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	@Override
 	protected boolean isRegularOn(String name, DayOfWeek dow) {
-		List<Set<DayOfWeek>> s = getConfig(name).stream().map(Config::getRegularOn).collect(Collectors.toList());
+		List<Set<DayOfWeek>> s = workdayConfig.getConfig(name).stream().map(Config::getRegularOn)
+				.collect(Collectors.toList());
 		if (s.stream().allMatch(Set::isEmpty)) {
 			return true;
 		}
@@ -70,100 +58,60 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	@Override
 	protected boolean isSpecificOn(String name, LocalDate ldt) {
-		return getConfig(name).stream().map(Config::getSpecificOn).anyMatch(l -> l.contains(ldt));
+		return workdayConfig.getConfig(name).stream().map(Config::getSpecificOn).anyMatch(l -> l.contains(ldt));
 	}
 
 	@Override
 	protected boolean isSpecificOff(String name, LocalDate ldt) {
-		return getConfig(name).stream().map(Config::getSpecificOff).anyMatch(l -> l.contains(ldt));
+		return workdayConfig.getConfig(name).stream().map(Config::getSpecificOff).anyMatch(l -> l.contains(ldt));
 	}
 
-	private List<Config> getConfig(String name) {
+	static class WorkdayConfig extends FileConfig<Config> {
 
-		File dir = new File(new File(basedir, name), subdir);
-		if (!dir.isDirectory()) {
-			configCache.remove(name);
-			return Collections.<Config> emptyList();
+		public WorkdayConfig(File basedir, String subdir) {
+			super(basedir, subdir);
 		}
 
-		Set<String> filenames = Stream.of(dir.list()).filter(n -> new File(dir, n).isFile())
-				.collect(Collectors.toSet());
-		if (configCache.containsKey(name)) {
-			List<Config> current = configCache.get(name);
-			if (filenames.size() == current.size() && current.stream().allMatch(c -> filenames.contains(c.getFilename())
-					&& new File(dir, c.getFilename()).lastModified() == c.getLastModified())) {
-				return current;
-			}
-		}
+		@Override
+		protected Config loadConfig(File file) {
+			Yaml yaml = new Yaml();
+			try (InputStream in = new FileInputStream(file)) {
 
-		List<Config> list = filenames.stream().sorted().map(n -> loadConfig(new File(dir, n)))
-				.collect(Collectors.toList());
-		configCache.put(name, list);
-		return list;
-	}
+				Map<String, List<?>> map = yaml.load(in);
+				if (map == null) {
+					return new Config(file.getName(), file.lastModified(), Collections.emptySet(),
+							Collections.emptySet(), Collections.emptySet());
+				}
 
-	private Config loadConfig(File file) {
-		Yaml yaml = new Yaml();
-		try (InputStream in = new FileInputStream(file)) {
+				List<?> ron = map.get("regularOn");
+				List<?> son = map.get("specificOn");
+				List<?> soff = map.get("specificOff");
 
-			Map<String, List<?>> map = yaml.load(in);
-			if (map == null) {
-				return new Config(file.getName(), file.lastModified(), Collections.emptySet(), Collections.emptySet(),
-						Collections.emptySet());
-			}
+				if (ron == null) {
+					ron = Collections.emptyList();
+				}
+				if (son == null) {
+					son = Collections.emptyList();
+				}
+				if (soff == null) {
+					soff = Collections.emptyList();
+				}
 
-			List<?> ron = (List<?>) map.get("regularOn");
-			List<?> son = (List<?>) map.get("specificOn");
-			List<?> soff = (List<?>) map.get("specificOff");
+				Set<DayOfWeek> regularOn = ron.stream().filter(ObjectUtils::isNotEmpty).map(Object::toString)
+						.map(DayOfWeek::valueOf).collect(Collectors.toSet());
+				Set<LocalDate> specificOn = son.stream().filter(ObjectUtils::isNotEmpty).map(YamlUtil::getLocalDate)
+						.collect(Collectors.toSet());
+				Set<LocalDate> specificOff = soff.stream().filter(ObjectUtils::isNotEmpty).map(YamlUtil::getLocalDate)
+						.collect(Collectors.toSet());
 
-			if (ron == null) {
-				ron = Collections.emptyList();
-			}
-			if (son == null) {
-				son = Collections.emptyList();
-			}
-			if (soff == null) {
-				soff = Collections.emptyList();
-			}
-
-			Set<DayOfWeek> regularOn = ron.stream().filter(ObjectUtils::isNotEmpty).map(Object::toString)
-					.map(DayOfWeek::valueOf).collect(Collectors.toSet());
-			Set<LocalDate> specificOn = son.stream().filter(ObjectUtils::isNotEmpty).map(this::getLocalDate)
-					.collect(Collectors.toSet());
-			Set<LocalDate> specificOff = soff.stream().filter(ObjectUtils::isNotEmpty).map(this::getLocalDate)
-					.collect(Collectors.toSet());
-
-			return new Config(file.getName(), file.lastModified(), regularOn, specificOn, specificOff);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
-	}
-
-	private LocalDate getLocalDate(Object v) {
-		if (v instanceof Date) {
-			Calendar cal = Calendar.getInstance();
-			cal.setTimeInMillis(((Date) v).getTime());
-			return LocalDate.of(cal.get(YEAR), cal.get(MONTH) + 1, cal.get(DAY_OF_MONTH));
-		}
-		if (v instanceof Number) {
-			int num = ((Number) v).intValue();
-			int dayOfMonth = num % 100; // 末尾二桁
-			int month = (num / 100) % 100; // 末尾から三桁目と四桁目
-			int year = num / 10000; // 末尾から五桁目以上
-			return LocalDate.of(year, month, dayOfMonth);
-		}
-		try {
-			return LocalDate.parse(v.toString(), DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-		} catch (DateTimeParseException ex1) {
-			try {
-				return LocalDate.parse(v.toString(), DateTimeFormatter.ofPattern("yyyyMMdd"));
-			} catch (DateTimeParseException ex2) {
-				return LocalDate.parse(v.toString());
+				return new Config(file.getName(), file.lastModified(), regularOn, specificOn, specificOff);
+			} catch (IOException ex) {
+				throw new UncheckedIOException(ex);
 			}
 		}
 	}
 
-	static class Config {
+	static class Config implements IConfig {
 
 		private final String filename;
 
@@ -184,10 +132,12 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 			this.specificOff = specificOff;
 		}
 
+		@Override
 		public String getFilename() {
 			return filename;
 		}
 
+		@Override
 		public long getLastModified() {
 			return lastModified;
 		}
