@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -73,7 +72,7 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 		}
 
 		@Override
-		protected Config loadConfig(File file) {
+		protected Config doLoadConfig(File file) throws IOException {
 			Yaml yaml = new Yaml();
 			try (InputStream in = new FileInputStream(file)) {
 
@@ -105,8 +104,6 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 						.collect(Collectors.toSet());
 
 				return new Config(file.getName(), file.lastModified(), regularOn, specificOn, specificOff);
-			} catch (IOException ex) {
-				throw new UncheckedIOException(ex);
 			}
 		}
 	}

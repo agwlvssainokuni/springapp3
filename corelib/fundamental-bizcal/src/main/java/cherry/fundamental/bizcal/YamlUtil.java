@@ -43,11 +43,7 @@ public class YamlUtil {
 			int year = num; // 末尾から一桁目以上
 			return Year.of(year);
 		}
-		try {
-			return Year.parse(v.toString(), DateTimeFormatter.ofPattern("yyyy"));
-		} catch (DateTimeParseException ex1) {
-			return Year.parse(v.toString());
-		}
+		return Year.parse(v.toString(), DateTimeFormatter.ofPattern("yyyy"));
 	}
 
 	public static YearMonth getYearMonth(Object v) {

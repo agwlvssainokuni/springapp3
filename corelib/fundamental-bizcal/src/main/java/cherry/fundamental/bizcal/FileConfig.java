@@ -17,6 +17,8 @@
 package cherry.fundamental.bizcal;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,7 +66,15 @@ public abstract class FileConfig<CFG extends IConfig> {
 		return list;
 	}
 
-	protected abstract CFG loadConfig(File file);
+	private CFG loadConfig(File file) {
+		try {
+			return doLoadConfig(file);
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
+		}
+	}
+
+	protected abstract CFG doLoadConfig(File file) throws IOException;
 
 	interface IConfig {
 

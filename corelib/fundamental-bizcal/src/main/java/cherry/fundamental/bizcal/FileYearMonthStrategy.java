@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Collections;
@@ -68,7 +67,7 @@ public class FileYearMonthStrategy extends AbstractYearMonthStrategy {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		protected Config loadConfig(File file) {
+		protected Config doLoadConfig(File file) throws IOException {
 			Yaml yaml = new Yaml();
 			try (InputStream in = new FileInputStream(file)) {
 
@@ -95,8 +94,6 @@ public class FileYearMonthStrategy extends AbstractYearMonthStrategy {
 						e -> YamlUtil.getYearMonth(e.get("yearmonth")), e -> YamlUtil.getLocalDate(e.get("first"))));
 
 				return new Config(file.getName(), file.lastModified(), regularYear, regularMonth, regularDay, specific);
-			} catch (IOException ex) {
-				throw new UncheckedIOException(ex);
 			}
 		}
 	}

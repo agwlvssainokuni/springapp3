@@ -16,44 +16,40 @@
 
 package cherry.fundamental.bizcal;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = BizcalDateTimeTest.class)
-@SpringBootApplication
-@ImportResource(locations = "classpath:spring/appctx-trace.xml")
 public class BizcalDateTimeTest {
-
-	@Autowired
-	private Bizcal bizcal;
 
 	@Test
 	public void testToday() {
-		LocalDate dt0 = LocalDate.now();
-		LocalDate today = bizcal.today();
-		LocalDate dt1 = LocalDate.now();
-		assertTrue(today.compareTo(dt0) >= 0);
-		assertTrue(today.compareTo(dt1) <= 0);
+		DateTimeStrategy dateTimeStrategy = mock(DateTimeStrategy.class);
+		Bizcal impl = new BizcalImpl(dateTimeStrategy, null, null, null, "standard");
+		LocalDate ldt0 = LocalDate.now();
+		LocalDate ldt1 = LocalDate.of(2000, 1, 1);
+		when(dateTimeStrategy.today(eq("standard"))).thenReturn(ldt0);
+		when(dateTimeStrategy.today(eq("extra"))).thenReturn(ldt1);
+		assertEquals(ldt0, impl.today());
+		assertEquals(ldt1, impl.today("extra"));
 	}
 
 	@Test
 	public void testNow() {
-		LocalDateTime dtm0 = LocalDateTime.now();
-		LocalDateTime now = bizcal.now();
-		LocalDateTime dtm1 = LocalDateTime.now();
-		assertTrue(now.compareTo(dtm0) >= 0);
-		assertTrue(now.compareTo(dtm1) <= 0);
+		DateTimeStrategy dateTimeStrategy = mock(DateTimeStrategy.class);
+		Bizcal impl = new BizcalImpl(dateTimeStrategy, null, null, null, "standard");
+		LocalDateTime ldtm0 = LocalDateTime.now();
+		LocalDateTime ldtm1 = LocalDateTime.of(2000, 1, 1, 12, 34, 56);
+		when(dateTimeStrategy.now(eq("standard"))).thenReturn(ldtm0);
+		when(dateTimeStrategy.now(eq("extra"))).thenReturn(ldtm1);
+		assertEquals(ldtm0, impl.now());
+		assertEquals(ldtm1, impl.now("extra"));
 	}
 
 }
