@@ -48,8 +48,15 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	private final File basedir;
 
-	public FileWorkdayStrategy(File basedir) {
+	private final String subdir;
+
+	public FileWorkdayStrategy(File basedir, String subdir) {
 		this.basedir = basedir;
+		this.subdir = subdir;
+	}
+
+	public FileWorkdayStrategy(File basedir) {
+		this(basedir, "workday");
 	}
 
 	@Override
@@ -73,7 +80,7 @@ public class FileWorkdayStrategy extends AbstractWorkdayStrategy {
 
 	private List<Config> getConfig(String name) {
 
-		File dir = new File(basedir, name);
+		File dir = new File(new File(basedir, name), subdir);
 		if (!dir.isDirectory()) {
 			configCache.remove(name);
 			return Collections.<Config> emptyList();
