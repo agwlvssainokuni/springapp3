@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import javax.mail.MessagingException;
 
@@ -28,12 +29,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.transaction.annotation.Transactional;
 
-import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.Attachment;
 
 public class MailQueueImpl implements MailQueue {
 
-	private final Bizcal bizcal;
+	private final Supplier<LocalDateTime> currentDateTime;
 
 	private final QueueStore queueStore;
 
@@ -41,9 +41,9 @@ public class MailQueueImpl implements MailQueue {
 
 	private final JavaMailSender mailSender;
 
-	public MailQueueImpl(Bizcal bizcal, QueueStore queueStore, AttachmentStore attachmentStore,
-			JavaMailSender mailSender) {
-		this.bizcal = bizcal;
+	public MailQueueImpl(Supplier<LocalDateTime> currentDateTime, QueueStore queueStore,
+			AttachmentStore attachmentStore, JavaMailSender mailSender) {
+		this.currentDateTime = currentDateTime;
 		this.queueStore = queueStore;
 		this.attachmentStore = attachmentStore;
 		this.mailSender = mailSender;
@@ -64,7 +64,7 @@ public class MailQueueImpl implements MailQueue {
 	@Override
 	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		LocalDateTime now = bizcal.now();
+		LocalDateTime now = currentDateTime.get();
 		long messageId = queueStore.create(loginId, messageName, now, from, to, cc, bcc, replyTo, subject, body);
 		attachmentStore.save(messageId, attachments);
 		QueuedEntry msg = queueStore.get(messageId);

@@ -23,7 +23,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,7 +53,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.Attachment;
 
 @RunWith(SpringRunner.class)
@@ -202,13 +200,10 @@ public class MailQueueImplTest {
 
 	private MailQueue create(LocalDateTime now) {
 
-		Bizcal bizcal = mock(Bizcal.class);
-		when(bizcal.now()).thenReturn(now);
-
 		mailSender = mock(JavaMailSender.class);
 
 		SimpleQueueStore queueStore = new SimpleQueueStore();
-		return new MailQueueImpl(bizcal, queueStore, new AttachmentStore() {
+		return new MailQueueImpl(() -> now, queueStore, new AttachmentStore() {
 			@Override
 			public boolean save(long messageId, Attachment... attachments) throws UncheckedIOException {
 				return attachmentStore.save(messageId, attachments);

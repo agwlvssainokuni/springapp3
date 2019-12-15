@@ -19,6 +19,7 @@ package cherry.fundamental.mail;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +27,13 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.mail.MailException;
 
 import cherry.elemental.loop.Loop;
-import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.queue.MailQueue;
 
 public class SendMailServiceImpl implements SendMailService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private final Bizcal bizcal;
+	private final Supplier<LocalDateTime> currentDateTime;
 
 	private final MailQueue mailQueue;
 
@@ -41,8 +41,9 @@ public class SendMailServiceImpl implements SendMailService {
 
 	private final TimeUnit rateUnit;
 
-	public SendMailServiceImpl(Bizcal bizcal, MailQueue mailQueue, double rateToSend, TimeUnit rateUnit) {
-		this.bizcal = bizcal;
+	public SendMailServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
+			TimeUnit rateUnit) {
+		this.currentDateTime = currentDateTime;
 		this.mailQueue = mailQueue;
 		this.rateToSend = rateToSend;
 		this.rateUnit = rateUnit;
@@ -51,7 +52,7 @@ public class SendMailServiceImpl implements SendMailService {
 	@Override
 	public void sendMail() {
 		try {
-			LocalDateTime now = bizcal.now();
+			LocalDateTime now = currentDateTime.get();
 			List<Long> list = mailQueue.list(now);
 			Loop.rate(rateToSend, rateUnit).iterate(list, messageId -> {
 				mailQueue.send(messageId);

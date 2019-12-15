@@ -20,19 +20,15 @@ import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 
 import org.junit.Test;
 
-import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.message.MessageHandler;
 import cherry.fundamental.mail.queue.MailQueue;
 
 public class MailFacadeImplTest {
-
-	private Bizcal bizcal;
 
 	private MessageHandler messageHandler;
 
@@ -94,11 +90,9 @@ public class MailFacadeImplTest {
 	}
 
 	private MailFacade create(LocalDateTime now) {
-		bizcal = mock(Bizcal.class);
-		when(bizcal.now()).thenReturn(now);
 		messageHandler = mock(MessageHandler.class);
 		mailQueue = mock(MailQueue.class);
-		return new MailFacadeImpl(bizcal, messageHandler, mailQueue);
+		return new MailFacadeImpl(() -> now, messageHandler, mailQueue);
 	}
 
 }

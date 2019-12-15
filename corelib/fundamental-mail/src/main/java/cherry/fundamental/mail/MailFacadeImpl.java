@@ -18,21 +18,21 @@ package cherry.fundamental.mail;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
 
-import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.message.MessageHandler;
 import cherry.fundamental.mail.queue.MailQueue;
 
 public class MailFacadeImpl implements MailFacade {
 
-	private final Bizcal bizcal;
+	private final Supplier<LocalDateTime> currentDateTime;
 
 	private final MessageHandler messageHandler;
 
 	private final MailQueue mailQueue;
 
-	public MailFacadeImpl(Bizcal bizcal, MessageHandler messageHandler, MailQueue mailQueue) {
-		this.bizcal = bizcal;
+	public MailFacadeImpl(Supplier<LocalDateTime> currentDateTime, MessageHandler messageHandler, MailQueue mailQueue) {
+		this.currentDateTime = currentDateTime;
 		this.messageHandler = messageHandler;
 		this.mailQueue = mailQueue;
 	}
@@ -51,8 +51,8 @@ public class MailFacadeImpl implements MailFacade {
 	@Override
 	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, bizcal.now(),
-				attachments);
+		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body,
+				currentDateTime.get(), attachments);
 	}
 
 	@Override

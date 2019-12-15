@@ -112,7 +112,7 @@ public class MailConfiguration {
 		@Bean
 		public MailQueue mailQueue(Bizcal bizcal, QueueStore queueStore, AttachmentStore attachmentStore,
 				JavaMailSender mailSender) {
-			return new MailQueueImpl(bizcal, queueStore, attachmentStore, mailSender);
+			return new MailQueueImpl(bizcal::now, queueStore, attachmentStore, mailSender);
 		}
 	}
 
@@ -121,7 +121,7 @@ public class MailConfiguration {
 	public static class MailFacadeConfiguration {
 		@Bean
 		public MailFacade mailFacade(Bizcal bizcal, MessageHandler messageHandler, MailQueue mailQueue) {
-			return new MailFacadeImpl(bizcal, messageHandler, mailQueue);
+			return new MailFacadeImpl(bizcal::now, messageHandler, mailQueue);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class MailConfiguration {
 
 		@Bean
 		public SendMailService sendMailService(Bizcal bizcal, MailQueue mailQueue) {
-			return new SendMailServiceImpl(bizcal, mailQueue, rateToSend, rateUnit);
+			return new SendMailServiceImpl(bizcal::now, mailQueue, rateToSend, rateUnit);
 		}
 
 		public void setRateToSend(double rateToSend) {
