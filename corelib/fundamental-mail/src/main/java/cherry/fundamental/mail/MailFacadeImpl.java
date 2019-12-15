@@ -20,6 +20,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import cherry.fundamental.mail.message.MessageHandler;
 import cherry.fundamental.mail.queue.MailQueue;
 
@@ -37,36 +39,44 @@ public class MailFacadeImpl implements MailFacade {
 		this.mailQueue = mailQueue;
 	}
 
+	@Transactional
 	@Override
 	public Message evaluate(String templateName, List<String> to, Object model) {
 		return messageHandler.evaluate(templateName, to, model);
 	}
 
+	@Transactional
 	@Override
 	public Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo,
 			String subject, String body, Object model) {
 		return messageHandler.evaluate(from, to, cc, bcc, replyTo, subject, body, model);
 	}
 
+	@Transactional
 	@Override
 	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body,
-				currentDateTime.get(), attachments);
+		return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, currentDateTime.get(),
+				attachments);
 	}
 
+	@Transactional
 	@Override
 	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
 			Attachment... attachments) {
-		return mailQueue.sendLater(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, scheduledAt,
+		return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, scheduledAt,
 				attachments);
 	}
 
+	@Transactional
 	@Override
 	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		return mailQueue.sendNow(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, attachments);
+		long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body,
+				currentDateTime.get(), attachments);
+		mailQueue.send(messageId);
+		return messageId;
 	}
 
 }

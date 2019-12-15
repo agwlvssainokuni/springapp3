@@ -45,26 +45,8 @@ public interface MailQueue {
 	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
-	long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+	long enqueue(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
 			String replyTo, String subject, String body, LocalDateTime scheduledAt, Attachment... attachments);
-
-	/**
-	 * メールを即時送信する。<br />
-	 *
-	 * @param loginId 当メソッドを呼出した利用者のログインID。
-	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
-	 * @param from 差出人 (From) のメールアドレス。
-	 * @param to 宛先 (To) のメールアドレス。
-	 * @param cc 宛先 (Cc) のメールアドレス。
-	 * @param bcc 宛先 (Bcc) のメールアドレス。
-	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
-	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
-	 * @param attachments 添付ファイル。
-	 * @return メールデータの識別番号。
-	 */
-	long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
-			String replyTo, String subject, String body, Attachment... attachments);
 
 	/**
 	 * キューに蓄積されているメールデータの識別番号のリストを取得する。<br />

@@ -69,9 +69,9 @@ public class MailQueueImplTest {
 	@Test
 	public void testSendLater() {
 		LocalDateTime now = LocalDateTime.now();
-		MailQueue handler = create(now);
+		MailQueue handler = create();
 
-		long messageId = handler.sendLater("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+		long messageId = handler.enqueue("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
 		assertEquals(0L, messageId);
 
@@ -100,36 +100,9 @@ public class MailQueueImplTest {
 	}
 
 	@Test
-	public void testSendNow() {
+	public void testSendLaterAttached() throws Exception {
 		LocalDateTime now = LocalDateTime.now();
-		MailQueue handler = create(now);
-
-		ArgumentCaptor<SimpleMailMessage> message = ArgumentCaptor.forClass(SimpleMailMessage.class);
-		doNothing().when(mailSender).send(message.capture());
-
-		long messageId = handler.sendNow("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
-				asList("bcc@addr"), "replyTo@addr", "subject", "body");
-		assertEquals(0L, messageId);
-
-		assertEquals("from@addr", message.getValue().getFrom());
-		assertEquals(1, message.getValue().getTo().length);
-		assertEquals("to@addr", message.getValue().getTo()[0]);
-		assertEquals(1, message.getValue().getCc().length);
-		assertEquals("cc@addr", message.getValue().getCc()[0]);
-		assertEquals(1, message.getValue().getBcc().length);
-		assertEquals("bcc@addr", message.getValue().getBcc()[0]);
-		assertEquals("replyTo@addr", message.getValue().getReplyTo());
-		assertEquals("subject", message.getValue().getSubject());
-		assertEquals("body", message.getValue().getText());
-
-		boolean result = handler.send(0L);
-		assertFalse(result);
-	}
-
-	@Test
-	public void testSendNowAttached() throws Exception {
-		LocalDateTime now = LocalDateTime.now();
-		MailQueue handler = create(now);
+		MailQueue handler = create();
 
 		ArgumentCaptor<MimeMessagePreparator> preparator = ArgumentCaptor.forClass(MimeMessagePreparator.class);
 		doNothing().when(mailSender).send(preparator.capture());
@@ -143,12 +116,13 @@ public class MailQueueImplTest {
 				out.write("attach2".getBytes());
 			}
 
-			messageId = handler.sendNow("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
-					asList("bcc@addr"), "replyTo@addr", "subject", "body", //
+			messageId = handler.enqueue("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+					asList("bcc@addr"), "replyTo@addr", "subject", "body", now, //
 					new Attachment("name0.txt", new ByteArrayInputStream("attach0".getBytes()), "text/plain"), //
 					new Attachment("name1.bin", new ByteArrayInputStream("attach1".getBytes()),
 							"application/octet-stream"), //
 					new Attachment("name2.txt", file));
+			handler.send(messageId);
 
 			Session session = Session.getDefaultInstance(new Properties());
 			MimeMessage message = new MimeMessage(session);
@@ -198,12 +172,12 @@ public class MailQueueImplTest {
 		}
 	}
 
-	private MailQueue create(LocalDateTime now) {
+	private MailQueue create() {
 
 		mailSender = mock(JavaMailSender.class);
 
 		SimpleQueueStore queueStore = new SimpleQueueStore();
-		return new MailQueueImpl(() -> now, queueStore, new AttachmentStore() {
+		return new MailQueueImpl(queueStore, new AttachmentStore() {
 			@Override
 			public boolean save(long messageId, Attachment... attachments) throws UncheckedIOException {
 				return attachmentStore.save(messageId, attachments);

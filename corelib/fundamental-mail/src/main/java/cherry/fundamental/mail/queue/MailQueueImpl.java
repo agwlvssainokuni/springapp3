@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import javax.mail.MessagingException;
 
@@ -33,17 +32,13 @@ import cherry.fundamental.mail.Attachment;
 
 public class MailQueueImpl implements MailQueue {
 
-	private final Supplier<LocalDateTime> currentDateTime;
-
 	private final QueueStore queueStore;
 
 	private final AttachmentStore attachmentStore;
 
 	private final JavaMailSender mailSender;
 
-	public MailQueueImpl(Supplier<LocalDateTime> currentDateTime, QueueStore queueStore,
-			AttachmentStore attachmentStore, JavaMailSender mailSender) {
-		this.currentDateTime = currentDateTime;
+	public MailQueueImpl(QueueStore queueStore, AttachmentStore attachmentStore, JavaMailSender mailSender) {
 		this.queueStore = queueStore;
 		this.attachmentStore = attachmentStore;
 		this.mailSender = mailSender;
@@ -51,27 +46,12 @@ public class MailQueueImpl implements MailQueue {
 
 	@Transactional
 	@Override
-	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
+	public long enqueue(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
 			Attachment... attachments) {
 		long messageId = queueStore.create(loginId, messageName, scheduledAt, from, to, cc, bcc, replyTo, subject,
 				body);
 		attachmentStore.save(messageId, attachments);
-		return messageId;
-	}
-
-	@Transactional
-	@Override
-	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		LocalDateTime now = currentDateTime.get();
-		long messageId = queueStore.create(loginId, messageName, now, from, to, cc, bcc, replyTo, subject, body);
-		attachmentStore.save(messageId, attachments);
-		QueuedEntry msg = queueStore.get(messageId);
-		Optional<List<AttachedEntry>> attached = attachmentStore.load(messageId);
-		queueStore.finish(messageId);
-		doSend(msg, attached);
-		attachmentStore.delete(messageId);
 		return messageId;
 	}
 

@@ -63,7 +63,7 @@ public class MailFacadeImplTest {
 
 		mailFacade.send("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body");
-		verify(mailQueue).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+		verify(mailQueue).enqueue(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
 				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(now));
 	}
 
@@ -74,7 +74,7 @@ public class MailFacadeImplTest {
 
 		mailFacade.sendLater("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
-		verify(mailQueue).sendLater(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+		verify(mailQueue).enqueue(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
 				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(now));
 	}
 
@@ -85,8 +85,9 @@ public class MailFacadeImplTest {
 
 		mailFacade.sendNow("launcherId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 				asList("bcc@addr"), "replyTo@addr", "subject", "body");
-		verify(mailQueue).sendNow(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
-				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"));
+		verify(mailQueue).enqueue(eq("launcherId"), eq("messageName"), eq("from@addr"), eq(asList("to@addr")),
+				eq(asList("cc@addr")), eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(now));
+		verify(mailQueue).send(0L);
 	}
 
 	private MailFacade create(LocalDateTime now) {

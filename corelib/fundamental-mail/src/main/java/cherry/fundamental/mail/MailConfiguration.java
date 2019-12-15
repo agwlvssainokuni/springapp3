@@ -110,9 +110,8 @@ public class MailConfiguration {
 
 	public static class MailQueueConfiguration {
 		@Bean
-		public MailQueue mailQueue(Bizcal bizcal, QueueStore queueStore, AttachmentStore attachmentStore,
-				JavaMailSender mailSender) {
-			return new MailQueueImpl(bizcal::now, queueStore, attachmentStore, mailSender);
+		public MailQueue mailQueue(QueueStore queueStore, AttachmentStore attachmentStore, JavaMailSender mailSender) {
+			return new MailQueueImpl(queueStore, attachmentStore, mailSender);
 		}
 	}
 

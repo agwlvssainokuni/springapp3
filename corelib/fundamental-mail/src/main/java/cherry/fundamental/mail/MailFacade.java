@@ -20,7 +20,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import cherry.fundamental.mail.message.MessageHandler;
-import cherry.fundamental.mail.queue.MailQueue;
 
 /**
  * メール送信機能。<br />
@@ -58,7 +57,6 @@ public interface MailFacade {
 
 	/**
 	 * 送信するメールデータを、キューに蓄積する。<br />
-	 * {@link MailQueue#sendLater(String, String, String, List, List, List, String, String, String, LocalDateTime, Attachment...)}に相当し、送信予定日時として現在日時を指定するのに等しい。
 	 *
 	 * @param loginId 当メソッドを呼出した利用者のログインID。
 	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
@@ -77,7 +75,6 @@ public interface MailFacade {
 
 	/**
 	 * 送信するメールデータを、キューに蓄積する。<br />
-	 * {@link MailQueue#sendLater(String, String, String, List, List, List, String, String, String, LocalDateTime, Attachment...)}に相当する。
 	 *
 	 * @param loginId 当メソッドを呼出した利用者のログインID。
 	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
@@ -97,7 +94,6 @@ public interface MailFacade {
 
 	/**
 	 * メールを即時送信する。<br />
-	 * {@link MailQueue#sendNow(String, String, String, List, List, List, String, String, String, Attachment...)}に相当する。
 	 *
 	 * @param loginId 当メソッドを呼出した利用者のログインID。
 	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
