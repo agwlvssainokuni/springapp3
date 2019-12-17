@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
@@ -44,20 +44,20 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = MessageHandlerImplTest.class)
+@SpringBootTest(classes = TemplateHandlerImplTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
-public class MessageHandlerImplTest {
+public class TemplateHandlerImplTest {
 
 	@Autowired
-	private MessageHandler messageHandler;
+	private TemplateHandler templateHandler;
 
 	@Autowired
 	private TemplateStore templateStore;
 
 	@Test
 	public void testFullAddress() throws IOException {
-		MessageHandler handler = create("name", "from@addr", "other@addr", "cc@addr", "bcc@addr", "replyTo@addr",
+		TemplateHandler handler = create("name", "from@addr", "other@addr", "cc@addr", "bcc@addr", "replyTo@addr",
 				"subject", "body", Mode.NORMAL);
 		Model model = new Model();
 		model.setParam("PARAM");
@@ -78,7 +78,7 @@ public class MessageHandlerImplTest {
 
 	@Test
 	public void testEmptyTemplate() throws IOException {
-		MessageHandler handler = create("name", "from@addr", null, null, null, null, "", "", Mode.NORMAL);
+		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "", "", Mode.NORMAL);
 		Model model = new Model();
 		model.setParam("PARAM");
 		Message msg = handler.evaluate("name", asList("to@addr"), model);
@@ -95,7 +95,7 @@ public class MessageHandlerImplTest {
 
 	@Test
 	public void testTemplateEvaluation() throws IOException {
-		MessageHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
+		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
 				"param is ${param}", Mode.NORMAL);
 		Model model = new Model();
 		model.setParam("PARAM");
@@ -113,7 +113,7 @@ public class MessageHandlerImplTest {
 
 	@Test
 	public void testTemplateEvaluationFalse() throws IOException {
-		MessageHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
+		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
 				"param is ${param}<#include \"dummy\">", Mode.MOCK_FALSE);
 		Model model = new Model();
 		model.setParam("PARAM");
@@ -130,7 +130,7 @@ public class MessageHandlerImplTest {
 		NORMAL, MOCK_FALSE
 	}
 
-	private MessageHandler create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr,
+	private TemplateHandler create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr,
 			String replyToAddr, String subject, String body, Mode mode) throws IOException {
 
 		Template template = new Template();
@@ -152,7 +152,7 @@ public class MessageHandlerImplTest {
 
 		switch (mode) {
 		case NORMAL:
-			return messageHandler;
+			return templateHandler;
 		default:
 			Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
 			configuration.setLocalizedLookup(false);
@@ -162,7 +162,7 @@ public class MessageHandlerImplTest {
 			TemplateLoader loader = mock(TemplateLoader.class);
 			when(loader.findTemplateSource(anyString())).thenThrow(new IOException());
 			configuration.setTemplateLoader(loader);
-			return new MessageHandlerImpl(templateStore, configuration);
+			return new TemplateHandlerImpl(templateStore, configuration);
 		}
 
 	}

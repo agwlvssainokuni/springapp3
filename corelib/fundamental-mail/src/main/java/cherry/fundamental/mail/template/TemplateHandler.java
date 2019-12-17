@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ import cherry.fundamental.mail.Message;
  * のメールアドレス、テンプレートに埋め込むデータを指定する。<br />
  * 特殊な運用方法として、DBに保管されていないメールテンプレートのデータを元に、送信するメールデータを生成することにも対応する。
  */
-public interface MessageHandler {
+public interface TemplateHandler {
 
 	/**
 	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 import java.util.Map;
 

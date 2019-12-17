@@ -28,17 +28,17 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
 
 import cherry.fundamental.bizcal.Bizcal;
-import cherry.fundamental.mail.message.MessageHandler;
-import cherry.fundamental.mail.message.MessageHandlerImpl;
-import cherry.fundamental.mail.message.PassthroughTemplateLoader;
-import cherry.fundamental.mail.message.SimpleTemplateStore;
-import cherry.fundamental.mail.message.TemplateStore;
 import cherry.fundamental.mail.queue.AttachmentStore;
 import cherry.fundamental.mail.queue.AttachmentStoreImpl;
 import cherry.fundamental.mail.queue.MailQueue;
 import cherry.fundamental.mail.queue.MailQueueImpl;
 import cherry.fundamental.mail.queue.QueueStore;
 import cherry.fundamental.mail.queue.SimpleQueueStore;
+import cherry.fundamental.mail.template.PassthroughTemplateLoader;
+import cherry.fundamental.mail.template.SimpleTemplateStore;
+import cherry.fundamental.mail.template.TemplateHandler;
+import cherry.fundamental.mail.template.TemplateHandlerImpl;
+import cherry.fundamental.mail.template.TemplateStore;
 import freemarker.template.TemplateExceptionHandler;
 
 @Configuration
@@ -55,11 +55,11 @@ public class MailConfiguration {
 		}
 	}
 
-	public static class MessageHandlerConfiguration {
+	public static class TemplateHandlerConfiguration {
 
 		@Bean
-		public MessageHandler messageHandler(TemplateStore templateStore) {
-			return new MessageHandlerImpl(templateStore, configuration());
+		public TemplateHandler templateHandler(TemplateStore templateStore) {
+			return new TemplateHandlerImpl(templateStore, configuration());
 		}
 
 		private freemarker.template.Configuration configuration() {
@@ -119,8 +119,8 @@ public class MailConfiguration {
 
 	public static class MailFacadeConfiguration {
 		@Bean
-		public MailFacade mailFacade(Bizcal bizcal, MessageHandler messageHandler, MailQueue mailQueue) {
-			return new MailFacadeImpl(bizcal::now, messageHandler, mailQueue);
+		public MailFacade mailFacade(Bizcal bizcal, TemplateHandler templateHandler, MailQueue mailQueue) {
+			return new MailFacadeImpl(bizcal::now, templateHandler, mailQueue);
 		}
 	}
 

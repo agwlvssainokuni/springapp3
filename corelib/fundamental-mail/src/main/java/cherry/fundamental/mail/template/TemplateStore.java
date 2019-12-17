@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 /**
  * メール送信機能。<br />

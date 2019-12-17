@@ -22,34 +22,35 @@ import java.util.function.Supplier;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import cherry.fundamental.mail.message.MessageHandler;
 import cherry.fundamental.mail.queue.MailQueue;
+import cherry.fundamental.mail.template.TemplateHandler;
 
 public class MailFacadeImpl implements MailFacade {
 
 	private final Supplier<LocalDateTime> currentDateTime;
 
-	private final MessageHandler messageHandler;
+	private final TemplateHandler templateHandler;
 
 	private final MailQueue mailQueue;
 
-	public MailFacadeImpl(Supplier<LocalDateTime> currentDateTime, MessageHandler messageHandler, MailQueue mailQueue) {
+	public MailFacadeImpl(Supplier<LocalDateTime> currentDateTime, TemplateHandler templateHandler,
+			MailQueue mailQueue) {
 		this.currentDateTime = currentDateTime;
-		this.messageHandler = messageHandler;
+		this.templateHandler = templateHandler;
 		this.mailQueue = mailQueue;
 	}
 
 	@Transactional
 	@Override
 	public Message evaluate(String templateName, List<String> to, Object model) {
-		return messageHandler.evaluate(templateName, to, model);
+		return templateHandler.evaluate(templateName, to, model);
 	}
 
 	@Transactional
 	@Override
 	public Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo,
 			String subject, String body, Object model) {
-		return messageHandler.evaluate(from, to, cc, bcc, replyTo, subject, body, model);
+		return templateHandler.evaluate(from, to, cc, bcc, replyTo, subject, body, model);
 	}
 
 	@Transactional

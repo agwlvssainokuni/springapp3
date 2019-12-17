@@ -25,12 +25,12 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
-import cherry.fundamental.mail.message.MessageHandler;
 import cherry.fundamental.mail.queue.MailQueue;
+import cherry.fundamental.mail.template.TemplateHandler;
 
 public class MailFacadeImplTest {
 
-	private MessageHandler messageHandler;
+	private TemplateHandler templateHandler;
 
 	private MailQueue mailQueue;
 
@@ -41,7 +41,7 @@ public class MailFacadeImplTest {
 
 		Object model = new Object();
 		mailFacade.evaluate("templateName", asList("to@addr"), model);
-		verify(messageHandler).evaluate(eq("templateName"), eq(asList("to@addr")), eq(model));
+		verify(templateHandler).evaluate(eq("templateName"), eq(asList("to@addr")), eq(model));
 	}
 
 	@Test
@@ -52,7 +52,7 @@ public class MailFacadeImplTest {
 		Object model = new Object();
 		mailFacade.evaluate("from@addr", asList("to@addr"), asList("cc@addr"), asList("bcc@addr"), "replyTo@addr",
 				"subject", "body", model);
-		verify(messageHandler).evaluate(eq("from@addr"), eq(asList("to@addr")), eq(asList("cc@addr")),
+		verify(templateHandler).evaluate(eq("from@addr"), eq(asList("to@addr")), eq(asList("cc@addr")),
 				eq(asList("bcc@addr")), eq("replyTo@addr"), eq("subject"), eq("body"), eq(model));
 	}
 
@@ -91,9 +91,9 @@ public class MailFacadeImplTest {
 	}
 
 	private MailFacade create(LocalDateTime now) {
-		messageHandler = mock(MessageHandler.class);
+		templateHandler = mock(TemplateHandler.class);
 		mailQueue = mock(MailQueue.class);
-		return new MailFacadeImpl(() -> now, messageHandler, mailQueue);
+		return new MailFacadeImpl(() -> now, templateHandler, mailQueue);
 	}
 
 }

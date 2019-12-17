@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;

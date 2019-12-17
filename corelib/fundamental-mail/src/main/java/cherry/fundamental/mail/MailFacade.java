@@ -19,8 +19,6 @@ package cherry.fundamental.mail;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import cherry.fundamental.mail.message.MessageHandler;
-
 /**
  * メール送信機能。<br />
  * 業務アプリケーションが直接的に使用する機能を集めたインタフェース。
@@ -29,7 +27,6 @@ public interface MailFacade {
 
 	/**
 	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
-	 * {@link MessageHandler#evaluate(String, List, Object)}に相当する。
 	 *
 	 * @param templateName テンプレート名称。
 	 * @param to 宛先 (To) のメールアドレス。
@@ -40,7 +37,6 @@ public interface MailFacade {
 
 	/**
 	 * DBに保管されていないメールテンプレートを元に、送信するメールデータを生成する。<br />
-	 * {@link MessageHandler#evaluate(String, List, List, List, String, String, String, Object)}に相当する。
 	 *
 	 * @param from 差出人 (From) のメールアドレス。
 	 * @param to 宛先 (To) のメールアドレス。

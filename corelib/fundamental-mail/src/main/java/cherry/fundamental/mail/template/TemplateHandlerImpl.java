@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cherry.fundamental.mail.message;
+package cherry.fundamental.mail.template;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -25,13 +25,13 @@ import cherry.fundamental.mail.Message;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
 
-public class MessageHandlerImpl implements MessageHandler {
+public class TemplateHandlerImpl implements TemplateHandler {
 
 	private final TemplateStore templateStore;
 
 	private final Configuration configuration;
 
-	public MessageHandlerImpl(TemplateStore templateStore, Configuration configuration) {
+	public TemplateHandlerImpl(TemplateStore templateStore, Configuration configuration) {
 		this.templateStore = templateStore;
 		this.configuration = configuration;
 	}
