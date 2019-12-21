@@ -53,7 +53,7 @@ public class SendMailServiceImpl implements SendMailService {
 	public void sendMail() {
 		try {
 			LocalDateTime now = currentDateTime.get();
-			List<Long> list = mailQueue.list(now);
+			List<Long> list = mailQueue.listToSend(now);
 			Loop.rate(rateToSend, rateUnit).iterate(list, messageId -> {
 				mailQueue.send(messageId);
 			});

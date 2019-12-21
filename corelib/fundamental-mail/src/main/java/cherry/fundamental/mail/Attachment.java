@@ -37,8 +37,8 @@ public class Attachment {
 
 	private final String contentType;
 
-	public Attachment(String filename, File file) {
-		this(filename, file, null, null);
+	public Attachment(String filename, File file, String contentType) {
+		this(filename, file, null, contentType);
 	}
 
 	public Attachment(String filename, byte[] array, String contentType) {
@@ -54,14 +54,6 @@ public class Attachment {
 		this.file = file;
 		this.stream = stream;
 		this.contentType = contentType;
-	}
-
-	public boolean isFile() {
-		return file != null;
-	}
-
-	public boolean isStream() {
-		return stream != null;
 	}
 
 	@Override

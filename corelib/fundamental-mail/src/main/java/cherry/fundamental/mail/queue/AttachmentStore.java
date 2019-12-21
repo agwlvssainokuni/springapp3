@@ -16,18 +16,17 @@
 
 package cherry.fundamental.mail.queue;
 
-import java.io.UncheckedIOException;
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 import cherry.fundamental.mail.Attachment;
 
 public interface AttachmentStore {
 
-	boolean save(long messageId, Attachment... attachments) throws UncheckedIOException;
+	void save(long messageId, Attachment... attachments) throws IOException;
 
-	Optional<List<AttachedEntry>> load(long messageId) throws UncheckedIOException;
+	List<AttachedEntry> load(long messageId) throws IOException;
 
-	void delete(long messageId) throws UncheckedIOException;
+	void delete(long messageId) throws IOException;
 
 }

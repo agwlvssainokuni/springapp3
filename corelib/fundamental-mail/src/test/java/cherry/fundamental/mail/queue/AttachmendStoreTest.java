@@ -17,15 +17,11 @@
 package cherry.fundamental.mail.queue;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,36 +46,39 @@ public class AttachmendStoreTest {
 
 	@Test
 	public void testAttachment() throws IOException {
+		File file1 = new File("file1.txt");
+		File file2 = new File("file2.txt");
 		try {
+			Files.write("abc".getBytes(), file1);
+			Files.write("def".getBytes(), file2);
 
 			attachmentStore.save(0L, //
-					new Attachment("filename11", new File("file1.txt")));
+					new Attachment("filename11", file1, "text/plain"));
 			attachmentStore.save(1L, //
-					new Attachment("filename21", new File("file2.txt")), //
+					new Attachment("filename21", file2, "text/plain"), //
 					new Attachment("filename22", "ABC".getBytes(), "text/csv"));
 
-			Optional<List<AttachedEntry>> l0 = attachmentStore.load(0L);
-			assertTrue(l0.isPresent());
-			assertEquals(1, l0.get().size());
-			assertEquals("filename11", l0.get().get(0).getFilename());
-			assertEquals(new File("file1.txt").getAbsolutePath(), l0.get().get(0).getFile().getAbsolutePath());
-			assertNull(l0.get().get(0).getContentType());
-			assertFalse(l0.get().get(0).isStream());
+			List<AttachedEntry> l0 = attachmentStore.load(0L);
+			assertEquals(1, l0.size());
+			assertEquals("filename11", l0.get(0).getFilename());
+			assertEquals("text/plain", l0.get(0).getContentType());
+			assertEquals("mailqueue/0000000000000000000/0", l0.get(0).getFile().getPath());
+			assertEquals("abc", Files.asCharSource(l0.get(0).getFile(), StandardCharsets.UTF_8).read());
 
-			Optional<List<AttachedEntry>> l1 = attachmentStore.load(1L);
-			assertTrue(l1.isPresent());
-			assertEquals(2, l1.get().size());
-			assertEquals("filename21", l1.get().get(0).getFilename());
-			assertEquals(new File("file2.txt").getAbsolutePath(), l1.get().get(0).getFile().getAbsolutePath());
-			assertNull(l1.get().get(0).getContentType());
-			assertFalse(l1.get().get(0).isStream());
-			assertEquals("filename22", l1.get().get(1).getFilename());
-			assertNotNull(l1.get().get(1).getFile());
-			assertEquals("ABC", new String(Files.toByteArray(l1.get().get(1).getFile())));
-			assertEquals("text/csv", l1.get().get(1).getContentType());
-			assertTrue(l1.get().get(1).isStream());
+			List<AttachedEntry> l1 = attachmentStore.load(1L);
+			assertEquals(2, l1.size());
+			assertEquals("filename21", l1.get(0).getFilename());
+			assertEquals("text/plain", l1.get(0).getContentType());
+			assertEquals("mailqueue/0000000000000000001/0", l1.get(0).getFile().getPath());
+			assertEquals("def", Files.asCharSource(l1.get(0).getFile(), StandardCharsets.UTF_8).read());
+			assertEquals("filename22", l1.get(1).getFilename());
+			assertEquals("text/csv", l1.get(1).getContentType());
+			assertEquals("mailqueue/0000000000000000001/1", l1.get(1).getFile().getPath());
+			assertEquals("ABC", Files.asCharSource(l1.get(1).getFile(), StandardCharsets.UTF_8).read());
 
 		} finally {
+			file1.delete();
+			file2.delete();
 			attachmentStore.delete(0L);
 			attachmentStore.delete(1L);
 		}

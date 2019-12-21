@@ -55,7 +55,7 @@ public interface MailQueue {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> list(LocalDateTime dtm);
+	List<Long> listToSend(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを実際に送信する。

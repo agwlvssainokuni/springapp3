@@ -18,6 +18,7 @@ package cherry.fundamental.mail.queue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,15 +26,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.DumperOptions;
@@ -58,44 +57,32 @@ public class AttachmentStoreImpl implements AttachmentStore {
 	}
 
 	@Override
-	public boolean save(long messageId, Attachment... attachments) throws UncheckedIOException {
+	public void save(long messageId, Attachment... attachments) throws IOException {
 
 		if (attachments.length <= 0) {
-			return false;
+			return;
 		}
 
 		File destdir = getDestdir(messageId);
 		destdir.mkdirs();
 
 		List<Item> list = new ArrayList<>(attachments.length);
-		for (Attachment a : attachments) {
-			if (a.isStream()) {
-				String name = UUID.randomUUID().toString();
-				File destfile = new File(destdir, name);
-				try (InputStream in = a.getStream(); OutputStream out = new FileOutputStream(destfile)) {
-					byte[] buff = new byte[1024];
-					int len;
-					while ((len = in.read(buff)) > 0) {
-						out.write(buff, 0, len);
-					}
-				} catch (IOException ex) {
-					throw new UncheckedIOException(ex);
+		for (int i = 0; i < attachments.length; i++) {
+			Attachment a = attachments[i];
+			String name = Integer.toString(i);
+			File destfile = new File(destdir, name);
+			try (InputStream in = getInputStream(a); OutputStream out = new FileOutputStream(destfile)) {
+				byte[] buff = new byte[1024];
+				int len;
+				while ((len = in.read(buff)) > 0) {
+					out.write(buff, 0, len);
 				}
-				Item item = new Item();
-				item.setFilename(a.getFilename());
-				item.setFile(name);
-				item.setContentType(a.getContentType());
-				item.setStream(true);
-				list.add(item);
 			}
-			if (a.isFile()) {
-				Item item = new Item();
-				item.setFilename(a.getFilename());
-				item.setFile(a.getFile().getAbsolutePath());
-				item.setContentType(a.getContentType());
-				item.setStream(false);
-				list.add(item);
-			}
+			Item item = new Item();
+			item.setFilename(a.getFilename());
+			item.setContentType(a.getContentType());
+			item.setName(name);
+			list.add(item);
 		}
 
 		DumperOptions opts = new DumperOptions();
@@ -105,19 +92,15 @@ public class AttachmentStoreImpl implements AttachmentStore {
 		try (OutputStream out = new FileOutputStream(new File(destdir, listname));
 				Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
 			yaml.dump(list, writer);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
 		}
-
-		return true;
 	}
 
 	@Override
-	public Optional<List<AttachedEntry>> load(long messageId) throws UncheckedIOException {
+	public List<AttachedEntry> load(long messageId) throws IOException {
 
 		File destdir = getDestdir(messageId);
 		if (!destdir.exists()) {
-			return Optional.empty();
+			return Collections.emptyList();
 		}
 
 		Yaml yaml = new Yaml();
@@ -125,22 +108,14 @@ public class AttachmentStoreImpl implements AttachmentStore {
 				Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
 			@SuppressWarnings("unchecked")
 			List<Item> list = (List<Item>) yaml.load(reader);
-			return Optional.of(list.stream().map(item -> {
-				if (item.isStream()) {
-					return new AttachedEntry(item.getFilename(), new File(destdir, item.getFile()),
-							item.getContentType(), item.isStream());
-				} else {
-					return new AttachedEntry(item.getFilename(), new File(item.getFile()), item.getContentType(),
-							item.isStream());
-				}
-			}).collect(Collectors.toList()));
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+			return list.stream().map(item -> {
+				return new AttachedEntry(item.getFilename(), item.getContentType(), new File(destdir, item.getName()));
+			}).collect(Collectors.toList());
 		}
 	}
 
 	@Override
-	public void delete(long messageId) throws UncheckedIOException {
+	public void delete(long messageId) throws IOException {
 
 		File destdir = getDestdir(messageId);
 		if (!destdir.exists()) {
@@ -148,16 +123,12 @@ public class AttachmentStoreImpl implements AttachmentStore {
 		}
 
 		File[] files = destdir.listFiles();
-		try {
-			if (files != null) {
-				for (File f : files) {
-					Files.delete(f.toPath());
-				}
+		if (files != null) {
+			for (File f : files) {
+				Files.delete(f.toPath());
 			}
-			Files.delete(destdir.toPath());
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
 		}
+		Files.delete(destdir.toPath());
 	}
 
 	private File getDestdir(long messageId) {
@@ -165,15 +136,21 @@ public class AttachmentStoreImpl implements AttachmentStore {
 		return new File(basedir, destname);
 	}
 
+	private InputStream getInputStream(Attachment a) throws FileNotFoundException {
+		if (a.getFile() != null) {
+			return new FileInputStream(a.getFile());
+		} else {
+			return a.getStream();
+		}
+	}
+
 	public static class Item {
 
 		private String filename;
 
-		private String file;
-
 		private String contentType;
 
-		private boolean stream;
+		private String name;
 
 		public String getFilename() {
 			return filename;
@@ -181,14 +158,6 @@ public class AttachmentStoreImpl implements AttachmentStore {
 
 		public void setFilename(String filename) {
 			this.filename = filename;
-		}
-
-		public String getFile() {
-			return file;
-		}
-
-		public void setFile(String file) {
-			this.file = file;
 		}
 
 		public String getContentType() {
@@ -199,12 +168,12 @@ public class AttachmentStoreImpl implements AttachmentStore {
 			this.contentType = contentType;
 		}
 
-		public boolean isStream() {
-			return stream;
+		public String getName() {
+			return name;
 		}
 
-		public void setStream(boolean stream) {
-			this.stream = stream;
+		public void setName(String name) {
+			this.name = name;
 		}
 	}
 

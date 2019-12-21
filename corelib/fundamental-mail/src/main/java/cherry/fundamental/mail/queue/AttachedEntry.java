@@ -30,41 +30,33 @@ public class AttachedEntry {
 	/** 添付時ファイル名。 */
 	private final String filename;
 
-	/** 添付ファイルデータ実態。 */
-	private final File file;
-
 	/** Content-Type */
 	private final String contentType;
 
-	/** 元データがストリームか否か。 */
-	private final boolean stream;
-
-	public AttachedEntry(String filename, File file, String contentType, boolean stream) {
-		this.filename = filename;
-		this.file = file;
-		this.contentType = contentType;
-		this.stream = stream;
-	}
+	/** 添付ファイルデータ実態。 */
+	private final File file;
 
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 	}
 
-	public String getFilename() {
-		return filename;
+	public AttachedEntry(String filename, String contentType, File file) {
+		this.filename = filename;
+		this.contentType = contentType;
+		this.file = file;
 	}
 
-	public File getFile() {
-		return file;
+	public String getFilename() {
+		return filename;
 	}
 
 	public String getContentType() {
 		return contentType;
 	}
 
-	public boolean isStream() {
-		return stream;
+	public File getFile() {
+		return file;
 	}
 
 }

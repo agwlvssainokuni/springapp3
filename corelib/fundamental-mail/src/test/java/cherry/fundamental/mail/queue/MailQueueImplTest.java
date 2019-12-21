@@ -30,10 +30,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 import javax.mail.Session;
@@ -52,6 +50,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.support.TransactionOperations;
 
 import cherry.fundamental.mail.Attachment;
 
@@ -60,6 +59,9 @@ import cherry.fundamental.mail.Attachment;
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
 public class MailQueueImplTest {
+
+	@Autowired
+	private TransactionOperations txOps;
 
 	@Autowired
 	private AttachmentStore attachmentStore;
@@ -75,7 +77,7 @@ public class MailQueueImplTest {
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
 		assertEquals(0L, messageId);
 
-		List<Long> list = handler.list(now);
+		List<Long> list = handler.listToSend(now);
 		assertEquals(1, list.size());
 		assertEquals(0L, list.get(0).longValue());
 
@@ -121,7 +123,7 @@ public class MailQueueImplTest {
 					new Attachment("name0.txt", new ByteArrayInputStream("attach0".getBytes()), "text/plain"), //
 					new Attachment("name1.bin", new ByteArrayInputStream("attach1".getBytes()),
 							"application/octet-stream"), //
-					new Attachment("name2.txt", file));
+					new Attachment("name2.txt", file, "text/plain"));
 			handler.send(messageId);
 
 			Session session = Session.getDefaultInstance(new Properties());
@@ -173,27 +175,9 @@ public class MailQueueImplTest {
 	}
 
 	private MailQueue create() {
-
 		mailSender = mock(JavaMailSender.class);
-
 		SimpleQueueStore queueStore = new SimpleQueueStore();
-		return new MailQueueImpl(queueStore, new AttachmentStore() {
-			@Override
-			public boolean save(long messageId, Attachment... attachments) throws UncheckedIOException {
-				return attachmentStore.save(messageId, attachments);
-			}
-
-			@Override
-			public Optional<List<AttachedEntry>> load(long messageId) throws UncheckedIOException {
-				return attachmentStore.load(messageId);
-			}
-
-			@Override
-			public void delete(long messageId) throws UncheckedIOException {
-				// 何もしない。
-				// 削除タイミングをずらす。
-			}
-		}, mailSender);
+		return new MailQueueImpl(txOps, queueStore, attachmentStore, mailSender);
 	}
 
 }

@@ -32,7 +32,7 @@ public class SimpleQueueStore implements QueueStore {
 	private final Map<Long, Item> entryMap = Collections.synchronizedMap(new LinkedHashMap<Long, Item>());
 
 	@Override
-	public long create(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
+	public long save(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
 			List<String> cc, List<String> bcc, String replyTo, String subject, String body) {
 
 		long messageId = nextMessageId.getAndIncrement();
@@ -48,7 +48,7 @@ public class SimpleQueueStore implements QueueStore {
 	}
 
 	@Override
-	public List<Long> list(LocalDateTime dtm) {
+	public List<Long> listToSend(LocalDateTime dtm) {
 		return entryMap.entrySet().stream().filter(e -> e.getValue().getScheduledAt().compareTo(dtm) <= 0)
 				.map(Map.Entry::getKey).collect(Collectors.toList());
 	}

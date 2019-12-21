@@ -40,7 +40,7 @@ public interface QueueStore {
 	 * @param body 本文。
 	 * @return メールデータの識別番号。
 	 */
-	long create(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
+	long save(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
 			List<String> cc, List<String> bcc, String replyTo, String subject, String body);
 
 	/**
@@ -50,7 +50,7 @@ public interface QueueStore {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> list(LocalDateTime dtm);
+	List<Long> listToSend(LocalDateTime dtm);
 
 	/**
 	 * キューに蓄積されているメールデータを取得する。<br />

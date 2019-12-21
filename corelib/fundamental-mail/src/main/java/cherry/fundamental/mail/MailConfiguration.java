@@ -26,6 +26,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.transaction.support.TransactionOperations;
 
 import cherry.fundamental.bizcal.Bizcal;
 import cherry.fundamental.mail.queue.AttachmentStore;
@@ -110,8 +111,9 @@ public class MailConfiguration {
 
 	public static class MailQueueConfiguration {
 		@Bean
-		public MailQueue mailQueue(QueueStore queueStore, AttachmentStore attachmentStore, JavaMailSender mailSender) {
-			return new MailQueueImpl(queueStore, attachmentStore, mailSender);
+		public MailQueue mailQueue(TransactionOperations txOps, QueueStore queueStore, AttachmentStore attachmentStore,
+				JavaMailSender mailSender) {
+			return new MailQueueImpl(txOps, queueStore, attachmentStore, mailSender);
 		}
 	}
 

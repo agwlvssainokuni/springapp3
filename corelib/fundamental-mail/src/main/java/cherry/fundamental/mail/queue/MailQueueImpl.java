@@ -17,20 +17,23 @@
 package cherry.fundamental.mail.queue;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import javax.mail.MessagingException;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 import cherry.fundamental.mail.Attachment;
 
 public class MailQueueImpl implements MailQueue {
+
+	private final TransactionOperations txOps;
 
 	private final QueueStore queueStore;
 
@@ -38,45 +41,56 @@ public class MailQueueImpl implements MailQueue {
 
 	private final JavaMailSender mailSender;
 
-	public MailQueueImpl(QueueStore queueStore, AttachmentStore attachmentStore, JavaMailSender mailSender) {
+	public MailQueueImpl(TransactionOperations txOps, QueueStore queueStore, AttachmentStore attachmentStore,
+			JavaMailSender mailSender) {
+		this.txOps = txOps;
 		this.queueStore = queueStore;
 		this.attachmentStore = attachmentStore;
 		this.mailSender = mailSender;
 	}
 
-	@Transactional
 	@Override
 	public long enqueue(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
 			Attachment... attachments) {
-		long messageId = queueStore.create(loginId, messageName, scheduledAt, from, to, cc, bcc, replyTo, subject,
-				body);
-		attachmentStore.save(messageId, attachments);
-		return messageId;
+		return txOps.execute(status -> {
+			long messageId = queueStore.save(loginId, messageName, scheduledAt, from, to, cc, bcc, replyTo, subject,
+					body);
+			try {
+				attachmentStore.save(messageId, attachments);
+			} catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
+			return messageId;
+		});
 	}
 
-	@Transactional
 	@Override
-	public List<Long> list(LocalDateTime dtm) {
-		return queueStore.list(dtm);
+	public List<Long> listToSend(LocalDateTime dtm) {
+		return txOps.execute(status -> queueStore.listToSend(dtm));
 	}
 
-	@Transactional
 	@Override
 	public boolean send(long messageId) {
-		QueuedEntry msg = queueStore.get(messageId);
-		if (msg == null) {
-			return false;
-		}
-		Optional<List<AttachedEntry>> attached = attachmentStore.load(messageId);
-		queueStore.finish(messageId);
-		doSend(msg, attached);
-		attachmentStore.delete(messageId);
-		return true;
+		return txOps.execute(status -> {
+			QueuedEntry msg = queueStore.get(messageId);
+			if (msg == null) {
+				return false;
+			}
+			List<AttachedEntry> attached;
+			try {
+				attached = attachmentStore.load(messageId);
+			} catch (IOException ex) {
+				throw new UncheckedIOException(ex);
+			}
+			doSend(msg, attached);
+			queueStore.finish(messageId);
+			return true;
+		});
 	}
 
-	private void doSend(QueuedEntry mail, Optional<List<AttachedEntry>> attached) {
-		if (!attached.isPresent()) {
+	private void doSend(QueuedEntry mail, List<AttachedEntry> attached) {
+		if (!attached.isEmpty()) {
 			SimpleMailMessage msg = new SimpleMailMessage();
 			msg.setFrom(mail.getFrom());
 			msg.setTo(toArray(mail.getTo()));
@@ -96,13 +110,8 @@ public class MailQueueImpl implements MailQueue {
 				helper.setReplyTo(mail.getReplyTo());
 				helper.setSubject(mail.getSubject());
 				helper.setText(mail.getText());
-				for (AttachedEntry a : attached.get()) {
-					if (a.isStream()) {
-						helper.addAttachment(a.getFilename(), () -> new FileInputStream(a.getFile()),
-								a.getContentType());
-					} else {
-						helper.addAttachment(a.getFilename(), a.getFile());
-					}
+				for (AttachedEntry a : attached) {
+					helper.addAttachment(a.getFilename(), () -> new FileInputStream(a.getFile()), a.getContentType());
 				}
 			});
 		}
