@@ -17,8 +17,6 @@
 package cherry.fundamental.mail.queue;
 
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -56,41 +54,46 @@ public class MailQueueImpl implements MailQueue {
 		return txOps.execute(status -> {
 			long messageId = queueStore.save(loginId, messageName, scheduledAt, from, to, cc, bcc, replyTo, subject,
 					body);
-			try {
-				attachmentStore.save(messageId, attachments);
-			} catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+			attachmentStore.save(messageId, attachments);
 			return messageId;
 		});
 	}
 
 	@Override
-	public List<Long> listToSend(LocalDateTime dtm) {
-		return txOps.execute(status -> queueStore.listToSend(dtm));
+	public List<Long> list(LocalDateTime dtm) {
+		return txOps.execute(status -> queueStore.list(dtm));
 	}
 
 	@Override
-	public boolean send(long messageId) {
+	public boolean send(long messageId, LocalDateTime sentAt) {
 		return txOps.execute(status -> {
 			QueuedEntry msg = queueStore.get(messageId);
 			if (msg == null) {
 				return false;
 			}
-			List<AttachedEntry> attached;
-			try {
-				attached = attachmentStore.load(messageId);
-			} catch (IOException ex) {
-				throw new UncheckedIOException(ex);
-			}
+			List<AttachedEntry> attached = attachmentStore.get(messageId);
 			doSend(msg, attached);
-			queueStore.finish(messageId);
+			queueStore.finish(messageId, sentAt);
 			return true;
 		});
 	}
 
+	@Override
+	public List<Long> listSent(LocalDateTime dtm) {
+		return txOps.execute(status -> queueStore.listSent(dtm));
+	}
+
+	@Override
+	public boolean delete(long messageId) {
+		return txOps.execute(status -> {
+			boolean result = queueStore.delete(messageId);
+			attachmentStore.delete(messageId);
+			return result;
+		});
+	}
+
 	private void doSend(QueuedEntry mail, List<AttachedEntry> attached) {
-		if (!attached.isEmpty()) {
+		if (attached.isEmpty()) {
 			SimpleMailMessage msg = new SimpleMailMessage();
 			msg.setFrom(mail.getFrom());
 			msg.setTo(toArray(mail.getTo()));

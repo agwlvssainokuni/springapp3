@@ -27,7 +27,16 @@ import cherry.fundamental.mail.Message;
  * のメールアドレス、テンプレートに埋め込むデータを指定する。<br />
  * 特殊な運用方法として、DBに保管されていないメールテンプレートのデータを元に、送信するメールデータを生成することにも対応する。
  */
-public interface TemplateHandler {
+public interface TemplateProcessor {
+
+	/**
+	 * 文字列をテンプレートとして処理する。
+	 *
+	 * @param template テンプレート文字列。
+	 * @param model テンプレートに埋め込むデータ。
+	 * @return 結果文字列。
+	 */
+	String evaluate(String template, Object model);
 
 	/**
 	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
@@ -38,21 +47,5 @@ public interface TemplateHandler {
 	 * @return 送信するメールデータ。
 	 */
 	Message evaluate(String templateName, List<String> to, Object model);
-
-	/**
-	 * DBに保管されていないメールテンプレートを元に、送信するメールデータを生成する。<br />
-	 *
-	 * @param from 差出人 (From) のメールアドレス。
-	 * @param to 宛先 (To) のメールアドレス。
-	 * @param cc 宛先 (Cc) のメールアドレス。
-	 * @param bcc 宛先 (Bcc) のメールアドレス。
-	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
-	 * @param subject 件名 (Subject) のテンプレート。
-	 * @param body 本文のテンプレート。
-	 * @param model テンプレートに埋め込むデータ。
-	 * @return 送信するメールデータ。
-	 */
-	Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo, String subject,
-			String body, Object model);
 
 }

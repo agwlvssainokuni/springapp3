@@ -29,7 +29,7 @@ import org.springframework.mail.MailException;
 import cherry.elemental.loop.Loop;
 import cherry.fundamental.mail.queue.MailQueue;
 
-public class SendMailServiceImpl implements SendMailService {
+public class MailServiceImpl implements MailService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -41,7 +41,7 @@ public class SendMailServiceImpl implements SendMailService {
 
 	private final TimeUnit rateUnit;
 
-	public SendMailServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
+	public MailServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
 			TimeUnit rateUnit) {
 		this.currentDateTime = currentDateTime;
 		this.mailQueue = mailQueue;
@@ -50,17 +50,25 @@ public class SendMailServiceImpl implements SendMailService {
 	}
 
 	@Override
-	public void sendMail() {
+	public void send() {
 		try {
 			LocalDateTime now = currentDateTime.get();
-			List<Long> list = mailQueue.listToSend(now);
+			List<Long> list = mailQueue.list(now);
 			Loop.rate(rateToSend, rateUnit).iterate(list, messageId -> {
-				mailQueue.send(messageId);
+				mailQueue.send(messageId, now);
 			});
 		} catch (MailException | DataAccessException ex) {
 			if (log.isDebugEnabled()) {
 				log.debug("failed to send mail", ex);
 			}
+		}
+	}
+
+	@Override
+	public void expire(LocalDateTime ldtm) {
+		List<Long> list = mailQueue.listSent(ldtm);
+		for (Long messageId : list) {
+			mailQueue.delete(messageId);
 		}
 	}
 

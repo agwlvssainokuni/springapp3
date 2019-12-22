@@ -20,64 +20,66 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 import cherry.fundamental.mail.queue.MailQueue;
-import cherry.fundamental.mail.template.TemplateHandler;
+import cherry.fundamental.mail.template.TemplateProcessor;
 
 public class MailFacadeImpl implements MailFacade {
 
+	private final TransactionOperations txOps;
+
 	private final Supplier<LocalDateTime> currentDateTime;
 
-	private final TemplateHandler templateHandler;
+	private final TemplateProcessor templateProcessor;
 
 	private final MailQueue mailQueue;
 
-	public MailFacadeImpl(Supplier<LocalDateTime> currentDateTime, TemplateHandler templateHandler,
-			MailQueue mailQueue) {
+	public MailFacadeImpl(TransactionOperations txOps, Supplier<LocalDateTime> currentDateTime,
+			TemplateProcessor templateProcessor, MailQueue mailQueue) {
+		this.txOps = txOps;
 		this.currentDateTime = currentDateTime;
-		this.templateHandler = templateHandler;
+		this.templateProcessor = templateProcessor;
 		this.mailQueue = mailQueue;
 	}
 
-	@Transactional
+	@Override
+	public String evaluate(String template, Object model) {
+		return txOps.execute(status -> templateProcessor.evaluate(template, model));
+	}
+
 	@Override
 	public Message evaluate(String templateName, List<String> to, Object model) {
-		return templateHandler.evaluate(templateName, to, model);
+		return txOps.execute(status -> templateProcessor.evaluate(templateName, to, model));
 	}
 
-	@Transactional
-	@Override
-	public Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo,
-			String subject, String body, Object model) {
-		return templateHandler.evaluate(from, to, cc, bcc, replyTo, subject, body, model);
-	}
-
-	@Transactional
 	@Override
 	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, currentDateTime.get(),
-				attachments);
+		return txOps.execute(status -> {
+			LocalDateTime now = currentDateTime.get();
+			return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now, attachments);
+		});
 	}
 
-	@Transactional
 	@Override
 	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
 			Attachment... attachments) {
-		return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, scheduledAt,
-				attachments);
+		return txOps.execute(status -> mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject,
+				body, scheduledAt, attachments));
 	}
 
-	@Transactional
 	@Override
 	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
 			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
-		long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body,
-				currentDateTime.get(), attachments);
-		mailQueue.send(messageId);
-		return messageId;
+		return txOps.execute(status -> {
+			LocalDateTime now = currentDateTime.get();
+			long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now,
+					attachments);
+			mailQueue.send(messageId, now);
+			return messageId;
+		});
 	}
 
 }

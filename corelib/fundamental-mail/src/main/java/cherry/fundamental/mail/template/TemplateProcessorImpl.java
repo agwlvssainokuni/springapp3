@@ -18,39 +18,46 @@ package cherry.fundamental.mail.template;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.transaction.support.TransactionOperations;
 
 import cherry.fundamental.mail.Message;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateException;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.Version;
 
-public class TemplateHandlerImpl implements TemplateHandler {
+public class TemplateProcessorImpl implements TemplateProcessor {
+
+	private final TransactionOperations txOps;
 
 	private final TemplateStore templateStore;
 
 	private final Configuration configuration;
 
-	public TemplateHandlerImpl(TemplateStore templateStore, Configuration configuration) {
+	public TemplateProcessorImpl(TransactionOperations txOps, TemplateStore templateStore) {
+		this.txOps = txOps;
 		this.templateStore = templateStore;
-		this.configuration = configuration;
+		this.configuration = createConfiguration(Configuration.VERSION_2_3_28);
+	}
+
+	@Override
+	public String evaluate(String template, Object model) {
+		return doEvaluate(template, model);
 	}
 
 	@Override
 	public Message evaluate(String templateName, List<String> to, Object model) {
-		Template template = templateStore.get(templateName);
+		Template template = txOps.execute(status -> templateStore.get(templateName));
 		List<String> toAddr = new ArrayList<>(to);
 		if (template.getTo() != null) {
 			toAddr.addAll(template.getTo());
 		}
-		return evaluate(template.getFrom(), toAddr, template.getCc(), template.getBcc(), template.getReplyTo(),
-				template.getSubject(), template.getBody(), model);
-	}
-
-	@Override
-	public Message evaluate(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo,
-			String subject, String body, Object model) {
-		return new Message(from, to, cc, bcc, replyTo, doEvaluate(subject, model), doEvaluate(body, model));
+		return new Message(template.getFrom(), toAddr, template.getCc(), template.getBcc(), template.getReplyTo(),
+				doEvaluate(template.getSubject(), model), doEvaluate(template.getBody(), model));
 	}
 
 	private String doEvaluate(String content, Object model) {
@@ -58,9 +65,20 @@ public class TemplateHandlerImpl implements TemplateHandler {
 			freemarker.template.Template template = new freemarker.template.Template(null, content, configuration);
 			template.process(model, writer);
 			return writer.toString();
-		} catch (TemplateException | IOException ex) {
+		} catch (TemplateException ex) {
 			throw new IllegalStateException(ex);
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
+	}
+
+	private Configuration createConfiguration(Version version) {
+		Configuration cfg = new Configuration(version);
+		cfg.setLocalizedLookup(false);
+		cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
+		cfg.setLogTemplateExceptions(false);
+		cfg.setTemplateLoader(new PassthroughTemplateLoader());
+		return cfg;
 	}
 
 }

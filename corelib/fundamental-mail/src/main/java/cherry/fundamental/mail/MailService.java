@@ -16,8 +16,12 @@
 
 package cherry.fundamental.mail;
 
-public interface SendMailService {
+import java.time.LocalDateTime;
 
-	void sendMail();
+public interface MailService {
+
+	void send();
+
+	void expire(LocalDateTime ldtm);
 
 }

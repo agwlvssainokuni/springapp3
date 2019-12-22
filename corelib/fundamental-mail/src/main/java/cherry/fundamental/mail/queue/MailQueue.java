@@ -55,14 +55,32 @@ public interface MailQueue {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> listToSend(LocalDateTime dtm);
+	List<Long> list(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを実際に送信する。
 	 *
 	 * @param messageId メールデータの識別番号。
+	 * @param sentAt 送信日時。
 	 * @return 指定された識別番号に該当するメールデータを送信したらtrue、該当するメールデータが存在しない場合はfalse。なお、該当するメールデータが存在したのに、メールの送信処理で異常が発生した場合は例外が発生する。
 	 */
-	boolean send(long messageId);
+	boolean send(long messageId, LocalDateTime sentAt);
+
+	/**
+	 * 送信済みのメールデータの識別番号のリストを取得する。<br />
+	 * 送信実績日時が、当メソッドの引数に指定された日時以前のものを取得する。
+	 *
+	 * @param dtm 基準日時。
+	 * @return メールデータの識別番号のリスト。
+	 */
+	List<Long> listSent(LocalDateTime dtm);
+
+	/**
+	 * メールデータの識別番号を指定して当該メールデータを削除する。
+	 *
+	 * @param messageId メールデータの識別番号。
+	 * @return 指定された識別番号に該当するメールデータを削除したらtrue、該当するメールデータが存在しない場合はfalse。なお、該当するメールデータが存在したのに、メールの削除処理で異常が発生した場合は例外が発生する。
+	 */
+	boolean delete(long messageId);
 
 }

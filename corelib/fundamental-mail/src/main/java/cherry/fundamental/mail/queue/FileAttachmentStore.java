@@ -26,10 +26,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.text.MessageFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,22 +44,22 @@ import org.yaml.snakeyaml.Yaml;
 
 import cherry.fundamental.mail.Attachment;
 
-public class AttachmentStoreImpl implements AttachmentStore {
+public class FileAttachmentStore implements AttachmentStore {
 
 	private final File basedir;
 
 	private final String pattern;
 
-	private final String listname;
+	private final String listFile;
 
-	public AttachmentStoreImpl(File basedir, String pattern, String listname) {
+	public FileAttachmentStore(File basedir, String pattern, String listFile) {
 		this.basedir = basedir;
 		this.pattern = pattern;
-		this.listname = listname;
+		this.listFile = listFile;
 	}
 
 	@Override
-	public void save(long messageId, Attachment... attachments) throws IOException {
+	public void save(long messageId, Attachment... attachments) {
 
 		if (attachments.length <= 0) {
 			return;
@@ -77,6 +79,8 @@ public class AttachmentStoreImpl implements AttachmentStore {
 				while ((len = in.read(buff)) > 0) {
 					out.write(buff, 0, len);
 				}
+			} catch (IOException ex) {
+				throw new UncheckedIOException(ex);
 			}
 			Item item = new Item();
 			item.setFilename(a.getFilename());
@@ -89,50 +93,76 @@ public class AttachmentStoreImpl implements AttachmentStore {
 		opts.setDefaultFlowStyle(FlowStyle.BLOCK);
 		opts.setLineBreak(LineBreak.WIN);
 		Yaml yaml = new Yaml(opts);
-		try (OutputStream out = new FileOutputStream(new File(destdir, listname));
+		try (OutputStream out = new FileOutputStream(new File(destdir, listFile));
 				Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
 			yaml.dump(list, writer);
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
 	}
 
 	@Override
-	public List<AttachedEntry> load(long messageId) throws IOException {
+	public List<AttachedEntry> get(long messageId) {
 
 		File destdir = getDestdir(messageId);
-		if (!destdir.exists()) {
+		if (!destdir.isDirectory()) {
+			return Collections.emptyList();
+		}
+
+		File f = new File(destdir, listFile);
+		if (!f.isFile()) {
 			return Collections.emptyList();
 		}
 
 		Yaml yaml = new Yaml();
-		try (InputStream in = new FileInputStream(new File(destdir, listname));
-				Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-			@SuppressWarnings("unchecked")
-			List<Item> list = (List<Item>) yaml.load(reader);
+		try (InputStream in = new FileInputStream(f); Reader r = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+			List<Item> list = yaml.load(r);
 			return list.stream().map(item -> {
 				return new AttachedEntry(item.getFilename(), item.getContentType(), new File(destdir, item.getName()));
 			}).collect(Collectors.toList());
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
 	}
 
 	@Override
-	public void delete(long messageId) throws IOException {
+	public void delete(long messageId) {
+		try {
 
-		File destdir = getDestdir(messageId);
-		if (!destdir.exists()) {
-			return;
-		}
+			File destdir = getDestdir(messageId);
+			if (!destdir.isDirectory()) {
+				return;
+			}
 
-		File[] files = destdir.listFiles();
-		if (files != null) {
-			for (File f : files) {
+			File f = new File(destdir, listFile);
+			if (f.isFile()) {
+
+				Yaml yaml = new Yaml();
+				try (InputStream in = new FileInputStream(f);
+						Reader r = new InputStreamReader(in, StandardCharsets.UTF_8)) {
+					List<Item> l = yaml.load(r);
+					for (Item item : l) {
+						Files.delete(new File(destdir, item.getName()).toPath());
+					}
+				}
+
 				Files.delete(f.toPath());
 			}
+
+			if (destdir.list() == null) {
+				Files.delete(destdir.toPath());
+			}
+		} catch (IOException ex) {
+			throw new UncheckedIOException(ex);
 		}
-		Files.delete(destdir.toPath());
+	}
+
+	private NumberFormat getFormatter() {
+		return new DecimalFormat(pattern);
 	}
 
 	private File getDestdir(long messageId) {
-		String destname = MessageFormat.format(pattern, messageId);
+		String destname = getFormatter().format(messageId);
 		return new File(basedir, destname);
 	}
 
@@ -147,9 +177,7 @@ public class AttachmentStoreImpl implements AttachmentStore {
 	public static class Item {
 
 		private String filename;
-
 		private String contentType;
-
 		private String name;
 
 		public String getFilename() {
