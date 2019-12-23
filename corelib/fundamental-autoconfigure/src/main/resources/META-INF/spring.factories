@@ -1,0 +1,6 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+cherry.fundamental.appinfo.AppinfoConfiguration,\
+cherry.fundamental.core.CoreConfiguration,\
+cherry.fundamental.bizcal.BizcalConfiguration,\
+cherry.fundamental.buildinfo.BuildinfoConfiguration,\
+cherry.fundamental.crypto.CryptoConfiguration

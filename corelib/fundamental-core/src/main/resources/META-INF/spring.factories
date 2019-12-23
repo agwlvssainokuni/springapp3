@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cherry.fundamental.format.FormatConfiguration,\
-cherry.fundamental.validator.ValidatorConfiguration
