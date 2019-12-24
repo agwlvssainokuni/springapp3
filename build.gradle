@@ -161,8 +161,6 @@ subprojects {
 			//compileOnly project(":corelib:fundamental-mail")
 			compileOnly project(":corelib:fundamental-numbering")
 			compileOnly project(":corelib:fundamental-servlet")
-			compileOnly project(":corelib:fundamental-spring")
-			compileOnly project(":corelib:fundamental-testtool")
 			testImplementation project(":corelib:elemental-core")
 			testImplementation project(":corelib:elemental-crypto")
 			testImplementation project(":corelib:fundamental-core")
@@ -171,13 +169,15 @@ subprojects {
 			testImplementation project(":corelib:fundamental-buildinfo")
 			testImplementation project(":corelib:fundamental-crypto")
 			//testImplementation project(":corelib:fundamental-mail")
-			//testImplementation project(":corelib:fundamental-numbering")
-			//testImplementation project(":corelib:fundamental-servlet")
-			//testImplementation project(":corelib:fundamental-spring")
-			//testImplementation project(":corelib:fundamental-testtool")
+			testImplementation project(":corelib:fundamental-numbering")
+			testImplementation project(":corelib:fundamental-servlet")
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			testImplementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			testImplementation "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
+			compileOnly "org.springframework.boot:spring-boot-starter-jdbc"
+			testRuntimeOnly "org.springframework.boot:spring-boot-starter-jdbc"
+			testRuntimeOnly "com.h2database:h2:${versionH2}"
 		}
 		if (project.name == "fundamental-core") {
 			implementation project(":corelib:elemental-core")

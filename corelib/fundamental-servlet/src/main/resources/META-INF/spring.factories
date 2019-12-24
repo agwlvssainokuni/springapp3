@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cherry.fundamental.download.DownloadConfiguration,\
-cherry.fundamental.onetimetoken.OneTimeTokenConfiguration
