@@ -16,46 +16,49 @@
 
 package cherry.fundamental.numbering;
 
-import java.util.Properties;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
-import org.springframework.transaction.interceptor.TransactionProxyFactoryBean;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
-@ConditionalOnBean(NumberingStore.class)
 public class NumberingConfiguration {
 
-	@ConditionalOnClass({ Numbering.class, PlatformTransactionManager.class, TransactionProxyFactoryBean.class })
+	@ConditionalOnClass({ Numbering.class })
+	@ConditionalOnBean({ NumberingStore.class })
 	public static class NumberingCfg {
+
+		private final NumberingStore numberingStore;
+
+		private final PlatformTransactionManager txMgr;
+
+		public NumberingCfg(NumberingStore numberingStore, PlatformTransactionManager txMgr) {
+			this.numberingStore = numberingStore;
+			this.txMgr = txMgr;
+		}
 
 		@Bean
 		@Primary
-		public TransactionProxyFactoryBean numbering(NumberingStore store, PlatformTransactionManager txMgr) {
-			return createNumberingFactoryBean(store, txMgr, Propagation.REQUIRES_NEW);
+		public Numbering numbering(PlatformTransactionManager txMgr) {
+			return createTxNumbering(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		}
 
 		@Bean
-		public TransactionProxyFactoryBean numberingInTx(NumberingStore store, PlatformTransactionManager txMgr) {
-			return createNumberingFactoryBean(store, txMgr, Propagation.REQUIRED);
+		public Numbering numberingInTx(NumberingStore store, PlatformTransactionManager txMgr) {
+			return createTxNumbering(TransactionDefinition.PROPAGATION_REQUIRED);
 		}
 
-		private TransactionProxyFactoryBean createNumberingFactoryBean(NumberingStore store,
-				PlatformTransactionManager txMgr, Propagation propagation) {
-			Properties attr = new Properties();
-			attr.setProperty("*", DefaultTransactionAttribute.PREFIX_PROPAGATION + propagation);
-			TransactionProxyFactoryBean bean = new TransactionProxyFactoryBean();
-			bean.setTarget(new NumberingImpl(store));
-			bean.setProxyInterfaces(new Class[] { Numbering.class });
-			bean.setTransactionManager(txMgr);
-			bean.setTransactionAttributes(attr);
-			return bean;
+		private Numbering createTxNumbering(int propagation) {
+			TransactionTemplate txOps = new TransactionTemplate();
+			txOps.setIsolationLevel(TransactionDefinition.ISOLATION_DEFAULT);
+			txOps.setTransactionManager(txMgr);
+			txOps.setPropagationBehavior(propagation);
+			txOps.afterPropertiesSet();
+			return new NumberingImpl(numberingStore, txOps);
 		}
 	}
 

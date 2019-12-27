@@ -23,12 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.transaction.support.TransactionOperations;
+
 public class NumberingImpl implements Numbering {
 
 	private final NumberingStore numberingStore;
 
-	public NumberingImpl(NumberingStore numberingStore) {
+	private final TransactionOperations txOps;
+
+	public NumberingImpl(NumberingStore numberingStore, TransactionOperations txOps) {
 		this.numberingStore = numberingStore;
+		this.txOps = txOps;
 	}
 
 	@Override
@@ -66,29 +71,32 @@ public class NumberingImpl implements Numbering {
 			throw new IllegalArgumentException("count must not be <= 0");
 		}
 
-		Definition def = numberingStore.getDefinition(numberName);
-		Function<Long, T> fmt = genfmt.apply(def);
-		long current = numberingStore.loadAndLock(numberName);
-		int offset = 0;
-		try {
+		return txOps.execute(status -> {
 
-			List<T> result = new ArrayList<>(count);
-			for (int i = 1; i <= count; i++) {
-				long v = current + i;
-				if (v < def.getMinValue()) {
-					throw new IllegalStateException(format("{0} must not be < {1}", numberName, def.getMinValue()));
+			Definition def = numberingStore.getDefinition(numberName);
+			Function<Long, T> fmt = genfmt.apply(def);
+			long current = numberingStore.loadAndLock(numberName);
+			int offset = 0;
+			try {
+
+				List<T> result = new ArrayList<>(count);
+				for (int i = 1; i <= count; i++) {
+					long v = current + i;
+					if (v < def.getMinValue()) {
+						throw new IllegalStateException(format("{0} must not be < {1}", numberName, def.getMinValue()));
+					}
+					if (v > def.getMaxValue()) {
+						throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
+					}
+					result.add(fmt.apply(v));
 				}
-				if (v > def.getMaxValue()) {
-					throw new IllegalStateException(format("{0} must not be > {1}", numberName, def.getMaxValue()));
-				}
-				result.add(fmt.apply(v));
+
+				offset = count;
+				return result;
+			} finally {
+				numberingStore.saveAndUnlock(numberName, current + offset);
 			}
-
-			offset = count;
-			return result;
-		} finally {
-			numberingStore.saveAndUnlock(numberName, current + offset);
-		}
+		});
 	}
 
 }
