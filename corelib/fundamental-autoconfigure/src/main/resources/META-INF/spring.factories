@@ -4,5 +4,6 @@ cherry.fundamental.core.CoreConfiguration,\
 cherry.fundamental.bizcal.BizcalConfiguration,\
 cherry.fundamental.buildinfo.BuildinfoConfiguration,\
 cherry.fundamental.crypto.CryptoConfiguration,\
+cherry.fundamental.mail.MailConfiguration,\
 cherry.fundamental.numbering.NumberingConfiguration,\
 cherry.fundamental.servlet.ServletConfiguration

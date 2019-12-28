@@ -21,11 +21,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
@@ -38,30 +33,25 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import cherry.fundamental.mail.Message;
-import freemarker.cache.TemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TemplateHandlerImplTest.class)
+@SpringBootTest(classes = TemplateProcessorImplTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
-public class TemplateHandlerImplTest {
+public class TemplateProcessorImplTest {
 
 	@Autowired
-	private TemplateHandler templateHandler;
+	private TemplateProcessor templateProcessor;
 
 	@Autowired
 	private TemplateStore templateStore;
 
 	@Test
 	public void testFullAddress() throws IOException {
-		TemplateHandler handler = create("name", "from@addr", "other@addr", "cc@addr", "bcc@addr", "replyTo@addr",
-				"subject", "body", Mode.NORMAL);
+		create("name", "from@addr", "other@addr", "cc@addr", "bcc@addr", "replyTo@addr", "subject", "body");
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = handler.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
 		assertNotNull(msg);
 		assertEquals("from@addr", msg.getFrom());
 		assertEquals(2, msg.getTo().size());
@@ -78,10 +68,10 @@ public class TemplateHandlerImplTest {
 
 	@Test
 	public void testEmptyTemplate() throws IOException {
-		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "", "", Mode.NORMAL);
+		create("name", "from@addr", null, null, null, null, "", "");
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = handler.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
 		assertNotNull(msg);
 		assertEquals("from@addr", msg.getFrom());
 		assertEquals(1, msg.getTo().size());
@@ -95,11 +85,10 @@ public class TemplateHandlerImplTest {
 
 	@Test
 	public void testTemplateEvaluation() throws IOException {
-		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
-				"param is ${param}", Mode.NORMAL);
+		create("name", "from@addr", null, null, null, null, "param=${param}", "param is ${param}");
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = handler.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
 		assertNotNull(msg);
 		assertEquals("from@addr", msg.getFrom());
 		assertEquals(1, msg.getTo().size());
@@ -111,27 +100,8 @@ public class TemplateHandlerImplTest {
 		assertEquals("param is PARAM", msg.getBody());
 	}
 
-	@Test
-	public void testTemplateEvaluationFalse() throws IOException {
-		TemplateHandler handler = create("name", "from@addr", null, null, null, null, "param=${param}",
-				"param is ${param}<#include \"dummy\">", Mode.MOCK_FALSE);
-		Model model = new Model();
-		model.setParam("PARAM");
-		try {
-			handler.evaluate("name", asList("to@addr"), model);
-			fail("Exception must be thrown");
-		} catch (IllegalStateException ex) {
-			assertTrue(ex.getCause() instanceof TemplateException);
-			assertTrue(ex.getCause().getCause() instanceof IOException);
-		}
-	}
-
-	static enum Mode {
-		NORMAL, MOCK_FALSE
-	}
-
-	private TemplateHandler create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr,
-			String replyToAddr, String subject, String body, Mode mode) throws IOException {
+	private void create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr, String replyToAddr,
+			String subject, String body) throws IOException {
 
 		Template template = new Template();
 		template.setFrom(fromAddr);
@@ -149,22 +119,6 @@ public class TemplateHandlerImplTest {
 		template.setBody(body);
 
 		templateStore.put(name, template);
-
-		switch (mode) {
-		case NORMAL:
-			return templateHandler;
-		default:
-			Configuration configuration = new Configuration(Configuration.VERSION_2_3_28);
-			configuration.setLocalizedLookup(false);
-			configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-			configuration.setLogTemplateExceptions(false);
-			configuration.setTemplateLoader(new PassthroughTemplateLoader());
-			TemplateLoader loader = mock(TemplateLoader.class);
-			when(loader.findTemplateSource(anyString())).thenThrow(new IOException());
-			configuration.setTemplateLoader(loader);
-			return new TemplateHandlerImpl(templateStore, configuration);
-		}
-
 	}
 
 	public static class Model {

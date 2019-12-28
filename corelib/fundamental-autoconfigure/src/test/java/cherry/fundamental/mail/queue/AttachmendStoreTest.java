@@ -58,14 +58,14 @@ public class AttachmendStoreTest {
 					new Attachment("filename21", file2, "text/plain"), //
 					new Attachment("filename22", "ABC".getBytes(), "text/csv"));
 
-			List<AttachedEntry> l0 = attachmentStore.load(0L);
+			List<AttachedEntry> l0 = attachmentStore.get(0L);
 			assertEquals(1, l0.size());
 			assertEquals("filename11", l0.get(0).getFilename());
 			assertEquals("text/plain", l0.get(0).getContentType());
 			assertEquals("mailqueue/0000000000000000000/0", l0.get(0).getFile().getPath());
 			assertEquals("abc", Files.asCharSource(l0.get(0).getFile(), StandardCharsets.UTF_8).read());
 
-			List<AttachedEntry> l1 = attachmentStore.load(1L);
+			List<AttachedEntry> l1 = attachmentStore.get(1L);
 			assertEquals(2, l1.size());
 			assertEquals("filename21", l1.get(0).getFilename());
 			assertEquals("text/plain", l1.get(0).getContentType());

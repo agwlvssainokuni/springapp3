@@ -16,6 +16,7 @@
 
 package cherry.fundamental.mail.queue;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.io.Writer;
@@ -35,6 +37,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -94,14 +97,16 @@ public class FileQueueStore implements QueueStore {
 				item.setTo(to);
 				item.setCc(cc);
 				item.setBcc(bcc);
+				item.setReplyTo(replyTo);
 				item.setSubject(subject);
 				item.setBody(body);
 				yaml.dump(item, w);
 			}
 
 			try (OutputStream out = new FileOutputStream(new File(destdir, scheduleFile));
-					Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
-				yaml.dump(scheduledAt, w);
+					Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+					PrintWriter pw = new PrintWriter(w)) {
+				pw.println(scheduledAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 			}
 
 			return messageId;
@@ -112,7 +117,7 @@ public class FileQueueStore implements QueueStore {
 
 	@Override
 	public List<Long> list(LocalDateTime dtm) {
-		return doList(dtm, scheduleFile);
+		return doList(dtm, scheduleFile, true);
 	}
 
 	@Override
@@ -143,14 +148,10 @@ public class FileQueueStore implements QueueStore {
 			return;
 		}
 
-		DumperOptions opts = new DumperOptions();
-		opts.setDefaultFlowStyle(FlowStyle.BLOCK);
-		opts.setLineBreak(LineBreak.WIN);
-		Yaml yaml = new Yaml(opts);
-
 		try (OutputStream out = new FileOutputStream(new File(destdir, sentFile));
-				Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
-			yaml.dump(sentAt);
+				Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+				PrintWriter pw = new PrintWriter(w)) {
+			pw.println(sentAt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 		} catch (IOException ex) {
 			throw new UncheckedIOException(ex);
 		}
@@ -158,7 +159,7 @@ public class FileQueueStore implements QueueStore {
 
 	@Override
 	public List<Long> listSent(LocalDateTime dtm) {
-		return doList(dtm, sentFile);
+		return doList(dtm, sentFile, false);
 	}
 
 	@Override
@@ -185,7 +186,8 @@ public class FileQueueStore implements QueueStore {
 				Files.delete(sent.toPath());
 			}
 
-			if (destdir.list() == null) {
+			String[] l = destdir.list();
+			if (l == null || l.length == 0) {
 				Files.delete(destdir.toPath());
 			}
 
@@ -201,25 +203,27 @@ public class FileQueueStore implements QueueStore {
 			FileLock lock = fc.lock();
 			try {
 
-				DumperOptions opts = new DumperOptions();
-				opts.setDefaultFlowStyle(FlowStyle.BLOCK);
-				opts.setLineBreak(LineBreak.WIN);
-				Yaml yaml = new Yaml(opts);
-
 				File counter = new File(basedir, counterFile);
 				long id;
 				if (!counter.exists()) {
-					id = 0L;
+					id = -1L;
 				} else {
 					try (InputStream in = new FileInputStream(counter);
-							Reader r = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-						id = yaml.load(r);
+							Reader r = new InputStreamReader(in, StandardCharsets.UTF_8);
+							BufferedReader br = new BufferedReader(r)) {
+						String line = br.readLine();
+						if (line == null) {
+							id = -1L;
+						} else {
+							id = Long.parseLong(line);
+						}
 					}
 				}
 
 				try (OutputStream out = new FileOutputStream(counter);
-						Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8)) {
-					yaml.dump(id + 1L, w);
+						Writer w = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+						PrintWriter pw = new PrintWriter(w)) {
+					pw.println(id + 1L);
 				}
 
 				return id + 1L;
@@ -238,7 +242,7 @@ public class FileQueueStore implements QueueStore {
 		return new File(basedir, destname);
 	}
 
-	private List<Long> doList(LocalDateTime dtm, String filename) {
+	private List<Long> doList(LocalDateTime dtm, String filename, boolean toSend) {
 
 		if (!basedir.isDirectory()) {
 			return Collections.emptyList();
@@ -249,12 +253,18 @@ public class FileQueueStore implements QueueStore {
 			return Collections.emptyList();
 		}
 
-		Yaml yaml = new Yaml();
 		NumberFormat fmt = getFormatter();
 		List<Long> idlist = new ArrayList<>(nms.length);
 		for (String nm : nms) {
 			File destdir = new File(basedir, nm);
 			if (!destdir.isDirectory()) {
+				continue;
+			}
+			File targetfile = new File(destdir, filename);
+			if (!targetfile.isFile()) {
+				continue;
+			}
+			if (toSend && new File(destdir, sentFile).isFile()) {
 				continue;
 			}
 			long messageId;
@@ -263,10 +273,15 @@ public class FileQueueStore implements QueueStore {
 			} catch (ParseException ex) {
 				continue;
 			}
-			try (InputStream in = new FileInputStream(new File(destdir, filename));
-					Reader r = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-				LocalDateTime at = yaml.load(r);
-				if (at.isBefore(dtm)) {
+			try (InputStream in = new FileInputStream(targetfile);
+					Reader r = new InputStreamReader(in, StandardCharsets.UTF_8);
+					BufferedReader br = new BufferedReader(r)) {
+				String line = br.readLine();
+				if (line == null) {
+					idlist.add(messageId);
+				}
+				LocalDateTime at = LocalDateTime.parse(line, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+				if (at.isBefore(dtm) || at.isEqual(dtm)) {
 					idlist.add(messageId);
 				}
 			} catch (IOException ex) {

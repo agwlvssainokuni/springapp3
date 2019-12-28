@@ -39,6 +39,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 import javax.mail.internet.MimeMultipart;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -64,9 +65,24 @@ public class MailQueueImplTest {
 	private TransactionOperations txOps;
 
 	@Autowired
+	private QueueStore queueStore;
+
+	@Autowired
 	private AttachmentStore attachmentStore;
 
 	private JavaMailSender mailSender;
+
+	@Before
+	public void before() {
+		File dir = new File("mailqueue");
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		File counter = new File(dir, "counter.txt");
+		if (counter.exists()) {
+			counter.delete();
+		}
+	}
 
 	@Test
 	public void testSendLater() {
@@ -77,13 +93,13 @@ public class MailQueueImplTest {
 				asList("bcc@addr"), "replyTo@addr", "subject", "body", now);
 		assertEquals(0L, messageId);
 
-		List<Long> list = handler.listToSend(now);
+		List<Long> list = handler.list(now);
 		assertEquals(1, list.size());
 		assertEquals(0L, list.get(0).longValue());
 
 		ArgumentCaptor<SimpleMailMessage> message = ArgumentCaptor.forClass(SimpleMailMessage.class);
 		doNothing().when(mailSender).send(message.capture());
-		boolean first = handler.send(0L);
+		boolean first = handler.send(0L, now);
 
 		assertTrue(first);
 		assertEquals("from@addr", message.getValue().getFrom());
@@ -97,7 +113,8 @@ public class MailQueueImplTest {
 		assertEquals("subject", message.getValue().getSubject());
 		assertEquals("body", message.getValue().getText());
 
-		boolean second = handler.send(0L);
+		handler.delete(0L);
+		boolean second = handler.send(0L, now);
 		assertFalse(second);
 	}
 
@@ -124,7 +141,7 @@ public class MailQueueImplTest {
 					new Attachment("name1.bin", new ByteArrayInputStream("attach1".getBytes()),
 							"application/octet-stream"), //
 					new Attachment("name2.txt", file, "text/plain"));
-			handler.send(messageId);
+			handler.send(messageId, LocalDateTime.now());
 
 			Session session = Session.getDefaultInstance(new Properties());
 			MimeMessage message = new MimeMessage(session);
@@ -176,7 +193,6 @@ public class MailQueueImplTest {
 
 	private MailQueue create() {
 		mailSender = mock(JavaMailSender.class);
-		SimpleQueueStore queueStore = new SimpleQueueStore();
 		return new MailQueueImpl(txOps, queueStore, attachmentStore, mailSender);
 	}
 

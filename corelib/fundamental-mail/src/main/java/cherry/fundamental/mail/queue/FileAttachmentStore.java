@@ -149,7 +149,8 @@ public class FileAttachmentStore implements AttachmentStore {
 				Files.delete(f.toPath());
 			}
 
-			if (destdir.list() == null) {
+			String[] l = destdir.list();
+			if (l == null || l.length == 0) {
 				Files.delete(destdir.toPath());
 			}
 		} catch (IOException ex) {
