@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <li>宛先 (To, Cc, Bcc)</li>
  * <li>返信先 (Reply-To)</li>
  * <li>件名 (Subject)</li>
- * <li>本文</li>
+ * <li>本文(プレーンテキスト、HTML)</li>
  * </ul>
  */
 public class Message {
@@ -52,18 +52,22 @@ public class Message {
 	/** 件名 (Subject) を保持する。 */
 	private final String subject;
 
-	/** 本文を保持する。 */
-	private final String body;
+	/** 本文(プレーンテキスト)を保持する。 */
+	private final String text;
+
+	/** 本文(HTML)を保持する。 */
+	private final String html;
 
 	public Message(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo, String subject,
-			String body) {
+			String text, String html) {
 		this.from = from;
 		this.to = to;
 		this.cc = cc;
 		this.bcc = bcc;
 		this.replyTo = replyTo;
 		this.subject = subject;
-		this.body = body;
+		this.text = text;
+		this.html = html;
 	}
 
 	@Override
@@ -95,8 +99,12 @@ public class Message {
 		return subject;
 	}
 
-	public String getBody() {
-		return body;
+	public String getText() {
+		return text;
+	}
+
+	public String getHtml() {
+		return html;
 	}
 
 }

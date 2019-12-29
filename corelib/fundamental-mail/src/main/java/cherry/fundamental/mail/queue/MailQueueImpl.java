@@ -49,11 +49,11 @@ public class MailQueueImpl implements MailQueue {
 
 	@Override
 	public long enqueue(String loginId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
+			List<String> bcc, String replyTo, String subject, String text, String html, LocalDateTime scheduledAt,
 			Attachment... attachments) {
 		return txOps.execute(status -> {
 			long messageId = queueStore.save(loginId, messageName, scheduledAt, from, to, cc, bcc, replyTo, subject,
-					body);
+					text, html);
 			attachmentStore.save(messageId, attachments);
 			return messageId;
 		});
@@ -93,7 +93,7 @@ public class MailQueueImpl implements MailQueue {
 	}
 
 	private void doSend(QueuedEntry mail, List<AttachedEntry> attached) {
-		if (attached.isEmpty()) {
+		if (mail.getHtml() == null && attached.isEmpty()) {
 			SimpleMailMessage msg = new SimpleMailMessage();
 			msg.setFrom(mail.getFrom());
 			msg.setTo(toArray(mail.getTo()));
@@ -106,13 +106,23 @@ public class MailQueueImpl implements MailQueue {
 		} else {
 			mailSender.send(msg -> {
 				MimeMessageHelper helper = new MimeMessageHelper(msg, true);
-				helper.setFrom(mail.getFrom());
+				if (mail.getFrom() != null) {
+					helper.setFrom(mail.getFrom());
+				}
 				toArrayAndSet(mail.getTo(), to -> helper.setTo(to));
 				toArrayAndSet(mail.getCc(), cc -> helper.setCc(cc));
 				toArrayAndSet(mail.getBcc(), bcc -> helper.setBcc(bcc));
-				helper.setReplyTo(mail.getReplyTo());
-				helper.setSubject(mail.getSubject());
-				helper.setText(mail.getText());
+				if (mail.getReplyTo() != null) {
+					helper.setReplyTo(mail.getReplyTo());
+				}
+				if (mail.getSubject() != null) {
+					helper.setSubject(mail.getSubject());
+				}
+				if (mail.getHtml() == null) {
+					helper.setText(mail.getText());
+				} else {
+					helper.setText(mail.getText(), mail.getHtml());
+				}
 				for (AttachedEntry a : attached) {
 					helper.addAttachment(a.getFilename(), () -> new FileInputStream(a.getFile()), a.getContentType());
 				}

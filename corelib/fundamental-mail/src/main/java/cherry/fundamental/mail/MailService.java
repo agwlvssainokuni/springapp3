@@ -17,11 +17,86 @@
 package cherry.fundamental.mail;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+/**
+ * メール送信機能。<br />
+ * 業務アプリケーションが直接的に使用する機能を集めたインタフェース。
+ */
 public interface MailService {
 
-	void send();
+	/**
+	 * 文字列をテンプレートとして処理する。
+	 *
+	 * @param template テンプレート文字列。
+	 * @param model テンプレートに埋め込むデータ。
+	 * @return 結果文字列。
+	 */
+	String evaluate(String template, Object model);
 
-	void expire(LocalDateTime ldtm);
+	/**
+	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
+	 *
+	 * @param templateName テンプレート名称。
+	 * @param to 宛先 (To) のメールアドレス。
+	 * @param model テンプレートに埋め込むデータ。
+	 * @return 送信するメールデータ。
+	 */
+	Message evaluate(String templateName, List<String> to, Object model);
+
+	/**
+	 * 送信するメールデータを、キューに蓄積する。<br />
+	 *
+	 * @param loginId 当メソッドを呼出した利用者のログインID。
+	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
+	 * @param from 差出人 (From) のメールアドレス。
+	 * @param to 宛先 (To) のメールアドレス。
+	 * @param cc 宛先 (Cc) のメールアドレス。
+	 * @param bcc 宛先 (Bcc) のメールアドレス。
+	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
+	 * @param subject 件名 (Subject)。
+	 * @param body 本文。
+	 * @param attachments 添付ファイル。
+	 * @return メールデータの識別番号。
+	 */
+	long send(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+			String replyTo, String subject, String body, Attachment... attachments);
+
+	/**
+	 * 送信するメールデータを、キューに蓄積する。<br />
+	 *
+	 * @param loginId 当メソッドを呼出した利用者のログインID。
+	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
+	 * @param from 差出人 (From) のメールアドレス。
+	 * @param to 宛先 (To) のメールアドレス。
+	 * @param cc 宛先 (Cc) のメールアドレス。
+	 * @param bcc 宛先 (Bcc) のメールアドレス。
+	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
+	 * @param subject 件名 (Subject)。
+	 * @param body 本文。
+	 * @param scheduledAt 送信予定日時。
+	 * @param attachments 添付ファイル。
+	 * @return メールデータの識別番号。
+	 */
+	long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+			String replyTo, String subject, String body, LocalDateTime scheduledAt, Attachment... attachments);
+
+	/**
+	 * メールを即時送信する。<br />
+	 *
+	 * @param loginId 当メソッドを呼出した利用者のログインID。
+	 * @param messageName メールデータの分類名称。典型的には、メールテンプレート名称。
+	 * @param from 差出人 (From) のメールアドレス。
+	 * @param to 宛先 (To) のメールアドレス。
+	 * @param cc 宛先 (Cc) のメールアドレス。
+	 * @param bcc 宛先 (Bcc) のメールアドレス。
+	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
+	 * @param subject 件名 (Subject)。
+	 * @param body 本文。
+	 * @param attachments 添付ファイル。
+	 * @return メールデータの識別番号。
+	 */
+	long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
+			String replyTo, String subject, String body, Attachment... attachments);
 
 }

@@ -27,7 +27,7 @@ public class MessageTest {
 	public void testGetter() {
 
 		Message message = new Message("from@addr", asList("to@addr"), asList("cc@addr"), asList("bcc@addr"),
-				"replyTo@addr", "subject", "body");
+				"replyTo@addr", "subject", "text", "html");
 
 		assertEquals("from@addr", message.getFrom());
 		assertEquals(1, message.getTo().size());
@@ -38,13 +38,15 @@ public class MessageTest {
 		assertEquals("bcc@addr", message.getBcc().get(0));
 		assertEquals("replyTo@addr", message.getReplyTo());
 		assertEquals("subject", message.getSubject());
-		assertEquals("body", message.getBody());
+		assertEquals("text", message.getText());
+		assertEquals("html", message.getHtml());
 	}
 
 	@Test
 	public void testToString() {
-		Message message = new Message(null, null, null, null, null, null, null);
-		assertEquals("Message[from=<null>,to=<null>,cc=<null>,bcc=<null>,replyTo=<null>,subject=<null>,body=<null>]",
+		Message message = new Message(null, null, null, null, null, null, null, null);
+		assertEquals(
+				"Message[from=<null>,to=<null>,cc=<null>,bcc=<null>,replyTo=<null>,subject=<null>,text=<null>,html=<null>]",
 				message.toString());
 	}
 

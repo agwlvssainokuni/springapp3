@@ -29,7 +29,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * <li>宛先 (To, Cc, Bcc)</li>
  * <li>返信先 (Reply-To)</li>
  * <li>件名 (Subject)</li>
- * <li>本文</li>
+ * <li>本文(プレーンテキスト、HTML)</li>
  * </ul>
  */
 public class Template {
@@ -52,8 +52,11 @@ public class Template {
 	/** 件名 (Subject) を保持する。 */
 	private String subject;
 
-	/** 本文を保持する。 */
-	private String body;
+	/** 本文(プレーンテキスト)を保持する。 */
+	private String text;
+
+	/** 本文(HTML)を保持する。 */
+	private String html;
 
 	@Override
 	public String toString() {
@@ -108,12 +111,20 @@ public class Template {
 		this.subject = subject;
 	}
 
-	public String getBody() {
-		return body;
+	public String getText() {
+		return text;
 	}
 
-	public void setBody(String body) {
-		this.body = body;
+	public void setText(String text) {
+		this.text = text;
+	}
+
+	public String getHtml() {
+		return html;
+	}
+
+	public void setHtml(String html) {
+		this.html = html;
 	}
 
 }

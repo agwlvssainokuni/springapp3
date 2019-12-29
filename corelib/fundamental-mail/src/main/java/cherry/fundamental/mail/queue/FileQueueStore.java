@@ -76,7 +76,7 @@ public class FileQueueStore implements QueueStore {
 
 	@Override
 	public long save(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
-			List<String> cc, List<String> bcc, String replyTo, String subject, String body) {
+			List<String> cc, List<String> bcc, String replyTo, String subject, String text, String html) {
 		try {
 
 			long messageId = getNextId();
@@ -99,7 +99,8 @@ public class FileQueueStore implements QueueStore {
 				item.setBcc(bcc);
 				item.setReplyTo(replyTo);
 				item.setSubject(subject);
-				item.setBody(body);
+				item.setText(text);
+				item.setHtml(html);
 				yaml.dump(item, w);
 			}
 
@@ -137,7 +138,7 @@ public class FileQueueStore implements QueueStore {
 		}
 
 		return new QueuedEntry(item.getFrom(), item.getTo(), item.getCc(), item.getBcc(), item.getReplyTo(),
-				item.getSubject(), item.getBody());
+				item.getSubject(), item.getText(), item.getHtml());
 	}
 
 	@Override
@@ -302,7 +303,8 @@ public class FileQueueStore implements QueueStore {
 		private List<String> bcc;
 		private String replyTo;
 		private String subject;
-		private String body;
+		private String text;
+		private String html;
 
 		public String getLoginId() {
 			return loginId;
@@ -368,12 +370,20 @@ public class FileQueueStore implements QueueStore {
 			this.subject = subject;
 		}
 
-		public String getBody() {
-			return body;
+		public String getText() {
+			return text;
 		}
 
-		public void setBody(String body) {
-			this.body = body;
+		public void setText(String text) {
+			this.text = text;
+		}
+
+		public String getHtml() {
+			return html;
+		}
+
+		public void setHtml(String html) {
+			this.html = html;
 		}
 	}
 

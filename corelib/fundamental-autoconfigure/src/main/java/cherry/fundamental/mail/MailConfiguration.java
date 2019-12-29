@@ -153,43 +153,43 @@ public class MailConfiguration {
 
 	// 利用者向けAPI窓口。
 
-	@ConditionalOnClass({ MailFacade.class })
-	public static class MailFacadeCfg {
+	@ConditionalOnClass({ MailService.class })
+	public static class MailServiceCfg {
 
 		@Bean
 		@ConditionalOnBean({ Bizcal.class })
-		public MailFacade mailFacade(TransactionOperations txOps, Bizcal bizcal, TemplateProcessor templateProcessor,
+		public MailService mailService(TransactionOperations txOps, Bizcal bizcal, TemplateProcessor templateProcessor,
 				MailQueue mailQueue) {
-			return new MailFacadeImpl(txOps, bizcal::now, templateProcessor, mailQueue);
+			return new MailServiceImpl(txOps, bizcal::now, templateProcessor, mailQueue);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({ Bizcal.class })
-		public MailFacade mailFacade(TransactionOperations txOps, TemplateProcessor templateProcessor,
+		public MailService mailService(TransactionOperations txOps, TemplateProcessor templateProcessor,
 				MailQueue mailQueue) {
-			return new MailFacadeImpl(txOps, LocalDateTime::now, templateProcessor, mailQueue);
+			return new MailServiceImpl(txOps, LocalDateTime::now, templateProcessor, mailQueue);
 		}
 	}
 
 	// 送信実態。
 
-	@ConditionalOnClass({ MailService.class })
-	@ConfigurationProperties(prefix = "cherry.mail.sendmail")
-	public static class MailServiceCfg {
+	@ConditionalOnClass({ BackendService.class })
+	@ConfigurationProperties(prefix = "cherry.mail.backend")
+	public static class BackendServiceCfg {
 
 		private double rateToSend = 2.0;
 		private TimeUnit rateUnit = TimeUnit.SECONDS;
 
 		@Bean
 		@ConditionalOnBean({ Bizcal.class })
-		public MailService mailService(Bizcal bizcal, MailQueue mailQueue) {
-			return new MailServiceImpl(bizcal::now, mailQueue, rateToSend, rateUnit);
+		public BackendService backendService(Bizcal bizcal, MailQueue mailQueue) {
+			return new BackendServiceImpl(bizcal::now, mailQueue, rateToSend, rateUnit);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({ Bizcal.class })
-		public MailService mailService(MailQueue mailQueue) {
-			return new MailServiceImpl(LocalDateTime::now, mailQueue, rateToSend, rateUnit);
+		public BackendService backendService(MailQueue mailQueue) {
+			return new BackendServiceImpl(LocalDateTime::now, mailQueue, rateToSend, rateUnit);
 		}
 
 		public void setRateToSend(double rateToSend) {

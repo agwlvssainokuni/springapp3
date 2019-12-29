@@ -41,16 +41,16 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = MailFacadeTest.class)
+@SpringBootTest(classes = MailServiceTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
-public class MailFacadeTest {
-
-	@Autowired
-	private MailFacade mailFacade;
+public class MailServiceTest {
 
 	@Autowired
 	private MailService mailService;
+
+	@Autowired
+	private BackendService backendService;
 
 	@Test
 	public void test() throws MessagingException, IOException {
@@ -58,9 +58,9 @@ public class MailFacadeTest {
 		greenMail.start();
 		try {
 
-			mailFacade.send("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+			mailService.send("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
 					asList("bcc@addr"), "replyTo@addr", "subject", "body");
-			mailService.send();
+			backendService.flushMail();
 
 			assertTrue(greenMail.waitForIncomingEmail(5000, 1));
 			MimeMessage[] ms = greenMail.getReceivedMessages();
@@ -76,7 +76,7 @@ public class MailFacadeTest {
 			}
 		} finally {
 			LocalDateTime now = LocalDateTime.now();
-			mailService.expire(now);
+			backendService.expireMail(now);
 			greenMail.stop();
 		}
 	}

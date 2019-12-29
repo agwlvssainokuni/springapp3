@@ -37,11 +37,12 @@ public interface QueueStore {
 	 * @param bcc 宛先 (Bcc) のメールアドレス。
 	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
+	 * @param text 本文(プレーンテキスト)。
+	 * @param html 本文(HTML)。
 	 * @return メールデータの識別番号。
 	 */
 	long save(String loginId, String messageName, LocalDateTime scheduledAt, String from, List<String> to,
-			List<String> cc, List<String> bcc, String replyTo, String subject, String body);
+			List<String> cc, List<String> bcc, String replyTo, String subject, String text, String html);
 
 	/**
 	 * キューに蓄積されているメールデータの識別番号のリストを取得する。<br />

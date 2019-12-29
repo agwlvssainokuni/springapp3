@@ -18,58 +18,68 @@ package cherry.fundamental.mail;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
-import org.springframework.mail.MailException;
+import org.springframework.transaction.support.TransactionOperations;
 
-import cherry.elemental.loop.Loop;
 import cherry.fundamental.mail.queue.MailQueue;
+import cherry.fundamental.mail.template.TemplateProcessor;
 
 public class MailServiceImpl implements MailService {
 
-	private final Logger log = LoggerFactory.getLogger(getClass());
+	private final TransactionOperations txOps;
 
 	private final Supplier<LocalDateTime> currentDateTime;
 
+	private final TemplateProcessor templateProcessor;
+
 	private final MailQueue mailQueue;
 
-	private final double rateToSend;
-
-	private final TimeUnit rateUnit;
-
-	public MailServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
-			TimeUnit rateUnit) {
+	public MailServiceImpl(TransactionOperations txOps, Supplier<LocalDateTime> currentDateTime,
+			TemplateProcessor templateProcessor, MailQueue mailQueue) {
+		this.txOps = txOps;
 		this.currentDateTime = currentDateTime;
+		this.templateProcessor = templateProcessor;
 		this.mailQueue = mailQueue;
-		this.rateToSend = rateToSend;
-		this.rateUnit = rateUnit;
 	}
 
 	@Override
-	public void send() {
-		try {
+	public String evaluate(String template, Object model) {
+		return txOps.execute(status -> templateProcessor.evaluate(template, model));
+	}
+
+	@Override
+	public Message evaluate(String templateName, List<String> to, Object model) {
+		return txOps.execute(status -> templateProcessor.evaluate(templateName, to, model));
+	}
+
+	@Override
+	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+		return txOps.execute(status -> {
 			LocalDateTime now = currentDateTime.get();
-			List<Long> list = mailQueue.list(now);
-			Loop.rate(rateToSend, rateUnit).iterate(list, messageId -> {
-				mailQueue.send(messageId, now);
-			});
-		} catch (MailException | DataAccessException ex) {
-			if (log.isDebugEnabled()) {
-				log.debug("failed to send mail", ex);
-			}
-		}
+			return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now, attachments);
+		});
 	}
 
 	@Override
-	public void expire(LocalDateTime ldtm) {
-		List<Long> list = mailQueue.listSent(ldtm);
-		for (Long messageId : list) {
-			mailQueue.delete(messageId);
-		}
+	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
+			Attachment... attachments) {
+		return txOps.execute(status -> mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject,
+				body, scheduledAt, attachments));
+	}
+
+	@Override
+	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
+			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+		return txOps.execute(status -> {
+			LocalDateTime now = currentDateTime.get();
+			long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now,
+					attachments);
+			mailQueue.send(messageId, now);
+			return messageId;
+		});
 	}
 
 }

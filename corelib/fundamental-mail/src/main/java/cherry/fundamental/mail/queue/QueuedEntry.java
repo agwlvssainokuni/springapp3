@@ -45,11 +45,14 @@ public class QueuedEntry {
 	/** 件名 (Subject) を保持する。 */
 	private final String subject;
 
-	/** 本文を保持する。 */
+	/** 本文(プレーンテキスト)を保持する。 */
 	private final String text;
 
+	/** 本文(HTML)を保持する。 */
+	private final String html;
+
 	public QueuedEntry(String from, List<String> to, List<String> cc, List<String> bcc, String replyTo, String subject,
-			String text) {
+			String text, String html) {
 		this.from = from;
 		this.to = to;
 		this.cc = cc;
@@ -57,6 +60,7 @@ public class QueuedEntry {
 		this.replyTo = replyTo;
 		this.subject = subject;
 		this.text = text;
+		this.html = html;
 	}
 
 	@Override
@@ -90,6 +94,10 @@ public class QueuedEntry {
 
 	public String getText() {
 		return text;
+	}
+
+	public String getHtml() {
+		return html;
 	}
 
 }

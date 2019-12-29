@@ -57,10 +57,17 @@ public class TemplateProcessorImpl implements TemplateProcessor {
 			toAddr.addAll(template.getTo());
 		}
 		return new Message(template.getFrom(), toAddr, template.getCc(), template.getBcc(), template.getReplyTo(),
-				doEvaluate(template.getSubject(), model), doEvaluate(template.getBody(), model));
+				doEvaluate(template.getSubject(), model), doEvaluate(template.getText(), model),
+				doEvaluate(template.getHtml(), model));
 	}
 
 	private String doEvaluate(String content, Object model) {
+		if (content == null) {
+			return null;
+		}
+		if (content.length() <= 0) {
+			return "";
+		}
 		try (StringWriter writer = new StringWriter()) {
 			freemarker.template.Template template = new freemarker.template.Template(null, content, configuration);
 			template.process(model, writer);
