@@ -1,0 +1,8 @@
+from: from@addr
+to:
+- other@addr
+cc:
+- cc@addr
+bcc:
+- bcc@addr
+replyTo: replyTo@addr

@@ -17,8 +17,8 @@
 package cherry.fundamental.mail;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -38,10 +38,8 @@ import cherry.fundamental.mail.queue.FileQueueStore;
 import cherry.fundamental.mail.queue.MailQueue;
 import cherry.fundamental.mail.queue.MailQueueImpl;
 import cherry.fundamental.mail.queue.QueueStore;
-import cherry.fundamental.mail.template.SimpleTemplateStore;
+import cherry.fundamental.mail.template.FreemarkerTemplateProcessor;
 import cherry.fundamental.mail.template.TemplateProcessor;
-import cherry.fundamental.mail.template.TemplateProcessorImpl;
-import cherry.fundamental.mail.template.TemplateStore;
 
 @Configuration
 @PropertySource({ "classpath:cherry.properties" })
@@ -49,20 +47,39 @@ public class MailConfiguration {
 
 	// メッセージ形成の系統。
 
-	@ConditionalOnClass({ TemplateStore.class })
-	public static class TemplateStoreCfg {
-		@Bean
-		@ConditionalOnMissingBean(TemplateStore.class)
-		public TemplateStore defaultTemplateStore() {
-			return new SimpleTemplateStore(new HashMap<>());
-		}
-	}
-
 	@ConditionalOnClass({ TemplateProcessor.class })
+	@ConfigurationProperties(prefix = "cherry.mail.template")
 	public static class TemplateProcessorCfg {
+
+		private File basedir;
+		private String addressFile;
+		private String subjectFile;
+		private String textFile;
+		private String htmlFile;
+
 		@Bean
-		public TemplateProcessor templateProcessor(TransactionOperations txOps, TemplateStore templateStore) {
-			return new TemplateProcessorImpl(txOps, templateStore);
+		public TemplateProcessor templateProcessor() throws IOException {
+			return new FreemarkerTemplateProcessor(basedir, addressFile, subjectFile, textFile, htmlFile);
+		}
+
+		public void setBasedir(File basedir) {
+			this.basedir = basedir;
+		}
+
+		public void setAddressFile(String addressFile) {
+			this.addressFile = addressFile;
+		}
+
+		public void setSubjectFile(String subjectFile) {
+			this.subjectFile = subjectFile;
+		}
+
+		public void setTextFile(String textFile) {
+			this.textFile = textFile;
+		}
+
+		public void setHtmlFile(String htmlFile) {
+			this.htmlFile = htmlFile;
 		}
 	}
 

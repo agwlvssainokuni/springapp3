@@ -41,6 +41,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.DumperOptions.FlowStyle;
@@ -118,7 +119,7 @@ public class FileQueueStore implements QueueStore {
 
 	@Override
 	public List<Long> list(LocalDateTime dtm) {
-		return doList(dtm, scheduleFile, true);
+		return doList(dtm, scheduleFile, destdir -> !new File(destdir, sentFile).isFile());
 	}
 
 	@Override
@@ -160,7 +161,7 @@ public class FileQueueStore implements QueueStore {
 
 	@Override
 	public List<Long> listSent(LocalDateTime dtm) {
-		return doList(dtm, sentFile, false);
+		return doList(dtm, sentFile, destdir -> new File(destdir, sentFile).isFile());
 	}
 
 	@Override
@@ -168,7 +169,7 @@ public class FileQueueStore implements QueueStore {
 		try {
 
 			File destdir = getDestdir(messageId);
-			if (!destdir.isDirectory()) {
+			if (!destdir.exists()) {
 				return false;
 			}
 
@@ -243,7 +244,7 @@ public class FileQueueStore implements QueueStore {
 		return new File(basedir, destname);
 	}
 
-	private List<Long> doList(LocalDateTime dtm, String filename, boolean toSend) {
+	private List<Long> doList(LocalDateTime dtm, String filename, Predicate<File> toInclude) {
 
 		if (!basedir.isDirectory()) {
 			return Collections.emptyList();
@@ -265,7 +266,7 @@ public class FileQueueStore implements QueueStore {
 			if (!targetfile.isFile()) {
 				continue;
 			}
-			if (toSend && new File(destdir, sentFile).isFile()) {
+			if (!toInclude.test(destdir)) {
 				continue;
 			}
 			long messageId;

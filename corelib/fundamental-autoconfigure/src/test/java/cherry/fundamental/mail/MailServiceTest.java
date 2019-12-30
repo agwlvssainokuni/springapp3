@@ -19,16 +19,21 @@ package cherry.fundamental.mail;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.google.common.io.ByteStreams;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
@@ -46,38 +52,164 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
 public class MailServiceTest {
 
+	private final File queuedir = new File("build/mailqueue");
+
 	@Autowired
 	private MailService mailService;
 
 	@Autowired
 	private BackendService backendService;
 
+	@Before
+	public void before() throws IOException {
+		Files.createDirectories(queuedir.toPath());
+	}
+
+	@After
+	public void after() throws IOException {
+		Files.deleteIfExists(new File(queuedir, "counter.txt").toPath());
+		Files.deleteIfExists(new File(queuedir, "counter.lock").toPath());
+	}
+
 	@Test
-	public void test() throws MessagingException, IOException {
-		GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
-		greenMail.start();
+	public void testSend() throws MessagingException, IOException {
 		try {
 
-			mailService.send("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
-					asList("bcc@addr"), "replyTo@addr", "subject", "body");
-			backendService.flushMail();
+			long id0 = mailService.send("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+					asList("bcc@addr"), "replyTo@addr", "subject", "text", "html", //
+					new Attachment("filename", "CONTENT".getBytes(), "content/type"));
+			assertEquals(0L, id0);
 
-			assertTrue(greenMail.waitForIncomingEmail(5000, 1));
-			MimeMessage[] ms = greenMail.getReceivedMessages();
-			assertEquals(3, ms.length);
-			for (MimeMessage msg : ms) {
-				assertEquals(new InternetAddress("from@addr"), msg.getFrom()[0]);
-				assertEquals(new InternetAddress("to@addr"), msg.getRecipients(RecipientType.TO)[0]);
-				assertEquals(new InternetAddress("cc@addr"), msg.getRecipients(RecipientType.CC)[0]);
-				assertNull(msg.getRecipients(RecipientType.BCC));
-				assertEquals(new InternetAddress("replyTo@addr"), msg.getReplyTo()[0]);
-				assertEquals("subject", msg.getSubject());
-				assertEquals("body\r\n", msg.getContent());
+			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
+			greenMail.start();
+			try {
+				backendService.flushMail();
+				MimeMessage[] ms = greenMail.getReceivedMessages();
+				assertEquals(3, ms.length);
+				for (MimeMessage msg : ms) {
+					assertEquals(new InternetAddress("from@addr"), msg.getFrom()[0]);
+					assertEquals(new InternetAddress("to@addr"), msg.getRecipients(RecipientType.TO)[0]);
+					assertEquals(new InternetAddress("cc@addr"), msg.getRecipients(RecipientType.CC)[0]);
+					assertNull(msg.getRecipients(RecipientType.BCC));
+					assertEquals(new InternetAddress("replyTo@addr"), msg.getReplyTo()[0]);
+					assertEquals("subject", msg.getSubject());
+
+					MimeMultipart mp = (MimeMultipart) msg.getContent();
+					assertEquals(2, mp.getCount());
+
+					MimeMultipart p0 = (MimeMultipart) mp.getBodyPart(0).getContent();
+					assertEquals(1, p0.getCount());
+					MimeMultipart p00 = (MimeMultipart) p0.getBodyPart(0).getContent();
+					assertEquals(2, p00.getCount());
+					assertEquals("text/plain; charset=UTF-8", p00.getBodyPart(0).getContentType());
+					assertEquals("text", p00.getBodyPart(0).getContent());
+					assertEquals("text/html;charset=UTF-8", p00.getBodyPart(1).getContentType());
+					assertEquals("html", p00.getBodyPart(1).getContent());
+
+					assertEquals("content/type; name=filename", mp.getBodyPart(1).getContentType());
+					assertEquals("CONTENT", //
+							new String(ByteStreams.toByteArray((InputStream) mp.getBodyPart(1).getContent())));
+				}
+			} finally {
+				greenMail.stop();
 			}
 		} finally {
-			LocalDateTime now = LocalDateTime.now();
-			backendService.expireMail(now);
-			greenMail.stop();
+			backendService.expireMail(LocalDateTime.now());
+		}
+	}
+
+	@Test
+	public void testSendLater() throws MessagingException, IOException {
+		try {
+
+			long id0 = mailService.sendLater("loginId", "messageName", "from@addr", asList("to@addr"),
+					asList("cc@addr"), asList("bcc@addr"), "replyTo@addr", "subject", "text", "html",
+					LocalDateTime.now(), //
+					new Attachment("filename", "CONTENT".getBytes(), "content/type"));
+			assertEquals(0L, id0);
+
+			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
+			greenMail.start();
+			try {
+				backendService.flushMail();
+				MimeMessage[] ms = greenMail.getReceivedMessages();
+				assertEquals(3, ms.length);
+				for (MimeMessage msg : ms) {
+					assertEquals(new InternetAddress("from@addr"), msg.getFrom()[0]);
+					assertEquals(new InternetAddress("to@addr"), msg.getRecipients(RecipientType.TO)[0]);
+					assertEquals(new InternetAddress("cc@addr"), msg.getRecipients(RecipientType.CC)[0]);
+					assertNull(msg.getRecipients(RecipientType.BCC));
+					assertEquals(new InternetAddress("replyTo@addr"), msg.getReplyTo()[0]);
+					assertEquals("subject", msg.getSubject());
+
+					MimeMultipart mp = (MimeMultipart) msg.getContent();
+					assertEquals(2, mp.getCount());
+
+					MimeMultipart p0 = (MimeMultipart) mp.getBodyPart(0).getContent();
+					assertEquals(1, p0.getCount());
+					MimeMultipart p00 = (MimeMultipart) p0.getBodyPart(0).getContent();
+					assertEquals(2, p00.getCount());
+					assertEquals("text/plain; charset=UTF-8", p00.getBodyPart(0).getContentType());
+					assertEquals("text", p00.getBodyPart(0).getContent());
+					assertEquals("text/html;charset=UTF-8", p00.getBodyPart(1).getContentType());
+					assertEquals("html", p00.getBodyPart(1).getContent());
+
+					assertEquals("content/type; name=filename", mp.getBodyPart(1).getContentType());
+					assertEquals("CONTENT", //
+							new String(ByteStreams.toByteArray((InputStream) mp.getBodyPart(1).getContent())));
+				}
+			} finally {
+				greenMail.stop();
+			}
+		} finally {
+			backendService.expireMail(LocalDateTime.now());
+		}
+	}
+
+	@Test
+	public void testSendNow() throws MessagingException, IOException {
+		try {
+			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
+			greenMail.start();
+
+			long id0 = mailService.sendNow("loginId", "messageName", "from@addr", asList("to@addr"), asList("cc@addr"),
+					asList("bcc@addr"), "replyTo@addr", "subject", "text", "html", //
+					new Attachment("filename", "CONTENT".getBytes(), "content/type"));
+			assertEquals(0L, id0);
+
+			try {
+				// backendService.flushMail();
+				MimeMessage[] ms = greenMail.getReceivedMessages();
+				assertEquals(3, ms.length);
+				for (MimeMessage msg : ms) {
+					assertEquals(new InternetAddress("from@addr"), msg.getFrom()[0]);
+					assertEquals(new InternetAddress("to@addr"), msg.getRecipients(RecipientType.TO)[0]);
+					assertEquals(new InternetAddress("cc@addr"), msg.getRecipients(RecipientType.CC)[0]);
+					assertNull(msg.getRecipients(RecipientType.BCC));
+					assertEquals(new InternetAddress("replyTo@addr"), msg.getReplyTo()[0]);
+					assertEquals("subject", msg.getSubject());
+
+					MimeMultipart mp = (MimeMultipart) msg.getContent();
+					assertEquals(2, mp.getCount());
+
+					MimeMultipart p0 = (MimeMultipart) mp.getBodyPart(0).getContent();
+					assertEquals(1, p0.getCount());
+					MimeMultipart p00 = (MimeMultipart) p0.getBodyPart(0).getContent();
+					assertEquals(2, p00.getCount());
+					assertEquals("text/plain; charset=UTF-8", p00.getBodyPart(0).getContentType());
+					assertEquals("text", p00.getBodyPart(0).getContent());
+					assertEquals("text/html;charset=UTF-8", p00.getBodyPart(1).getContentType());
+					assertEquals("html", p00.getBodyPart(1).getContent());
+
+					assertEquals("content/type; name=filename", mp.getBodyPart(1).getContentType());
+					assertEquals("CONTENT", //
+							new String(ByteStreams.toByteArray((InputStream) mp.getBodyPart(1).getContent())));
+				}
+			} finally {
+				greenMail.stop();
+			}
+		} finally {
+			backendService.expireMail(LocalDateTime.now());
 		}
 	}
 

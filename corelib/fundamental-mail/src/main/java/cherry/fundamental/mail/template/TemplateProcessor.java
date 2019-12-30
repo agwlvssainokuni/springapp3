@@ -23,29 +23,29 @@ import cherry.fundamental.mail.Message;
 /**
  * メール送信機能。<br />
  * メールテンプレートを元に、送信するメールデータを生成する機能を提供する。<br />
- * 基本的な運用方法としては、メールテンプレートはDBに保管されていることを想定し、その名称 (テンプレート名称) によりメールテンプレートを識別する。送信するメールデータを生成する際は、テンプレート名称、宛先 (To)
+ * 基本的な運用方法としては、メールテンプレートはストレージに保管されていることを想定し、その名称 (テンプレート名称) によりメールテンプレートを識別する。送信するメールデータを生成する際は、テンプレート名称、宛先 (To)
  * のメールアドレス、テンプレートに埋め込むデータを指定する。<br />
- * 特殊な運用方法として、DBに保管されていないメールテンプレートのデータを元に、送信するメールデータを生成することにも対応する。
+ * 特殊な運用方法として、ストレージに保管されていないメールテンプレートのデータを元に、送信するメールデータを生成することにも対応する。
  */
 public interface TemplateProcessor {
 
 	/**
 	 * 文字列をテンプレートとして処理する。
 	 *
-	 * @param template テンプレート文字列。
+	 * @param content テンプレート文字列。
 	 * @param model テンプレートに埋め込むデータ。
 	 * @return 結果文字列。
 	 */
-	String evaluate(String template, Object model);
+	String process(String content, Object model);
 
 	/**
-	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
+	 * ストレージに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
 	 *
 	 * @param templateName テンプレート名称。
 	 * @param to 宛先 (To) のメールアドレス。
 	 * @param model テンプレートに埋め込むデータ。
 	 * @return 送信するメールデータ。
 	 */
-	Message evaluate(String templateName, List<String> to, Object model);
+	Message getMessage(String templateName, List<String> to, Object model);
 
 }

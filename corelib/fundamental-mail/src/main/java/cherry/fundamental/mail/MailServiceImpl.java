@@ -44,39 +44,40 @@ public class MailServiceImpl implements MailService {
 	}
 
 	@Override
-	public String evaluate(String template, Object model) {
-		return txOps.execute(status -> templateProcessor.evaluate(template, model));
+	public String process(String content, Object model) {
+		return txOps.execute(status -> templateProcessor.process(content, model));
 	}
 
 	@Override
-	public Message evaluate(String templateName, List<String> to, Object model) {
-		return txOps.execute(status -> templateProcessor.evaluate(templateName, to, model));
+	public Message getMessage(String templateName, List<String> to, Object model) {
+		return txOps.execute(status -> templateProcessor.getMessage(templateName, to, model));
 	}
 
 	@Override
 	public long send(String loginId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+			List<String> bcc, String replyTo, String subject, String text, String html, Attachment... attachments) {
 		return txOps.execute(status -> {
 			LocalDateTime now = currentDateTime.get();
-			return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now, attachments);
+			return mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, text, html, now,
+					attachments);
 		});
 	}
 
 	@Override
 	public long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, LocalDateTime scheduledAt,
+			List<String> bcc, String replyTo, String subject, String text, String html, LocalDateTime scheduledAt,
 			Attachment... attachments) {
 		return txOps.execute(status -> mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject,
-				body, scheduledAt, attachments));
+				text, html, scheduledAt, attachments));
 	}
 
 	@Override
 	public long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc,
-			List<String> bcc, String replyTo, String subject, String body, Attachment... attachments) {
+			List<String> bcc, String replyTo, String subject, String text, String html, Attachment... attachments) {
 		return txOps.execute(status -> {
 			LocalDateTime now = currentDateTime.get();
-			long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, body, now,
-					attachments);
+			long messageId = mailQueue.enqueue(loginId, messageName, from, to, cc, bcc, replyTo, subject, text, html,
+					now, attachments);
 			mailQueue.send(messageId, now);
 			return messageId;
 		});

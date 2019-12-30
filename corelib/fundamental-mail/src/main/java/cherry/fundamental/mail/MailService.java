@@ -28,21 +28,21 @@ public interface MailService {
 	/**
 	 * 文字列をテンプレートとして処理する。
 	 *
-	 * @param template テンプレート文字列。
+	 * @param content テンプレート文字列。
 	 * @param model テンプレートに埋め込むデータ。
 	 * @return 結果文字列。
 	 */
-	String evaluate(String template, Object model);
+	String process(String content, Object model);
 
 	/**
-	 * DBに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
+	 * ストレージに保管されているメールテンプレートを元に、送信するメールデータを生成する。<br />
 	 *
 	 * @param templateName テンプレート名称。
 	 * @param to 宛先 (To) のメールアドレス。
 	 * @param model テンプレートに埋め込むデータ。
 	 * @return 送信するメールデータ。
 	 */
-	Message evaluate(String templateName, List<String> to, Object model);
+	Message getMessage(String templateName, List<String> to, Object model);
 
 	/**
 	 * 送信するメールデータを、キューに蓄積する。<br />
@@ -55,12 +55,13 @@ public interface MailService {
 	 * @param bcc 宛先 (Bcc) のメールアドレス。
 	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
+	 * @param text 本文(プレーンテキスト)。
+	 * @param html 本文(HTML)。
 	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
 	long send(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
-			String replyTo, String subject, String body, Attachment... attachments);
+			String replyTo, String subject, String text, String html, Attachment... attachments);
 
 	/**
 	 * 送信するメールデータを、キューに蓄積する。<br />
@@ -73,13 +74,15 @@ public interface MailService {
 	 * @param bcc 宛先 (Bcc) のメールアドレス。
 	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
+	 * @param text 本文(プレーンテキスト)。
+	 * @param html 本文(HTML)。
 	 * @param scheduledAt 送信予定日時。
 	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
 	long sendLater(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
-			String replyTo, String subject, String body, LocalDateTime scheduledAt, Attachment... attachments);
+			String replyTo, String subject, String text, String html, LocalDateTime scheduledAt,
+			Attachment... attachments);
 
 	/**
 	 * メールを即時送信する。<br />
@@ -92,11 +95,12 @@ public interface MailService {
 	 * @param bcc 宛先 (Bcc) のメールアドレス。
 	 * @param replyTo 返信先 (Reply-To) のメールアドレス。
 	 * @param subject 件名 (Subject)。
-	 * @param body 本文。
+	 * @param text 本文(プレーンテキスト)。
+	 * @param html 本文(HTML)。
 	 * @param attachments 添付ファイル。
 	 * @return メールデータの識別番号。
 	 */
 	long sendNow(String loginId, String messageName, String from, List<String> to, List<String> cc, List<String> bcc,
-			String replyTo, String subject, String body, Attachment... attachments);
+			String replyTo, String subject, String text, String html, Attachment... attachments);
 
 }

@@ -17,7 +17,6 @@
 package cherry.fundamental.mail.template;
 
 import static java.util.Arrays.asList;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -35,23 +34,19 @@ import org.springframework.test.context.junit4.SpringRunner;
 import cherry.fundamental.mail.Message;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = TemplateProcessorImplTest.class)
+@SpringBootTest(classes = FreemarkerTemplateProcessorTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
-public class TemplateProcessorImplTest {
+public class FreemarkerTemplateProcessorTest {
 
 	@Autowired
 	private TemplateProcessor templateProcessor;
 
-	@Autowired
-	private TemplateStore templateStore;
-
 	@Test
 	public void testFullAddress() throws IOException {
-		create("name", "from@addr", "other@addr", "cc@addr", "bcc@addr", "replyTo@addr", "subject", "body");
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.getMessage("FullAddress", asList("to@addr"), model);
 		assertNotNull(msg);
 		assertEquals("from@addr", msg.getFrom());
 		assertEquals(2, msg.getTo().size());
@@ -63,32 +58,31 @@ public class TemplateProcessorImplTest {
 		assertEquals("bcc@addr", msg.getBcc().get(0));
 		assertEquals("replyTo@addr", msg.getReplyTo());
 		assertEquals("subject", msg.getSubject());
-		assertEquals("body", msg.getBody());
+		assertEquals("text", msg.getText());
+		assertEquals("html", msg.getHtml());
 	}
 
 	@Test
 	public void testEmptyTemplate() throws IOException {
-		create("name", "from@addr", null, null, null, null, "", "");
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.getMessage("Empty", null, model);
 		assertNotNull(msg);
-		assertEquals("from@addr", msg.getFrom());
-		assertEquals(1, msg.getTo().size());
-		assertEquals("to@addr", msg.getTo().get(0));
+		assertNull(msg.getFrom());
+		assertEquals(0, msg.getTo().size());
 		assertNull(msg.getCc());
 		assertNull(msg.getBcc());
 		assertNull(msg.getReplyTo());
-		assertEquals("", msg.getSubject());
-		assertEquals("", msg.getBody());
+		assertNull(msg.getSubject());
+		assertNull(msg.getText());
+		assertNull(msg.getHtml());
 	}
 
 	@Test
-	public void testTemplateEvaluation() throws IOException {
-		create("name", "from@addr", null, null, null, null, "param=${param}", "param is ${param}");
+	public void testProcessTemplate() throws IOException {
 		Model model = new Model();
 		model.setParam("PARAM");
-		Message msg = templateProcessor.evaluate("name", asList("to@addr"), model);
+		Message msg = templateProcessor.getMessage("Process", asList("to@addr"), model);
 		assertNotNull(msg);
 		assertEquals("from@addr", msg.getFrom());
 		assertEquals(1, msg.getTo().size());
@@ -96,29 +90,9 @@ public class TemplateProcessorImplTest {
 		assertNull(msg.getCc());
 		assertNull(msg.getBcc());
 		assertNull(msg.getReplyTo());
-		assertEquals("param=PARAM", msg.getSubject());
-		assertEquals("param is PARAM", msg.getBody());
-	}
-
-	private void create(String name, String fromAddr, String toAddr, String ccAddr, String bccAddr, String replyToAddr,
-			String subject, String body) throws IOException {
-
-		Template template = new Template();
-		template.setFrom(fromAddr);
-		if (isNotEmpty(toAddr)) {
-			template.setTo(asList(toAddr));
-		}
-		if (isNotEmpty(ccAddr)) {
-			template.setCc(asList(ccAddr));
-		}
-		if (isNotEmpty(bccAddr)) {
-			template.setBcc(asList(bccAddr));
-		}
-		template.setReplyTo(replyToAddr);
-		template.setSubject(subject);
-		template.setBody(body);
-
-		templateStore.put(name, template);
+		assertEquals("subject is PARAM", msg.getSubject());
+		assertEquals("text is PARAM", msg.getText());
+		assertEquals("html is PARAM", msg.getHtml());
 	}
 
 	public static class Model {

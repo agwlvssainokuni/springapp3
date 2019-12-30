@@ -130,7 +130,7 @@ public class FileAttachmentStore implements AttachmentStore {
 		try {
 
 			File destdir = getDestdir(messageId);
-			if (!destdir.isDirectory()) {
+			if (!destdir.exists()) {
 				return;
 			}
 
