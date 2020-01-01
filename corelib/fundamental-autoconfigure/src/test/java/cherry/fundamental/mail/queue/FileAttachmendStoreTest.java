@@ -169,4 +169,32 @@ public class FileAttachmendStoreTest {
 		}
 	}
 
+	@Test
+	public void testEmptyDestdir() throws IOException {
+		try {
+
+			new File(queuedir, "0000000000000000000").createNewFile();
+			new File(queuedir, "0000000000000000001").mkdirs();
+			new File(queuedir, "0000000000000000001/dummy").createNewFile();
+
+			assertTrue(attachmentStore.get(0L).isEmpty());
+			assertTrue(attachmentStore.get(1L).isEmpty());
+
+			assertTrue(new File(queuedir, "0000000000000000000").exists());
+			attachmentStore.delete(0L);
+			assertFalse(new File(queuedir, "0000000000000000000").exists());
+
+			assertTrue(new File(queuedir, "0000000000000000001").exists());
+			attachmentStore.delete(1L);
+			assertTrue(new File(queuedir, "0000000000000000001").exists());
+			new File(queuedir, "0000000000000000001/dummy").delete();
+			attachmentStore.delete(1L);
+			assertFalse(new File(queuedir, "0000000000000000001").exists());
+
+		} finally {
+			attachmentStore.delete(0L);
+			attachmentStore.delete(1L);
+		}
+	}
+
 }

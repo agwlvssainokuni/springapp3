@@ -246,7 +246,7 @@ public class FileQueueStore implements QueueStore {
 
 	private List<Long> doList(LocalDateTime dtm, String filename, Predicate<File> toInclude) {
 
-		if (!basedir.isDirectory()) {
+		if (!basedir.exists()) {
 			return Collections.emptyList();
 		}
 
@@ -262,11 +262,11 @@ public class FileQueueStore implements QueueStore {
 			if (!destdir.isDirectory()) {
 				continue;
 			}
-			File targetfile = new File(destdir, filename);
-			if (!targetfile.isFile()) {
+			if (!toInclude.test(destdir)) {
 				continue;
 			}
-			if (!toInclude.test(destdir)) {
+			File targetfile = new File(destdir, filename);
+			if (!targetfile.isFile()) {
 				continue;
 			}
 			long messageId;
@@ -281,6 +281,7 @@ public class FileQueueStore implements QueueStore {
 				String line = br.readLine();
 				if (line == null) {
 					idlist.add(messageId);
+					continue;
 				}
 				LocalDateTime at = LocalDateTime.parse(line, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 				if (at.isBefore(dtm) || at.isEqual(dtm)) {

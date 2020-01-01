@@ -280,4 +280,85 @@ public class FileQueueStoreTest {
 		}
 	}
 
+	@Test
+	public void testEmptyDestdir() throws IOException {
+		try {
+
+			LocalDateTime now = LocalDateTime.now();
+
+			new File(queuedir, "0000000000000000000").createNewFile();
+			new File(queuedir, "0000000000000000001").mkdirs();
+			new File(queuedir, "0000000000000000001/dummy").createNewFile();
+
+			assertNull(queueStore.get(0L));
+			assertNull(queueStore.get(1L));
+
+			assertFalse(new File(queuedir, "0000000000000000000/sentAt.txt").exists());
+			queueStore.finish(0L, now);
+			assertFalse(new File(queuedir, "0000000000000000000/sentAt.txt").exists());
+
+			assertTrue(queueStore.list(now).isEmpty());
+			new File(queuedir, "0000000000000000001/scheduledAt.txt").createNewFile();
+			assertEquals(asList(1L), queueStore.list(now));
+
+			assertTrue(queueStore.listSent(now).isEmpty());
+			new File(queuedir, "0000000000000000001/sentAt.txt").createNewFile();
+			assertEquals(asList(1L), queueStore.listSent(now));
+
+			assertTrue(new File(queuedir, "0000000000000000000").exists());
+			queueStore.delete(0L);
+			assertFalse(new File(queuedir, "0000000000000000000").exists());
+
+			assertTrue(new File(queuedir, "0000000000000000001").exists());
+			queueStore.delete(1L);
+			assertTrue(new File(queuedir, "0000000000000000001").exists());
+			new File(queuedir, "0000000000000000001/dummy").delete();
+			queueStore.delete(1L);
+			assertFalse(new File(queuedir, "0000000000000000001").exists());
+
+		} finally {
+			queueStore.delete(0L);
+			queueStore.delete(1L);
+		}
+	}
+
+	@Test
+	public void testEmptyQueuedir() throws IOException {
+		try {
+
+			LocalDateTime now = LocalDateTime.now();
+
+			new File(queuedir, "counter.txt").createNewFile();
+			assertFalse(new File(queuedir, "0000000000000000000").exists());
+			long id0 = queueStore.save(null, null, now, null, null, null, null, null, null, null, null);
+			assertEquals(0L, id0);
+			assertTrue(new File(queuedir, "0000000000000000000").exists());
+			assertTrue(queueStore.delete(id0));
+			new File(queuedir, "counter.txt").delete();
+			new File(queuedir, "counter.lock").delete();
+
+			new File(queuedir, "not a number").mkdirs();
+			new File(queuedir, "not a number/scheduledAt.txt").createNewFile();
+			assertTrue(queueStore.list(now).isEmpty());
+			assertTrue(queueStore.listSent(now).isEmpty());
+			new File(queuedir, "not a number/sentAt.txt").createNewFile();
+			assertTrue(queueStore.list(now).isEmpty());
+			assertTrue(queueStore.listSent(now).isEmpty());
+			new File(queuedir, "not a number/scheduledAt.txt").delete();
+			new File(queuedir, "not a number/sentAt.txt").delete();
+			new File(queuedir, "not a number").delete();
+
+			Files.delete(queuedir.toPath());
+			assertTrue(queueStore.list(now).isEmpty());
+			assertTrue(queueStore.listSent(now).isEmpty());
+
+			queuedir.createNewFile();
+			assertTrue(queueStore.list(now).isEmpty());
+			assertTrue(queueStore.listSent(now).isEmpty());
+
+		} finally {
+			Files.deleteIfExists(queuedir.toPath());
+		}
+	}
+
 }
