@@ -113,16 +113,16 @@ public class MailQueueImplTest {
 			assertTrue(new File(queuedir, "0000000000000000002/1").exists());
 
 		} finally {
-			mailQueue.delete(0L);
-			mailQueue.delete(1L);
-			mailQueue.delete(2L);
+			mailQueue.expire(0L);
+			mailQueue.expire(1L);
+			mailQueue.expire(2L);
 			Files.deleteIfExists(file1.toPath());
 			Files.deleteIfExists(file2.toPath());
 		}
 	}
 
 	@Test
-	public void testList() throws IOException {
+	public void testListToSend() throws IOException {
 		File file1 = new File("file1.txt");
 		File file2 = new File("file2.txt");
 		try {
@@ -145,37 +145,37 @@ public class MailQueueImplTest {
 					new Attachment("filename22", "DEF".getBytes(), "text/csv"));
 			assertEquals(2L, id2);
 
-			List<Long> list00 = mailQueue.list(now.minusSeconds(1L));
+			List<Long> list00 = mailQueue.listToSend(now.minusSeconds(1L));
 			assertTrue(list00.isEmpty());
 
-			List<Long> list01 = mailQueue.list(now);
+			List<Long> list01 = mailQueue.listToSend(now);
 			assertEquals(asList(id0), list01);
 
-			List<Long> list02 = mailQueue.list(now.plusSeconds(1L));
+			List<Long> list02 = mailQueue.listToSend(now.plusSeconds(1L));
 			assertEquals(asList(id0), list02);
 
-			List<Long> list10 = mailQueue.list(now.plusMinutes(1L).minusSeconds(1L));
+			List<Long> list10 = mailQueue.listToSend(now.plusMinutes(1L).minusSeconds(1L));
 			assertEquals(asList(id0), list10);
 
-			List<Long> list11 = mailQueue.list(now.plusMinutes(1L));
+			List<Long> list11 = mailQueue.listToSend(now.plusMinutes(1L));
 			assertEquals(asList(id0, id1), list11);
 
-			List<Long> list12 = mailQueue.list(now.plusMinutes(1L).plusSeconds(1L));
+			List<Long> list12 = mailQueue.listToSend(now.plusMinutes(1L).plusSeconds(1L));
 			assertEquals(asList(id0, id1), list12);
 
-			List<Long> list20 = mailQueue.list(now.plusMinutes(2L).minusSeconds(1L));
+			List<Long> list20 = mailQueue.listToSend(now.plusMinutes(2L).minusSeconds(1L));
 			assertEquals(asList(id0, id1), list20);
 
-			List<Long> list21 = mailQueue.list(now.plusMinutes(2L));
+			List<Long> list21 = mailQueue.listToSend(now.plusMinutes(2L));
 			assertEquals(asList(id0, id1, id2), list21);
 
-			List<Long> list22 = mailQueue.list(now.plusMinutes(2L).plusSeconds(1L));
+			List<Long> list22 = mailQueue.listToSend(now.plusMinutes(2L).plusSeconds(1L));
 			assertEquals(asList(id0, id1, id2), list22);
 
 		} finally {
-			mailQueue.delete(0L);
-			mailQueue.delete(1L);
-			mailQueue.delete(2L);
+			mailQueue.expire(0L);
+			mailQueue.expire(1L);
+			mailQueue.expire(2L);
 			Files.deleteIfExists(file1.toPath());
 			Files.deleteIfExists(file2.toPath());
 		}
@@ -233,16 +233,16 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
-			mailQueue.delete(1L);
-			mailQueue.delete(2L);
+			mailQueue.expire(0L);
+			mailQueue.expire(1L);
+			mailQueue.expire(2L);
 			Files.deleteIfExists(file1.toPath());
 			Files.deleteIfExists(file2.toPath());
 		}
 	}
 
 	@Test
-	public void testListSent() throws IOException {
+	public void testListToExpire() throws IOException {
 		File file1 = new File("file1.txt");
 		File file2 = new File("file2.txt");
 		try {
@@ -267,8 +267,8 @@ public class MailQueueImplTest {
 
 			LocalDateTime sentAt = now.plusMinutes(5L);
 
-			assertEquals(3, mailQueue.list(now.plusMinutes(2L)).size());
-			assertEquals(0, mailQueue.listSent(sentAt.plusMinutes(2L)).size());
+			assertEquals(3, mailQueue.listToSend(now.plusMinutes(2L)).size());
+			assertEquals(0, mailQueue.listToExpire(sentAt.plusMinutes(2L)).size());
 
 			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
 			greenMail.start();
@@ -282,39 +282,39 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 
-			assertEquals(0, mailQueue.list(now.plusMinutes(2L)).size());
+			assertEquals(0, mailQueue.listToSend(now.plusMinutes(2L)).size());
 
-			List<Long> list00 = mailQueue.listSent(sentAt.minusSeconds(1L));
+			List<Long> list00 = mailQueue.listToExpire(sentAt.minusSeconds(1L));
 			assertTrue(list00.isEmpty());
 
-			List<Long> list01 = mailQueue.listSent(sentAt);
+			List<Long> list01 = mailQueue.listToExpire(sentAt);
 			assertEquals(asList(id0), list01);
 
-			List<Long> list02 = mailQueue.listSent(sentAt.plusSeconds(1L));
+			List<Long> list02 = mailQueue.listToExpire(sentAt.plusSeconds(1L));
 			assertEquals(asList(id0), list02);
 
-			List<Long> list10 = mailQueue.listSent(sentAt.plusMinutes(1L).minusSeconds(1L));
+			List<Long> list10 = mailQueue.listToExpire(sentAt.plusMinutes(1L).minusSeconds(1L));
 			assertEquals(asList(id0), list10);
 
-			List<Long> list11 = mailQueue.listSent(sentAt.plusMinutes(1L));
+			List<Long> list11 = mailQueue.listToExpire(sentAt.plusMinutes(1L));
 			assertEquals(asList(id0, id1), list11);
 
-			List<Long> list12 = mailQueue.listSent(sentAt.plusMinutes(1L).plusSeconds(1L));
+			List<Long> list12 = mailQueue.listToExpire(sentAt.plusMinutes(1L).plusSeconds(1L));
 			assertEquals(asList(id0, id1), list12);
 
-			List<Long> list20 = mailQueue.listSent(sentAt.plusMinutes(2L).minusSeconds(1L));
+			List<Long> list20 = mailQueue.listToExpire(sentAt.plusMinutes(2L).minusSeconds(1L));
 			assertEquals(asList(id0, id1), list20);
 
-			List<Long> list21 = mailQueue.listSent(sentAt.plusMinutes(2L));
+			List<Long> list21 = mailQueue.listToExpire(sentAt.plusMinutes(2L));
 			assertEquals(asList(id0, id1, id2), list21);
 
-			List<Long> list22 = mailQueue.listSent(sentAt.plusMinutes(2L).plusSeconds(1L));
+			List<Long> list22 = mailQueue.listToExpire(sentAt.plusMinutes(2L).plusSeconds(1L));
 			assertEquals(asList(id0, id1, id2), list22);
 
 		} finally {
-			mailQueue.delete(0L);
-			mailQueue.delete(1L);
-			mailQueue.delete(2L);
+			mailQueue.expire(0L);
+			mailQueue.expire(1L);
+			mailQueue.expire(2L);
 			Files.deleteIfExists(file1.toPath());
 			Files.deleteIfExists(file2.toPath());
 		}
@@ -346,8 +346,8 @@ public class MailQueueImplTest {
 
 			LocalDateTime sentAt = now.plusMinutes(5L);
 
-			assertEquals(3, mailQueue.list(now.plusMinutes(2L)).size());
-			assertEquals(0, mailQueue.listSent(sentAt.plusMinutes(2L)).size());
+			assertEquals(3, mailQueue.listToSend(now.plusMinutes(2L)).size());
+			assertEquals(0, mailQueue.listToExpire(sentAt.plusMinutes(2L)).size());
 
 			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
 			greenMail.start();
@@ -361,34 +361,34 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 
-			assertEquals(0, mailQueue.list(now.plusMinutes(2L)).size());
-			assertEquals(3, mailQueue.listSent(sentAt.plusMinutes(2L)).size());
+			assertEquals(0, mailQueue.listToSend(now.plusMinutes(2L)).size());
+			assertEquals(3, mailQueue.listToExpire(sentAt.plusMinutes(2L)).size());
 
 			assertTrue(new File(queuedir, "0000000000000000000/message.yaml").exists());
 			assertFalse(new File(queuedir, "0000000000000000000/filelist.yaml").exists());
-			assertTrue(mailQueue.delete(0L));
+			assertTrue(mailQueue.expire(0L));
 			assertFalse(new File(queuedir, "0000000000000000000").exists());
 
 			assertTrue(new File(queuedir, "0000000000000000001/message.yaml").exists());
 			assertTrue(new File(queuedir, "0000000000000000001/filelist.yaml").exists());
 			assertTrue(new File(queuedir, "0000000000000000001/0").exists());
 			assertFalse(new File(queuedir, "0000000000000000001/1").exists());
-			assertTrue(mailQueue.delete(1L));
+			assertTrue(mailQueue.expire(1L));
 			assertFalse(new File(queuedir, "0000000000000000001").exists());
 
 			assertTrue(new File(queuedir, "0000000000000000002/message.yaml").exists());
 			assertTrue(new File(queuedir, "0000000000000000002/filelist.yaml").exists());
 			assertTrue(new File(queuedir, "0000000000000000002/0").exists());
 			assertTrue(new File(queuedir, "0000000000000000002/1").exists());
-			assertTrue(mailQueue.delete(2L));
+			assertTrue(mailQueue.expire(2L));
 			assertFalse(new File(queuedir, "0000000000000000002").exists());
 
-			assertFalse(mailQueue.delete(3L));
+			assertFalse(mailQueue.expire(3L));
 
 		} finally {
-			mailQueue.delete(0L);
-			mailQueue.delete(1L);
-			mailQueue.delete(2L);
+			mailQueue.expire(0L);
+			mailQueue.expire(1L);
+			mailQueue.expire(2L);
 			Files.deleteIfExists(file1.toPath());
 			Files.deleteIfExists(file2.toPath());
 		}
@@ -424,7 +424,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 
@@ -458,7 +458,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 
@@ -503,7 +503,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 
@@ -549,7 +549,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 
@@ -595,7 +595,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 
@@ -645,7 +645,7 @@ public class MailQueueImplTest {
 				greenMail.stop();
 			}
 		} finally {
-			mailQueue.delete(0L);
+			mailQueue.expire(0L);
 		}
 	}
 

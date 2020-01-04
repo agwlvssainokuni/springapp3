@@ -58,7 +58,7 @@ public class MailServiceTest {
 	private MailService mailService;
 
 	@Autowired
-	private BackendService backendService;
+	private MailBackendService mailBackendService;
 
 	@Before
 	public void before() throws IOException {
@@ -83,7 +83,7 @@ public class MailServiceTest {
 			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
 			greenMail.start();
 			try {
-				backendService.flushMail();
+				mailBackendService.flushMail();
 				MimeMessage[] ms = greenMail.getReceivedMessages();
 				assertEquals(3, ms.length);
 				for (MimeMessage msg : ms) {
@@ -114,7 +114,7 @@ public class MailServiceTest {
 				greenMail.stop();
 			}
 		} finally {
-			backendService.expireMail(LocalDateTime.now());
+			mailBackendService.expireMail(LocalDateTime.now());
 		}
 	}
 
@@ -131,7 +131,7 @@ public class MailServiceTest {
 			GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
 			greenMail.start();
 			try {
-				backendService.flushMail();
+				mailBackendService.flushMail();
 				MimeMessage[] ms = greenMail.getReceivedMessages();
 				assertEquals(3, ms.length);
 				for (MimeMessage msg : ms) {
@@ -162,7 +162,7 @@ public class MailServiceTest {
 				greenMail.stop();
 			}
 		} finally {
-			backendService.expireMail(LocalDateTime.now());
+			mailBackendService.expireMail(LocalDateTime.now());
 		}
 	}
 
@@ -209,7 +209,7 @@ public class MailServiceTest {
 				greenMail.stop();
 			}
 		} finally {
-			backendService.expireMail(LocalDateTime.now());
+			mailBackendService.expireMail(LocalDateTime.now());
 		}
 	}
 

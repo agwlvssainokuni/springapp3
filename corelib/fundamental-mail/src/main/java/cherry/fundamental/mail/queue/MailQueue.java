@@ -57,7 +57,7 @@ public interface MailQueue {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> list(LocalDateTime dtm);
+	List<Long> listToSend(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを実際に送信する。
@@ -75,7 +75,7 @@ public interface MailQueue {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> listSent(LocalDateTime dtm);
+	List<Long> listToExpire(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを削除する。
@@ -83,6 +83,6 @@ public interface MailQueue {
 	 * @param messageId メールデータの識別番号。
 	 * @return 指定された識別番号に該当するメールデータを削除したらtrue、該当するメールデータが存在しない場合はfalse。なお、該当するメールデータが存在したのに、メールの削除処理で異常が発生した場合は例外が発生する。
 	 */
-	boolean delete(long messageId);
+	boolean expire(long messageId);
 
 }

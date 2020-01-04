@@ -60,7 +60,7 @@ public class MailQueueImpl implements MailQueue {
 	}
 
 	@Override
-	public List<Long> list(LocalDateTime dtm) {
+	public List<Long> listToSend(LocalDateTime dtm) {
 		return txOps.execute(status -> queueStore.list(dtm));
 	}
 
@@ -79,12 +79,12 @@ public class MailQueueImpl implements MailQueue {
 	}
 
 	@Override
-	public List<Long> listSent(LocalDateTime dtm) {
-		return txOps.execute(status -> queueStore.listSent(dtm));
+	public List<Long> listToExpire(LocalDateTime dtm) {
+		return txOps.execute(status -> queueStore.listFinished(dtm));
 	}
 
 	@Override
-	public boolean delete(long messageId) {
+	public boolean expire(long messageId) {
 		return txOps.execute(status -> {
 			boolean result = queueStore.delete(messageId);
 			attachmentStore.delete(messageId);

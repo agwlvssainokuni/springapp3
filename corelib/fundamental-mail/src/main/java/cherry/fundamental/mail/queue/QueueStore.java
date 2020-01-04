@@ -76,7 +76,7 @@ public interface QueueStore {
 	 * @param dtm 基準日時。
 	 * @return メールデータの識別番号のリスト。
 	 */
-	List<Long> listSent(LocalDateTime dtm);
+	List<Long> listFinished(LocalDateTime dtm);
 
 	/**
 	 * メールデータの識別番号を指定して当該メールデータを削除する。

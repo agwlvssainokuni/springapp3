@@ -18,7 +18,7 @@ package cherry.fundamental.mail;
 
 import java.time.LocalDateTime;
 
-public interface BackendService {
+public interface MailBackendService {
 
 	void flushMail();
 

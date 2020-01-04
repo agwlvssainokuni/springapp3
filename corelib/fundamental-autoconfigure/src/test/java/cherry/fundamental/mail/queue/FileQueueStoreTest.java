@@ -201,7 +201,7 @@ public class FileQueueStoreTest {
 	}
 
 	@Test
-	public void testListSent() {
+	public void testListFinished() {
 		try {
 
 			LocalDateTime now = LocalDateTime.now();
@@ -221,22 +221,22 @@ public class FileQueueStoreTest {
 
 			assertEquals(0, queueStore.list(now.plusMinutes(1L)).size());
 
-			List<Long> list00 = queueStore.listSent(sentAt.minusSeconds(1L));
+			List<Long> list00 = queueStore.listFinished(sentAt.minusSeconds(1L));
 			assertTrue(list00.isEmpty());
 
-			List<Long> list01 = queueStore.listSent(sentAt);
+			List<Long> list01 = queueStore.listFinished(sentAt);
 			assertEquals(asList(id0), list01);
 
-			List<Long> list02 = queueStore.listSent(sentAt.plusSeconds(1L));
+			List<Long> list02 = queueStore.listFinished(sentAt.plusSeconds(1L));
 			assertEquals(asList(id0), list02);
 
-			List<Long> list10 = queueStore.listSent(sentAt.plusMinutes(1L).minusSeconds(1L));
+			List<Long> list10 = queueStore.listFinished(sentAt.plusMinutes(1L).minusSeconds(1L));
 			assertEquals(asList(id0), list10);
 
-			List<Long> list11 = queueStore.listSent(sentAt.plusMinutes(1L));
+			List<Long> list11 = queueStore.listFinished(sentAt.plusMinutes(1L));
 			assertEquals(asList(id0, id1), list11);
 
-			List<Long> list12 = queueStore.listSent(sentAt.plusMinutes(1L).plusSeconds(1L));
+			List<Long> list12 = queueStore.listFinished(sentAt.plusMinutes(1L).plusSeconds(1L));
 			assertEquals(asList(id0, id1), list12);
 
 		} finally {
@@ -301,9 +301,9 @@ public class FileQueueStoreTest {
 			new File(queuedir, "0000000000000000001/scheduledAt.txt").createNewFile();
 			assertEquals(asList(1L), queueStore.list(now));
 
-			assertTrue(queueStore.listSent(now).isEmpty());
+			assertTrue(queueStore.listFinished(now).isEmpty());
 			new File(queuedir, "0000000000000000001/sentAt.txt").createNewFile();
-			assertEquals(asList(1L), queueStore.listSent(now));
+			assertEquals(asList(1L), queueStore.listFinished(now));
 
 			assertTrue(new File(queuedir, "0000000000000000000").exists());
 			queueStore.delete(0L);
@@ -340,21 +340,21 @@ public class FileQueueStoreTest {
 			new File(queuedir, "not a number").mkdirs();
 			new File(queuedir, "not a number/scheduledAt.txt").createNewFile();
 			assertTrue(queueStore.list(now).isEmpty());
-			assertTrue(queueStore.listSent(now).isEmpty());
+			assertTrue(queueStore.listFinished(now).isEmpty());
 			new File(queuedir, "not a number/sentAt.txt").createNewFile();
 			assertTrue(queueStore.list(now).isEmpty());
-			assertTrue(queueStore.listSent(now).isEmpty());
+			assertTrue(queueStore.listFinished(now).isEmpty());
 			new File(queuedir, "not a number/scheduledAt.txt").delete();
 			new File(queuedir, "not a number/sentAt.txt").delete();
 			new File(queuedir, "not a number").delete();
 
 			Files.delete(queuedir.toPath());
 			assertTrue(queueStore.list(now).isEmpty());
-			assertTrue(queueStore.listSent(now).isEmpty());
+			assertTrue(queueStore.listFinished(now).isEmpty());
 
 			queuedir.createNewFile();
 			assertTrue(queueStore.list(now).isEmpty());
-			assertTrue(queueStore.listSent(now).isEmpty());
+			assertTrue(queueStore.listFinished(now).isEmpty());
 
 		} finally {
 			Files.deleteIfExists(queuedir.toPath());

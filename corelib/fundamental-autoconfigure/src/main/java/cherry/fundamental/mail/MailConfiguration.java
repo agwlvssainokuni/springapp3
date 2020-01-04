@@ -190,23 +190,23 @@ public class MailConfiguration {
 
 	// 送信実態。
 
-	@ConditionalOnClass({ BackendService.class })
+	@ConditionalOnClass({ MailBackendService.class })
 	@ConfigurationProperties(prefix = "cherry.mail.backend")
-	public static class BackendServiceCfg {
+	public static class MailBackendServiceCfg {
 
 		private double rateToSend = 2.0;
 		private TimeUnit rateUnit = TimeUnit.SECONDS;
 
 		@Bean
 		@ConditionalOnBean({ Bizcal.class })
-		public BackendService backendService(Bizcal bizcal, MailQueue mailQueue) {
-			return new BackendServiceImpl(bizcal::now, mailQueue, rateToSend, rateUnit);
+		public MailBackendService mailBackendService(Bizcal bizcal, MailQueue mailQueue) {
+			return new MailBackendServiceImpl(bizcal::now, mailQueue, rateToSend, rateUnit);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean({ Bizcal.class })
-		public BackendService backendService(MailQueue mailQueue) {
-			return new BackendServiceImpl(LocalDateTime::now, mailQueue, rateToSend, rateUnit);
+		public MailBackendService mailBackendService(MailQueue mailQueue) {
+			return new MailBackendServiceImpl(LocalDateTime::now, mailQueue, rateToSend, rateUnit);
 		}
 
 		public void setRateToSend(double rateToSend) {

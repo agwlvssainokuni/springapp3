@@ -160,7 +160,7 @@ public class FileQueueStore implements QueueStore {
 	}
 
 	@Override
-	public List<Long> listSent(LocalDateTime dtm) {
+	public List<Long> listFinished(LocalDateTime dtm) {
 		return doList(dtm, sentFile, destdir -> new File(destdir, sentFile).isFile());
 	}
 

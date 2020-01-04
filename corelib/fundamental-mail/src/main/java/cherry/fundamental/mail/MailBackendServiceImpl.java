@@ -29,7 +29,7 @@ import org.springframework.mail.MailException;
 import cherry.elemental.loop.Loop;
 import cherry.fundamental.mail.queue.MailQueue;
 
-public class BackendServiceImpl implements BackendService {
+public class MailBackendServiceImpl implements MailBackendService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -41,7 +41,7 @@ public class BackendServiceImpl implements BackendService {
 
 	private final TimeUnit rateUnit;
 
-	public BackendServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
+	public MailBackendServiceImpl(Supplier<LocalDateTime> currentDateTime, MailQueue mailQueue, double rateToSend,
 			TimeUnit rateUnit) {
 		this.currentDateTime = currentDateTime;
 		this.mailQueue = mailQueue;
@@ -53,7 +53,7 @@ public class BackendServiceImpl implements BackendService {
 	public void flushMail() {
 		try {
 			LocalDateTime now = currentDateTime.get();
-			List<Long> list = mailQueue.list(now);
+			List<Long> list = mailQueue.listToSend(now);
 			Loop.rate(rateToSend, rateUnit).iterate(list, messageId -> {
 				mailQueue.send(messageId, now);
 			});
@@ -66,9 +66,9 @@ public class BackendServiceImpl implements BackendService {
 
 	@Override
 	public void expireMail(LocalDateTime ldtm) {
-		List<Long> list = mailQueue.listSent(ldtm);
+		List<Long> list = mailQueue.listToExpire(ldtm);
 		for (Long messageId : list) {
-			mailQueue.delete(messageId);
+			mailQueue.expire(messageId);
 		}
 	}
 
