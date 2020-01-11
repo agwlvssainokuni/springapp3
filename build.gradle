@@ -113,8 +113,11 @@ subprojects {
 	repositories { mavenCentral() }
 	dependencies {
 		// elemental
-		if (project.name == "elemental-core") {
+		if (project.name == "elemental-chartype") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+		}
+		if (project.name == "elemental-code") {
+			// なし。
 		}
 		if (project.name == "elemental-collection") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
@@ -126,6 +129,9 @@ subprojects {
 		if (project.name == "elemental-crypto") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 			testImplementation "commons-codec:commons-codec:${versionCommonsCodec}"
+		}
+		if (project.name == "elemental-encdec") {
+			testImplementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 		}
 		if (project.name == "elemental-log") {
 			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
@@ -143,6 +149,9 @@ subprojects {
 		if (project.name == "elemental-paginate") {
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
 		}
+		if (project.name == "elemental-util") {
+			// なし。
+		}
 		if (project.name == "elemental-wakachi") {
 			// なし。
 		}
@@ -154,24 +163,26 @@ subprojects {
 		// fundamental
 		if (project.name == "fundamental-autoconfigure") {
 			compileOnly project(":corelib:elemental-crypto")
-			compileOnly project(":corelib:fundamental-core")
 			compileOnly project(":corelib:fundamental-appinfo")
 			compileOnly project(":corelib:fundamental-bizcal")
 			compileOnly project(":corelib:fundamental-buildinfo")
 			compileOnly project(":corelib:fundamental-crypto")
+			compileOnly project(":corelib:fundamental-formatter")
 			compileOnly project(":corelib:fundamental-mail")
 			compileOnly project(":corelib:fundamental-numbering")
 			compileOnly project(":corelib:fundamental-servlet")
-			testImplementation project(":corelib:elemental-core")
+			compileOnly project(":corelib:fundamental-validator")
+			testImplementation project(":corelib:elemental-chartype")
 			testImplementation project(":corelib:elemental-crypto")
-			testImplementation project(":corelib:fundamental-core")
 			testImplementation project(":corelib:fundamental-appinfo")
 			testImplementation project(":corelib:fundamental-bizcal")
 			testImplementation project(":corelib:fundamental-buildinfo")
 			testImplementation project(":corelib:fundamental-crypto")
+			testImplementation project(":corelib:fundamental-formatter")
 			testImplementation project(":corelib:fundamental-mail")
 			testImplementation project(":corelib:fundamental-numbering")
 			testImplementation project(":corelib:fundamental-servlet")
+			testImplementation project(":corelib:fundamental-validator")
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			testImplementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
@@ -183,15 +194,7 @@ subprojects {
 			testImplementation "org.springframework.boot:spring-boot-starter-mail"
 			testRuntimeOnly "com.h2database:h2:${versionH2}"
 			testImplementation "com.icegreen:greenmail:${versionGreenMail}"
-		}
-		if (project.name == "fundamental-core") {
-			implementation project(":corelib:elemental-core")
-			runtimeOnly "javax.el:javax.el-api:${versionJavaxEl}"
-			implementation "javax.validation:validation-api:${versionJavaxValidation}"
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			runtimeOnly "org.glassfish:javax.el:${versionJavaxEl}"
-			runtimeOnly "org.hibernate.validator:hibernate-validator:${versionHibernateValidator}"
-			implementation "org.springframework.boot:spring-boot-starter"
+			compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 		}
 		if (project.name == "fundamental-appinfo") {
 			implementation "org.springframework.boot:spring-boot-starter"
@@ -212,6 +215,9 @@ subprojects {
 			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
 			implementation "org.springframework.boot:spring-boot-starter"
 			testImplementation project(":corelib:elemental-crypto")
+		}
+		if (project.name == "fundamental-formatter") {
+			implementation "org.springframework.boot:spring-boot-starter"
 		}
 		if (project.name == "fundamental-mail") {
 			implementation project(":corelib:elemental-loop")
@@ -251,6 +257,15 @@ subprojects {
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-web"
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			testImplementation "org.springframework.boot:spring-boot-starter-json"
+		}
+		if (project.name == "fundamental-validator") {
+			implementation project(":corelib:elemental-chartype")
+			runtimeOnly "javax.el:javax.el-api:${versionJavaxEl}"
+			implementation "javax.validation:validation-api:${versionJavaxValidation}"
+			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			runtimeOnly "org.glassfish:javax.el:${versionJavaxEl}"
+			runtimeOnly "org.hibernate.validator:hibernate-validator:${versionHibernateValidator}"
+			implementation "org.springframework.boot:spring-boot-starter"
 		}
 
 		// galleryapp

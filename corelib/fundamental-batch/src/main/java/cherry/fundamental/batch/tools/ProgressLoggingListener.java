@@ -31,6 +31,7 @@ public class ProgressLoggingListener implements SpringApplicationRunListener {
 
 	private final Msg msg = new Msg();
 
+	@SuppressWarnings("unused")
 	private final SpringApplication app;
 
 	private final ApplicationArguments args;

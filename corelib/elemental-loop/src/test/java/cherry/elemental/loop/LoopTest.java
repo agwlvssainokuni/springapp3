@@ -25,6 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -36,16 +37,14 @@ public class LoopTest {
 
 	@Test
 	public void testIntervalRepeat_0times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.interval(100L).repeat(n -> n < 0L, action);
 		verify(action, never()).accept(anyLong());
 	}
 
 	@Test
 	public void testIntervalRepeat_1times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.interval(100L).repeat(n -> n < 1L, action);
 		verify(action, times(1)).accept(anyLong());
 		for (long i = 0L; i < 1L; i++) {
@@ -55,8 +54,7 @@ public class LoopTest {
 
 	@Test
 	public void testIntervalRepeat_2times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.interval(100L).repeat(n -> n < 2L, action);
 		verify(action, times(2)).accept(anyLong());
 		for (long i = 0L; i < 2L; i++) {
@@ -66,8 +64,7 @@ public class LoopTest {
 
 	@Test
 	public void testIntervalRepeat_10times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.interval(100L).repeat(n -> n < 10L, action);
 		verify(action, times(10)).accept(anyLong());
 		for (long i = 0L; i < 10L; i++) {
@@ -132,16 +129,14 @@ public class LoopTest {
 
 	@Test
 	public void testRateRepeat_0times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.rate(10.0).repeat(n -> n < 0L, action);
 		verify(action, never()).accept(anyLong());
 	}
 
 	@Test
 	public void testRateRepeat_1times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.rate(10.0).repeat(n -> n < 1L, action);
 		verify(action, times(1)).accept(anyLong());
 		for (long i = 0L; i < 1L; i++) {
@@ -151,8 +146,7 @@ public class LoopTest {
 
 	@Test
 	public void testRateRepeat_2times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.rate(10.0).repeat(n -> n < 2L, action);
 		verify(action, times(2)).accept(anyLong());
 		for (long i = 0L; i < 2L; i++) {
@@ -162,8 +156,7 @@ public class LoopTest {
 
 	@Test
 	public void testRateRepeat_10times() {
-		@SuppressWarnings("unchecked")
-		Consumer<Long> action = mock(Consumer.class);
+		LongConsumer action = mock(LongConsumer.class);
 		Loop.rate(10.0).repeat(n -> n < 10L, action);
 		verify(action, times(10)).accept(anyLong());
 		for (long i = 0L; i < 10L; i++) {
