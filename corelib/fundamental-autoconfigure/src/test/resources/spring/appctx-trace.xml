@@ -7,7 +7,10 @@
 	<!-- AOP: トレース設定 -->
 	<aop:aspectj-autoproxy proxy-target-class="false" />
 	<aop:config proxy-target-class="false">
-		<aop:pointcut id="tracePointcut" expression="execution(* cherry..*.*(..))" />
+		<aop:pointcut id="tracePointcut"
+			expression="execution(* cherry..*.*(..))
+				or execution(* org.springframework.mail.javamail.JavaMailSender.send(..))
+		" />
 		<aop:advisor pointcut-ref="tracePointcut" advice-ref="traceInterceptor" order="100" />
 	</aop:config>
 	<bean id="traceInterceptor" class="org.springframework.aop.interceptor.CustomizableTraceInterceptor">
