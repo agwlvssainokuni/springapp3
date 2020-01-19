@@ -306,6 +306,7 @@ subprojects {
 			runtimeOnly "com.h2database:h2:${versionH2}"
 		}
 		if (project.name == "gallery-ex01-web") {
+			runtimeOnly project(":corelib:fundamental-autoconfigure")
 			implementation project(":corelib:fundamental-servlet")
 			runtimeOnly project(":corelib:fundamental-spring")
 			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"

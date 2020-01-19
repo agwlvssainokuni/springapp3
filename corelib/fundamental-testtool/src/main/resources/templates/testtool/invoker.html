@@ -5,101 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="tool-uri" th:content="@{/testtool/invoker}" />
+<meta name="csrf" th:content="${_csrf.token}" />
 <title>呼出しツール</title>
 <link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
 <link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" />
 <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-	$(function() {
-
-		const uri = (function(root) {
-			return function() {
-				return root + $("#format").val();
-			};
-		})($("meta[name='tool-uri']").attr("content"));
-
-		$("#invokeBtn").click(function(event) {
-			$.ajax(uri(), {
-				method : "POST",
-				data : {
-					beanName : $("#beanName").val(),
-					className : $("#className").val(),
-					methodName : $("#methodName").val(),
-					methodIndex : $("#methodIndex").val(),
-					args : $("#args").val(),
-					argTypes : $("#argTypes").val()
-				},
-				success : function(data, textStatus, jqXHR) {
-					$("#result").val(data);
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert(errorThrown);
-				}
-			});
-		});
-
-		$("#className").blur(function(event) {
-			let old = $(this).data("old");
-			if (old == $(this).val()) {
-				return;
-			}
-			$(this).data("old", $(this).val());
-			if ("" == $(this).val()) {
-				return;
-			}
-			$.ajax(uri() + "?bean", {
-				method : "POST",
-				data : {
-					className : $("#className").val()
-				},
-				success : function(data, textStatus, jqXHR) {
-					$("#beanName option.withValue").remove();
-					for (let i = 0; i < data.length; i++) {
-						let opt = $("<option/>").addClass("withValue");
-						opt.attr("value", data[i]).attr("label", data[i]).text(data[i]);
-						$("#beanName").append(opt);
-					}
-					$("#beanName option.withValue:first").attr("selected", "selected");
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert(errorThrown);
-				}
-			});
-		});
-
-		$("#methodName").blur(function(event) {
-			let old = $(this).data("old");
-			if (old == $(this).val()) {
-				return;
-			}
-			$(this).data("old", $(this).val());
-			if ("" == $(this).val() || "" == $("#className").val()) {
-				return;
-			}
-			$.ajax(uri() + "?method", {
-				method : "POST",
-				data : {
-					className : $("#className").val(),
-					methodName : $("#methodName").val()
-				},
-				success : function(data, textStatus, jqXHR) {
-					$("#methodIndex option.withValue").remove();
-					for (let i = 0; i < data.length; i++) {
-						let opt = $("<option/>").addClass("withValue");
-						opt.attr("value", i).attr("label", data[i]).text(data[i]);
-						$("#methodIndex").append(opt);
-					}
-					$("#methodIndex option.withValue:first").attr("selected", "selected");
-				},
-				error : function(jqXHR, textStatus, errorThrown) {
-					alert(errorThrown);
-				}
-			});
-		});
-
-	});
-</script>
+<script type="text/javascript" th:src="@{/javascript/testtool/invoker.js}"></script>
 </head>
 <body role="document">
 	<div class="navbar navbar-default" role="navigation">
@@ -168,7 +80,7 @@
 		</div>
 	</div>
 	<div class="container" role="main">
-		<address class="text-center">Copyright &copy;, 2015,2019, agwlvssainokuni</address>
+		<address class="text-center">Copyright &copy;, 2015,2020, agwlvssainokuni</address>
 	</div>
 </body>
 </html>

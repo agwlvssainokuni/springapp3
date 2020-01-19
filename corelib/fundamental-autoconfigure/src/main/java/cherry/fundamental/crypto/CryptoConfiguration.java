@@ -53,6 +53,7 @@ import cherry.elemental.crypto.VersionedCrypto;
 import cherry.elemental.crypto.VersionedSignature;
 
 @Configuration
+@ConditionalOnClass({ Crypto.class })
 @PropertySource({ "classpath:cherry.properties" })
 public class CryptoConfiguration {
 

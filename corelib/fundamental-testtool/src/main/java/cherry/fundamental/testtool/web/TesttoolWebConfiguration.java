@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 agwlvssainokuni
+ * Copyright 2019,2020 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import cherry.fundamental.testtool.stub.StubRepository;
 public class TesttoolWebConfiguration {
 
 	@Bean
-	@ConditionalOnProperty(prefix = "fundamental.testtool.web", name = "invoker", havingValue = "true")
+	@ConditionalOnProperty(prefix = "cherry.testtool.web", name = "invoker", havingValue = "true")
 	public InvokerController invokerController(@Qualifier("jsonInvokerService") InvokerService jsonInvokerService,
 			@Qualifier("yamlInvokerService") InvokerService yamlInvokerService, ReflectionResolver reflectionResolver) {
 		return new InvokerControllerImpl(jsonInvokerService, yamlInvokerService, reflectionResolver);
 	}
 
 	@Bean
-	@ConditionalOnProperty(prefix = "fundamental.testtool.web", name = "stubconfig", havingValue = "true")
+	@ConditionalOnProperty(prefix = "cherry.testtool.web", name = "stubconfig", havingValue = "true")
 	public StubConfigController stubConfigController(
 			@Qualifier("jsonStubConfigService") StubConfigService jsonStubConfigService,
 			@Qualifier("yamlStubConfigService") StubConfigService yamlStubConfigService, StubRepository repository,
