@@ -20,23 +20,23 @@ import { common } from "./common";
 
 $(common);
 
-$(function() {
+$(function () {
 
-	$("#invokeBtn").click(function(event) {
+	$("#invokeBtn").click(function (event) {
 		$.ajax(uri(), {
-			method : "POST",
-			data : {
-				beanName : $("#beanName").val(),
-				className : $("#className").val(),
-				methodName : $("#methodName").val(),
-				methodIndex : $("#methodIndex").val(),
-				args : $("#args").val(),
-				argTypes : $("#argTypes").val()
+			method: "POST",
+			data: {
+				beanName: $("#beanName").val(),
+				className: $("#className").val(),
+				methodName: $("#methodName").val(),
+				methodIndex: $("#methodIndex").val(),
+				args: $("#args").val(),
+				argTypes: $("#argTypes").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				$("#result").val(data);
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});

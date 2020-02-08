@@ -20,63 +20,63 @@ import { common } from "./common";
 
 $(common);
 
-$(function() {
+$(function () {
 
-	$("#registerBtn").click(function(event) {
+	$("#registerBtn").click(function (event) {
 		$.ajax(uri(), {
-			method : "POST",
-			data : {
-				className : $("#className").val(),
-				methodName : $("#methodName").val(),
-				methodIndex : $("#methodIndex").val(),
-				value : $("#value").val(),
-				valueType : $("#valueType").val()
+			method: "POST",
+			data: {
+				className: $("#className").val(),
+				methodName: $("#methodName").val(),
+				methodIndex: $("#methodIndex").val(),
+				value: $("#value").val(),
+				valueType: $("#valueType").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				$("#result").val(data);
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});
 	});
 
-	$("#peekBtn").click(function(event) {
+	$("#peekBtn").click(function (event) {
 		$.ajax(uri() + "?peek", {
-			method : "POST",
-			data : {
-				className : $("#className").val(),
-				methodName : $("#methodName").val(),
-				methodIndex : $("#methodIndex").val()
+			method: "POST",
+			data: {
+				className: $("#className").val(),
+				methodName: $("#methodName").val(),
+				methodIndex: $("#methodIndex").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				if (data == null) {
 					return;
 				}
 				$("#value").val(data[0]);
 				$("#valueType").val(data[1]);
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});
 	});
 
-	$("#clearBtn").click(function(event) {
+	$("#clearBtn").click(function (event) {
 		$("#value").val("");
 		$("#valueType").val("");
 	});
 
-	$("#listBtn").click(function(event) {
+	$("#listBtn").click(function (event) {
 		$.ajax(uri() + "?list", {
-			method : "POST",
-			data : {
-				className : $("#className").val()
+			method: "POST",
+			data: {
+				className: $("#className").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				$("#result").val(data);
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});

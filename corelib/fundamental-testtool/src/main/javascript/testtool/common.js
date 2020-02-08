@@ -18,13 +18,13 @@ import { uri } from "./uri";
 
 export function common() {
 
-	(function(token) {
+	(function (token) {
 		$.ajaxSetup({
-			headers: { "X-CSRF-TOKEN" : token }
+			headers: { "X-CSRF-TOKEN": token }
 		});
 	})($("meta[name='csrf']").attr("content"));
 
-	$("#className").blur(function(event) {
+	$("#className").blur(function (event) {
 		let old = $(this).data("old");
 		if (old == $(this).val()) {
 			return;
@@ -34,11 +34,11 @@ export function common() {
 			return;
 		}
 		$.ajax(uri() + "?bean", {
-			method : "POST",
-			data : {
-				className : $("#className").val()
+			method: "POST",
+			data: {
+				className: $("#className").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				$("#beanName option.withValue").remove();
 				for (let i = 0; i < data.length; i++) {
 					let opt = $("<option/>").addClass("withValue");
@@ -47,13 +47,13 @@ export function common() {
 				}
 				$("#beanName option.withValue:first").attr("selected", "selected");
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});
 	});
 
-	$("#methodName").blur(function(event) {
+	$("#methodName").blur(function (event) {
 		let old = $(this).data("old");
 		if (old == $(this).val()) {
 			return;
@@ -63,12 +63,12 @@ export function common() {
 			return;
 		}
 		$.ajax(uri() + "?method", {
-			method : "POST",
-			data : {
-				className : $("#className").val(),
-				methodName : $("#methodName").val()
+			method: "POST",
+			data: {
+				className: $("#className").val(),
+				methodName: $("#methodName").val()
 			},
-			success : function(data, textStatus, jqXHR) {
+			success: function (data, textStatus, jqXHR) {
 				$("#methodIndex option.withValue").remove();
 				for (let i = 0; i < data.length; i++) {
 					let opt = $("<option/>").addClass("withValue");
@@ -77,7 +77,7 @@ export function common() {
 				}
 				$("#methodIndex option.withValue:first").attr("selected", "selected");
 			},
-			error : function(jqXHR, textStatus, errorThrown) {
+			error: function (jqXHR, textStatus, errorThrown) {
 				alert(errorThrown);
 			}
 		});

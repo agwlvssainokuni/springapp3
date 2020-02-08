@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export const uri = (function(root) {
-	return function() {
+export const uri = (function (root) {
+	return function () {
 		return root + $("#format").val();
 	};
 })($("meta[name='tool-uri']").attr("content"));
