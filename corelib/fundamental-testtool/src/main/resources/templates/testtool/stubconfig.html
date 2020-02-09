@@ -2,90 +2,91 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="tool-uri" th:content="@{/testtool/stubconfig}" />
 <meta name="csrf" th:content="${_csrf.token}" />
 <title>スタブ設定ツール</title>
-<link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
-<link rel="stylesheet" media="screen" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" />
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <script type="text/javascript" th:src="@{/javascript/testtool/stubconfig.js}"></script>
 </head>
-<body role="document">
-	<div class="navbar navbar-default" role="navigation">
-		<div class="container">
-			<div class="nav navbar-header">
-				<div class="navbar-brand">スタブ設定ツール</div>
+<body>
+	<div class="container">
+		<h2 class="my-3">スタブ設定ツール</h2>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<label for="format" class="col-form-label">電文書式</label>
+			</div>
+			<div class="col-lg-11">
+				<select id="format" name="format" class="form-control">
+					<option value="/yaml">YAML</option>
+					<option value="/json">JSON</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<label for="className" class="col-form-label">クラス</label>
+			</div>
+			<div class="col-lg-7">
+				<input type="text" id="className" name="className" class="form-control"
+					placeholder="BeanのFQCNを指定してください" />
+			</div>
+			<div class="col-lg-4">
+				<select id="beanName" name="beanName" class="form-control">
+					<option value="0" label="(参考)">(参考)</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<label for="methodName" class="col-form-label">メソッド</label>
+			</div>
+			<div class="col-lg-7">
+				<input type="text" id="methodName" name="methodName" class="form-control"
+					placeholder="メソッドの名称を指定してください" />
+			</div>
+			<div class="col-lg-4">
+				<select id="methodIndex" name="methodIndex" class="form-control">
+					<option value="0" label="メソッドを引数のパターンで指定">メソッドを引数のパターンで指定</option>
+				</select>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<label for="value" class="col-form-label p-0">返却値</label>
+				<button class="btn btn-secondary p-0" type="button" id="clearBtn">クリア</button>
+				<button class="btn btn-secondary p-0" type="button" id="peekBtn">現在値</button>
+			</div>
+			<div class="col-lg-7">
+				<textarea rows="3" cols="1" id="value" name="value" class="form-control"
+					placeholder="返却値をYAML形式で指定"></textarea>
+			</div>
+			<div class="col-lg-4">
+				<textarea rows="3" cols="1" id="valueType" name="valueType" class="form-control"
+					placeholder="返却値の型を指定(非必須)"></textarea>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<button class="btn btn-secondary btn-block" type="button" id="listBtn">一覧</button>
+			</div>
+			<div class="col-lg-11">
+				<button class="btn btn-primary btn-block" type="button" id="registerBtn">登録</button>
+			</div>
+		</div>
+		<div class="form-group row">
+			<div class="col-lg-1">
+				<label for="result" class="col-form-label">登録結果</label>
+			</div>
+			<div class="col-lg-11">
+				<textarea rows="5" cols="1" id="result" name="result" class="form-control"></textarea>
 			</div>
 		</div>
 	</div>
-	<div class="container" role="main">
-		<h2 class="page-header">スタブ設定ツール</h2>
-		<div role="form" class="form-horizontal">
-			<div class="form-group">
-				<label for="format" class="col-sm-1 control-label">電文書式</label>
-				<div class="col-sm-11">
-					<select id="format" name="format" class="form-control">
-						<option value="/yaml">YAML</option>
-						<option value="/json">JSON</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="className" class="col-sm-1 control-label">クラス</label>
-				<div class="col-sm-7">
-					<input type="text" id="className" name="className" class="form-control" placeholder="BeanのFQCNを指定してください" />
-				</div>
-				<div class="col-sm-4">
-					<select id="beanName" name="beanName" class="form-control">
-						<option value="0" label="(参考)">(参考)</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="methodName" class="col-sm-1 control-label">メソッド</label>
-				<div class="col-sm-7">
-					<input type="text" id="methodName" name="methodName" class="form-control" placeholder="メソッドの名称を指定してください" />
-				</div>
-				<div class="col-sm-4">
-					<select id="methodIndex" name="methodIndex" class="form-control">
-						<option value="0" label="メソッドを引数のパターンで指定">メソッドを引数のパターンで指定</option>
-					</select>
-				</div>
-			</div>
-			<div class="form-group">
-				<label for="value" class="col-sm-1 control-label">返却値
-					<button class="btn btn-default btn-xs" type="button" id="clearBtn">クリア</button>
-					<button class="btn btn-default btn-xs" type="button" id="peekBtn">現在値</button>
-				</label>
-				<div class="col-sm-7">
-					<textarea rows="3" cols="1" id="value" name="value" class="form-control" placeholder="返却値をYAML形式で指定"></textarea>
-				</div>
-				<div class="col-sm-4">
-					<textarea rows="3" cols="1" id="valueType" name="valueType" class="form-control" placeholder="返却値の型を指定(非必須)"></textarea>
-				</div>
-			</div>
-			<div class="form-group">
-				<div class="col-sm-1">
-					<button class="btn btn-default btn-block" type="button" id="listBtn">一覧</button>
-				</div>
-				<div class="col-sm-11">
-					<button class="btn btn-default btn-block" type="button" id="registerBtn">登録</button>
-				</div>
-			</div>
-		</div>
-		<div class="form-horizontal" role="form">
-			<div class="form-group">
-				<label for="result" class="col-sm-1 control-label">登録結果</label>
-				<div class="col-sm-11">
-					<textarea rows="5" cols="1" id="result" name="result" class="form-control"></textarea>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div class="container" role="main">
+	<div class="container">
 		<address class="text-center">Copyright &copy;, 2015,2020, agwlvssainokuni</address>
 	</div>
 </body>
