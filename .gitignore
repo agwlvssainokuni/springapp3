@@ -37,6 +37,9 @@ bin/
 .settings/
 .springBeans
 
+# VS Code
+.vscode/
+
 # misc
 .DS_Store
 *~
