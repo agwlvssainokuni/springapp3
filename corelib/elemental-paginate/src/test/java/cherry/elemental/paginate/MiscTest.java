@@ -32,14 +32,14 @@ public class MiscTest {
 		page.setCount(2);
 		page.setFrom(3);
 		page.setTo(4);
-		assertEquals("Page[no=1,count=2,from=3,to=4]", page.toString());
+		assertEquals("Page[count=2,from=3,no=1,to=4]", page.toString());
 	}
 
 	@Test
 	public void testPageSetToString() {
 		PageSet pageSet = new PageSet();
 		assertEquals(
-				"PageSet[totalCount=0,pageSz=0,current=<null>,prev=<null>,next=<null>,first=<null>,last=<null>,range=<null>]",
+				"PageSet[current=<null>,first=<null>,last=<null>,next=<null>,pageSz=0,prev=<null>,range=<null>,totalCount=0]",
 				pageSet.toString());
 	}
 

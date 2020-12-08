@@ -31,7 +31,7 @@ public class DefinitionTest {
 		assertEquals("template", dto.getTemplate());
 		assertEquals(100000, dto.getMinValue());
 		assertEquals(999999, dto.getMaxValue());
-		assertEquals("Definition[template=template,minValue=100000,maxValue=999999]", dto.toString());
+		assertEquals("Definition[maxValue=999999,minValue=100000,template=template]", dto.toString());
 	}
 
 }

@@ -78,7 +78,7 @@ public class PageSetTest {
 		pageSet.setRange(Arrays.asList(p0, p1, p2, p3, p4));
 
 		assertEquals(
-				"PageSet[totalCount=5,pageSz=1,current=Page[no=2,count=1,from=2,to=2],prev=Page[no=1,count=1,from=1,to=1],next=Page[no=3,count=1,from=3,to=3],first=Page[no=0,count=1,from=0,to=0],last=Page[no=4,count=1,from=4,to=4],range=[Page[no=0,count=1,from=0,to=0], Page[no=1,count=1,from=1,to=1], Page[no=2,count=1,from=2,to=2], Page[no=3,count=1,from=3,to=3], Page[no=4,count=1,from=4,to=4]]]",
+				"PageSet[current=Page[count=1,from=2,no=2,to=2],first=Page[count=1,from=0,no=0,to=0],last=Page[count=1,from=4,no=4,to=4],next=Page[count=1,from=3,no=3,to=3],pageSz=1,prev=Page[count=1,from=1,no=1,to=1],range={Page[count=1,from=0,no=0,to=0],Page[count=1,from=1,no=1,to=1],Page[count=1,from=2,no=2,to=2],Page[count=1,from=3,no=3,to=3],Page[count=1,from=4,no=4,to=4]},totalCount=5]",
 				pageSet.toString());
 	}
 

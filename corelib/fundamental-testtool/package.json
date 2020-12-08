@@ -4,7 +4,7 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"clean": "rm -rf src/main/resources/static/javascript",
+		"clean": "rimraf src/main/resources/static/javascript",
 		"build": "webpack --mode=production"
 	},
 	"repository": {
@@ -18,7 +18,8 @@
 	},
 	"homepage": "https://github.com/agwlvssainokuni/springapp3#readme",
 	"devDependencies": {
-		"webpack": "^4.43.0",
-		"webpack-cli": "^3.3.11"
+		"rimraf": "^3.0.2",
+		"webpack": "^5.10.0",
+		"webpack-cli": "^4.2.0"
 	}
 }

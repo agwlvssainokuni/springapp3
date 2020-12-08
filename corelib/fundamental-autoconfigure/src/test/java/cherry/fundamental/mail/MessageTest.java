@@ -46,7 +46,7 @@ public class MessageTest {
 	public void testToString() {
 		Message message = new Message(null, null, null, null, null, null, null, null);
 		assertEquals(
-				"Message[from=<null>,to=<null>,cc=<null>,bcc=<null>,replyTo=<null>,subject=<null>,text=<null>,html=<null>]",
+				"Message[bcc=<null>,cc=<null>,from=<null>,html=<null>,replyTo=<null>,subject=<null>,text=<null>,to=<null>]",
 				message.toString());
 	}
 

@@ -30,7 +30,7 @@ public class CharTypeResultTest {
 		assertTrue(result.isValid());
 		assertEquals(-1, result.getIndex());
 		assertEquals(-1, result.getCodePoint());
-		assertEquals("CharTypeResult[valid=true,index=-1,codePoint=-1]", result.toString());
+		assertEquals("CharTypeResult[codePoint=-1,index=-1,valid=true]", result.toString());
 	}
 
 	@Test
@@ -39,7 +39,7 @@ public class CharTypeResultTest {
 		assertFalse(result.isValid());
 		assertEquals(1, result.getIndex());
 		assertEquals(2, result.getCodePoint());
-		assertEquals("CharTypeResult[valid=false,index=1,codePoint=2]", result.toString());
+		assertEquals("CharTypeResult[codePoint=2,index=1,valid=false]", result.toString());
 	}
 
 }
