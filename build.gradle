@@ -42,14 +42,8 @@ buildscript {
 	}
 }
 
-plugins {
-	id "java-library"
-	id "eclipse"
-}
-
 subprojects {
 	apply plugin: "java-library"
-	apply plugin: "eclipse"
 	apply plugin: "io.spring.dependency-management"
 
 	if (project.name.startsWith("fundamental-")) {

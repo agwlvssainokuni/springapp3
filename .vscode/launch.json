@@ -1,0 +1,44 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<gallery-blank-web>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "mainClass": "cherry.gallery.Main",
+            "projectName": "gallery-blank-web",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<gallery-ex01-web>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "mainClass": "cherry.gallery.Main",
+            "projectName": "gallery-ex01-web",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<gallery-login-inmem-web>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "mainClass": "cherry.gallery.Main",
+            "projectName": "gallery-login-inmem-web",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Main<gallery-login-jdbc-web>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "mainClass": "cherry.gallery.Main",
+            "projectName": "gallery-login-jdbc-web",
+            "args": ""
+        }
+    ]
+}

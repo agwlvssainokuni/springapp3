@@ -32,13 +32,13 @@ target/
 
 # Eclipse
 bin/
-.classpath
-.project
-.settings/
-.springBeans
+#.classpath
+#.project
+#.settings/
+#.springBeans
 
 # VS Code
-.vscode/
+#.vscode/
 
 # misc
 .DS_Store
