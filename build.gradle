@@ -1,6 +1,9 @@
 buildscript {
 	ext {
 
+		// Spring Bootのバージョン。
+		versionSpringBoot = "2.5.5"
+
 		// リリース物件ビルド構成。
 		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
 		propInstid = getProjectProperty("instid", "00")
@@ -13,47 +16,22 @@ buildscript {
 		propBatchdir = getProjectProperty("batchdir", "${propInstdir}/batch")
 		propBatchconfdir = getProjectProperty("batchconfdir", "${propBatchdir}/conf")
 		propBatchlogdir = getProjectProperty("batchlogdir", "${propBatchdir}/log")
+	}
+}
 
-		// 依存ライブラリのバージョン。
-		versionJavaxEl = "3.0.0"
-		versionJavaxServlet = "4.0.1"
-		versionJavaxValidation = "2.0.1.Final"
-		versionCommonsLang3 = "3.11"
-		versionCommonsCollections4 = "4.4"
-		versionCommonsCodec = "1.15"
-		versionCommonsCsv = "1.8"
-		versionGuava = "30.0-jre"
-		versionHibernateValidator = "6.1.6.Final"
-		versionFreemarker = "2.3.30"
-		versionSpringBoot = "2.3.5.RELEASE"
-		versionSlf4j = "1.7.30"
-		versionLogback = "1.2.3"
-		versionJanino = "3.1.2"
-		versionFluentLogger = "0.3.4"
-		versionJunit = "4.12"
-		versionHamcrest = "1.3"
-		versionMockito = "2.28.2"
-		versionH2 = "1.4.200"
-		versionGreenMail = "1.6.1"
-	}
-	repositories { mavenCentral() }
-	dependencies {
-		classpath "org.springframework.boot:spring-boot-gradle-plugin:${versionSpringBoot}"
-	}
+plugins {
+	id "io.spring.dependency-management" version "1.0.11.RELEASE" apply false
+	id "org.springframework.boot" version "${versionSpringBoot}" apply false
 }
 
 subprojects {
 	apply plugin: "java-library"
 	apply plugin: "io.spring.dependency-management"
-
-	if (project.name.startsWith("fundamental-")) {
-		dependencyManagement {
-			imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}") }
-		}
+	if (project.name.startsWith("gallery-")) {
+		apply plugin: "org.springframework.boot"
 	}
 
 	if (project.name.startsWith("gallery-")) {
-		apply plugin: "org.springframework.boot"
 		springBoot { mainClassName = "cherry.gallery.Main" }
 	}
 
@@ -105,43 +83,57 @@ subprojects {
 	}
 
 	repositories { mavenCentral() }
+
+	dependencyManagement {
+		imports { mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}" }
+		dependencies {
+			dependency group: "org.apache.commons", name: "commons-collections4", version: "4.4"
+			dependency group: "org.apache.commons", name: "commons-csv", version: "1.9.0"
+			dependency group: "com.google.guava", name: "guava", version: "31.0-jre"
+			dependency group: "javax.el", name: "javax.el-api", version: "3.0.0"
+			dependency group: "org.glassfish", name: "javax.el", version: "3.0.0"
+			dependency group: "org.fluentd", name: "fluent-logger", version: "0.3.4"
+			dependency group: "com.icegreen", name: "greenmail", version: "1.6.5"
+		}
+	}
+
 	dependencies {
 		// elemental
 		if (project.name == "elemental-chartype") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 		}
 		if (project.name == "elemental-code") {
 			// なし。
 		}
 		if (project.name == "elemental-collection") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.apache.commons:commons-collections4"
 		}
 		if (project.name == "elemental-command") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 		}
 		if (project.name == "elemental-crypto") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			testImplementation "commons-codec:commons-codec:${versionCommonsCodec}"
+			implementation "org.apache.commons:commons-lang3"
+			testImplementation "commons-codec:commons-codec"
 		}
 		if (project.name == "elemental-encdec") {
-			testImplementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			testImplementation "org.apache.commons:commons-lang3"
 		}
 		if (project.name == "elemental-log") {
-			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			implementation "org.slf4j:slf4j-api"
 		}
 		if (project.name == "elemental-logback") {
-			implementation "ch.qos.logback:logback-classic:${versionLogback}"
-			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
-			testRuntimeOnly "org.codehaus.janino:janino:${versionJanino}"
+			implementation "ch.qos.logback:logback-classic"
+			testImplementation "org.slf4j:slf4j-api"
+			testRuntimeOnly "org.codehaus.janino:janino"
 		}
 		if (project.name == "elemental-loop") {
-			implementation "com.google.guava:guava:${versionGuava}"
-			testImplementation "org.slf4j:slf4j-api:${versionSlf4j}"
-			testRuntimeOnly "ch.qos.logback:logback-classic:${versionLogback}"
+			implementation "com.google.guava:guava"
+			testImplementation "org.slf4j:slf4j-api"
+			testRuntimeOnly "ch.qos.logback:logback-classic"
 		}
 		if (project.name == "elemental-paginate") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 		}
 		if (project.name == "elemental-util") {
 			// なし。
@@ -150,8 +142,8 @@ subprojects {
 			// なし。
 		}
 		if (project.name == "elemental-fluent") {
-			implementation "org.fluentd:fluent-logger:${versionFluentLogger}"
-			implementation "ch.qos.logback:logback-classic:${versionLogback}"
+			implementation "org.fluentd:fluent-logger"
+			implementation "ch.qos.logback:logback-classic"
 		}
 
 		// fundamental
@@ -178,16 +170,16 @@ subprojects {
 			testImplementation project(":corelib:fundamental-servlet")
 			testImplementation project(":corelib:fundamental-validator")
 			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
-			testImplementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			testImplementation "com.google.guava:guava:${versionGuava}"
-			testImplementation "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
+			implementation "org.apache.commons:commons-collections4"
+			testImplementation "org.apache.commons:commons-lang3"
+			testImplementation "com.google.guava:guava"
+			testImplementation "javax.servlet:javax.servlet-api"
 			compileOnly "org.springframework.boot:spring-boot-starter-jdbc"
 			testImplementation "org.springframework.boot:spring-boot-starter-jdbc"
 			compileOnly "org.springframework.boot:spring-boot-starter-mail"
 			testImplementation "org.springframework.boot:spring-boot-starter-mail"
-			testRuntimeOnly "com.h2database:h2:${versionH2}"
-			testImplementation "com.icegreen:greenmail:${versionGreenMail}"
+			testRuntimeOnly "com.h2database:h2"
+			testImplementation "com.icegreen:greenmail"
 			compileOnly "org.springframework.boot:spring-boot-configuration-processor"
 		}
 		if (project.name == "fundamental-appinfo") {
@@ -197,7 +189,7 @@ subprojects {
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
 		if (project.name == "fundamental-bizcal") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 			implementation "org.yaml:snakeyaml"
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
@@ -206,7 +198,7 @@ subprojects {
 		}
 		if (project.name == "fundamental-crypto") {
 			implementation project(":corelib:elemental-crypto")
-			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.apache.commons:commons-collections4"
 			implementation "org.springframework.boot:spring-boot-starter"
 			testImplementation project(":corelib:elemental-crypto")
 		}
@@ -215,35 +207,35 @@ subprojects {
 		}
 		if (project.name == "fundamental-mail") {
 			implementation project(":corelib:elemental-loop")
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.freemarker:freemarker:${versionFreemarker}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.freemarker:freemarker"
 			implementation "org.yaml:snakeyaml"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			implementation "org.springframework.boot:spring-boot-starter-mail"
 		}
 		if (project.name == "fundamental-numbering") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.apache.commons:commons-collections4"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
-			testImplementation "com.h2database:h2:${versionH2}"
+			testImplementation "com.h2database:h2"
 		}
 		if (project.name == "fundamental-servlet") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.slf4j:slf4j-api"
 			implementation "org.springframework.boot:spring-boot-starter"
-			compileOnly "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
-			testImplementation "javax.servlet:javax.servlet-api:${versionJavaxServlet}"
+			compileOnly "javax.servlet:javax.servlet-api"
+			testImplementation "javax.servlet:javax.servlet-api"
 		}
 		if (project.name == "fundamental-spring") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.slf4j:slf4j-api:${versionSlf4j}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.slf4j:slf4j-api"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-web"
 			implementation "org.springframework.boot:spring-boot-starter-security"
 		}
 		if (project.name == "fundamental-testtool") {
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.apache.commons:commons-collections4:${versionCommonsCollections4}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.apache.commons:commons-collections4"
 			implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-json"
@@ -254,18 +246,18 @@ subprojects {
 		}
 		if (project.name == "fundamental-validator") {
 			implementation project(":corelib:elemental-chartype")
-			runtimeOnly "javax.el:javax.el-api:${versionJavaxEl}"
-			implementation "javax.validation:validation-api:${versionJavaxValidation}"
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			runtimeOnly "org.glassfish:javax.el:${versionJavaxEl}"
-			runtimeOnly "org.hibernate.validator:hibernate-validator:${versionHibernateValidator}"
+			runtimeOnly "javax.el:javax.el-api"
+			implementation "javax.validation:validation-api"
+			implementation "org.apache.commons:commons-lang3"
+			runtimeOnly "org.glassfish:javax.el"
+			runtimeOnly "org.hibernate.validator:hibernate-validator"
 			implementation "org.springframework.boot:spring-boot-starter"
 		}
 
 		// galleryapp
 		if (project.name == "gallery-blank-web") {
 			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-web"
 			implementation "org.springframework.boot:spring-boot-starter-security"
@@ -276,7 +268,7 @@ subprojects {
 		}
 		if (project.name == "gallery-login-inmem-web") {
 			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-web"
 			implementation "org.springframework.boot:spring-boot-starter-security"
@@ -287,7 +279,7 @@ subprojects {
 		}
 		if (project.name == "gallery-login-jdbc-web") {
 			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
+			implementation "org.apache.commons:commons-lang3"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-web"
 			implementation "org.springframework.boot:spring-boot-starter-security"
@@ -297,14 +289,14 @@ subprojects {
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-jdbc"
 			runtimeOnly "org.flywaydb:flyway-core"
-			runtimeOnly "com.h2database:h2:${versionH2}"
+			runtimeOnly "com.h2database:h2"
 		}
 		if (project.name == "gallery-ex01-web") {
 			runtimeOnly project(":corelib:fundamental-autoconfigure")
 			implementation project(":corelib:fundamental-servlet")
 			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3:${versionCommonsLang3}"
-			implementation "org.apache.commons:commons-csv:${versionCommonsCsv}"
+			implementation "org.apache.commons:commons-lang3"
+			implementation "org.apache.commons:commons-csv"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-web"
 			implementation "org.springframework.boot:spring-boot-starter-security"
@@ -314,13 +306,13 @@ subprojects {
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
 			runtimeOnly "org.flywaydb:flyway-core"
-			runtimeOnly "com.h2database:h2:${versionH2}"
+			runtimeOnly "com.h2database:h2"
 		}
 
 		// テストライブラリ。
-		testImplementation "junit:junit:${versionJunit}"
-		testImplementation "org.hamcrest:hamcrest-all:${versionHamcrest}"
-		testImplementation "org.mockito:mockito-core:${versionMockito}"
+		testImplementation "junit:junit"
+		testImplementation "org.hamcrest:hamcrest-core"
+		testImplementation "org.mockito:mockito-core"
 		if (project.name.startsWith("fundamental-")) {
 			testImplementation "org.springframework.boot:spring-boot-starter-test"
 			testRuntimeOnly "org.springframework.boot:spring-boot-starter-aop"

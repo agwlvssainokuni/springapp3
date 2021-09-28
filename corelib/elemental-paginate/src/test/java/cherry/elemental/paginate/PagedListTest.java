@@ -48,7 +48,7 @@ public class PagedListTest {
 		pagedList.setList(Arrays.asList(1L, 2L, 3L));
 
 		assertEquals(
-				"PagedList[list={1,2,3},pageSet=PageSet[current=<null>,first=<null>,last=<null>,next=<null>,pageSz=0,prev=<null>,range=<null>,totalCount=0]]",
+				"PagedList[list=[1, 2, 3],pageSet=PageSet[current=<null>,first=<null>,last=<null>,next=<null>,pageSz=0,prev=<null>,range=<null>,totalCount=0]]",
 				pagedList.toString());
 	}
 
