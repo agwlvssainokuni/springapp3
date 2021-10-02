@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,74 +16,73 @@
 
 package cherry.elemental.util;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LocalDateUtilTest {
 
 	@Test
 	public void testRangeFromLocalDate() {
 		LocalDate now = LocalDate.now();
-		assertThat(LocalDateUtil.rangeFrom((LocalDate) null), is(nullValue()));
-		assertThat(LocalDateUtil.rangeFrom(now),
-				is(LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth())));
+		assertNull(LocalDateUtil.rangeFrom((LocalDate) null));
+		assertEquals(LocalDateUtil.rangeFrom(now),
+				LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth()));
 	}
 
 	@Test
 	public void testRangeFromLocalDateTime() {
 		LocalDateTime now = LocalDateTime.now();
-		assertThat(LocalDateUtil.rangeFrom((LocalDateTime) null), is(nullValue()));
-		assertThat(LocalDateUtil.rangeFrom(now),
-				is(LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth())));
+		assertNull(LocalDateUtil.rangeFrom((LocalDateTime) null));
+		assertEquals(LocalDateUtil.rangeFrom(now),
+				LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth()));
 	}
 
 	@Test
 	public void testRangeToLocalDate() {
 		LocalDate now = LocalDate.now();
-		assertThat(LocalDateUtil.rangeTo((LocalDate) null), is(nullValue()));
-		assertThat(LocalDateUtil.rangeTo(now), is(LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth())
-				.plusDays(1)));
+		assertNull(LocalDateUtil.rangeTo((LocalDate) null));
+		assertEquals(LocalDateUtil.rangeTo(now),
+				LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth()).plusDays(1));
 	}
 
 	@Test
 	public void testRangeToLocalDateTime() {
 		LocalDateTime now = LocalDateTime.now();
-		assertThat(LocalDateUtil.rangeTo((LocalDateTime) null), is(nullValue()));
-		assertThat(LocalDateUtil.rangeTo(now), is(LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth())
-				.plusDays(1)));
+		assertNull(LocalDateUtil.rangeTo((LocalDateTime) null));
+		assertEquals(LocalDateUtil.rangeTo(now),
+				LocalDate.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth()).plusDays(1));
 	}
 
 	@Test
 	public void testNormalizeYm() {
 		LocalDate now = LocalDate.now();
-		assertThat(LocalDateUtil.normalizeYm(null), is(nullValue()));
-		assertThat(LocalDateUtil.normalizeYm(now), is(LocalDate.of(now.getYear(), now.getMonthValue(), 1)));
+		assertNull(LocalDateUtil.normalizeYm(null));
+		assertEquals(LocalDateUtil.normalizeYm(now), LocalDate.of(now.getYear(), now.getMonthValue(), 1));
 	}
 
 	@Test
 	public void testYmRangeFrom() {
 		LocalDate now = LocalDate.now();
-		assertThat(LocalDateUtil.ymRangeFrom(null), is(nullValue()));
-		assertThat(LocalDateUtil.ymRangeFrom(now), is(LocalDate.of(now.getYear(), now.getMonthValue(), 1)));
+		assertNull(LocalDateUtil.ymRangeFrom(null));
+		assertEquals(LocalDateUtil.ymRangeFrom(now), LocalDate.of(now.getYear(), now.getMonthValue(), 1));
 	}
 
 	@Test
 	public void testYmRangeTo() {
 		LocalDate now = LocalDate.now();
-		assertThat(LocalDateUtil.ymRangeTo(null), is(nullValue()));
-		assertThat(LocalDateUtil.ymRangeTo(now), is(LocalDate.of(now.getYear(), now.getMonthValue(), 1).plusMonths(1)));
+		assertNull(LocalDateUtil.ymRangeTo(null));
+		assertEquals(LocalDateUtil.ymRangeTo(now), LocalDate.of(now.getYear(), now.getMonthValue(), 1).plusMonths(1));
 	}
 
 	@Test
 	public void testMisc() {
-		assertThat(new LocalDateUtil(), is(notNullValue()));
+		assertNotNull(new LocalDateUtil());
 	}
 
 }

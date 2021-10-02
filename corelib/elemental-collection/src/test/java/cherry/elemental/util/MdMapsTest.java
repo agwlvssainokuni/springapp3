@@ -1,5 +1,5 @@
 /*
- * Copyright 2016,2019 agwlvssainokuni
+ * Copyright 2016,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package cherry.elemental.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MdMapsTest {
 
@@ -95,12 +95,12 @@ public class MdMapsTest {
 
 	// @Test
 	public void test5d() {
-		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map1 = MdMaps.defaulted5dMap(
-				MdMaps.TREEMAP, Boolean.FALSE);
-		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map2 = MdMaps.defaulted5dMap(
-				MdMaps.TREEMAP, () -> Boolean.TRUE);
-		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map3 = MdMaps.lazy5dMap(
-				MdMaps.TREEMAP, () -> Boolean.FALSE);
+		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map1 = MdMaps
+				.defaulted5dMap(MdMaps.TREEMAP, Boolean.FALSE);
+		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map2 = MdMaps
+				.defaulted5dMap(MdMaps.TREEMAP, () -> Boolean.TRUE);
+		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map3 = MdMaps
+				.lazy5dMap(MdMaps.TREEMAP, () -> Boolean.FALSE);
 		for (int x1 = 0; x1 < 100; x1++) {
 			for (int x2 = 0; x2 < 10; x2++) {
 				for (int x3 = 0; x3 < 10; x3++) {
@@ -147,8 +147,8 @@ public class MdMapsTest {
 		Map<Integer, Map<Integer, Boolean>> map2d = Collections.singletonMap(1, map1d);
 		Map<Integer, Map<Integer, Map<Integer, Boolean>>> map3d = Collections.singletonMap(1, map2d);
 		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>> map4d = Collections.singletonMap(1, map3d);
-		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map5d = Collections.singletonMap(
-				1, map4d);
+		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>> map5d = Collections
+				.singletonMap(1, map4d);
 		Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Map<Integer, Boolean>>>>>> map6d = Collections
 				.singletonMap(1, map5d);
 		assertFalse(MdMaps.getOpt(map1d, 1).isPresent());

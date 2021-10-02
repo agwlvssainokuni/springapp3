@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,31 @@
 
 package cherry.fundamental.testtool.stub;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
 import cherry.fundamental.testtool.reflect.ReflectionResolver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = StubConfigServiceTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
@@ -62,12 +62,12 @@ public class StubConfigServiceTest {
 
 	private Method method;
 
-	@Before
+	@BeforeEach
 	public void before() throws NoSuchMethodException {
 		method = ToolTester.class.getDeclaredMethod("toBeStubbed1", Long.class, Long.class);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		for (Method m : repository.getStubbedMethod()) {
 			repository.clear(m);

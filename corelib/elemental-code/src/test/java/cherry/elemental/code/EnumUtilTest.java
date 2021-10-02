@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,12 @@
 package cherry.elemental.code;
 
 import static cherry.elemental.code.EnumUtil.getEnumList;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EnumUtilTest {
 
@@ -34,9 +33,9 @@ public class EnumUtilTest {
 	@Test
 	public void testGetEnumList() {
 		List<FlagCode> list = getEnumList(FlagCode.class);
-		assertThat(list.size(), is(2));
-		assertThat(list.get(0), is(FlagCode.FALSE));
-		assertThat(list.get(1), is(FlagCode.TRUE));
+		assertEquals(list.size(), 2);
+		assertEquals(list.get(0), FlagCode.FALSE);
+		assertEquals(list.get(1), FlagCode.TRUE);
 	}
 
 	@Test

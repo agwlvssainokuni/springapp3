@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 agwlvssainokuni
+ * Copyright 2019,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,7 @@ public class ItemService {
 
 	private ResultSetExtractor<Long> resultSetExtractor(Writer out) {
 		return resultSet -> {
-			CSVFormat format = CSVFormat.EXCEL.withHeader(resultSet);
+			CSVFormat format = CSVFormat.EXCEL.builder().setHeader(resultSet).build();
 			try (CSVPrinter csv = new CSVPrinter(out, format)) {
 				int columnCount = resultSet.getMetaData().getColumnCount();
 				long count = 0L;

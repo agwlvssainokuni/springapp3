@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 agwlvssainokuni
+ * Copyright 2019,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

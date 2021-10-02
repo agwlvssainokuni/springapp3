@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AesCryptoTest {
 
@@ -39,7 +40,7 @@ public class AesCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(plain));
+			assertArrayEquals(dec, plain);
 		}
 	}
 
@@ -54,7 +55,7 @@ public class AesCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(plain));
+			assertArrayEquals(dec, plain);
 		}
 	}
 
@@ -77,11 +78,11 @@ public class AesCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc0 = crypto0.encrypt(plain);
 			byte[] enc1 = crypto1.encrypt(plain);
-			assertThat(enc1, is(not(enc0)));
+			assertFalse(Arrays.equals(enc1, enc0));
 			byte[] dec0 = crypto0.decrypt(enc0);
 			byte[] dec1 = crypto1.decrypt(enc1);
-			assertThat(dec0, is(plain));
-			assertThat(dec1, is(plain));
+			assertArrayEquals(dec0, plain);
+			assertArrayEquals(dec1, plain);
 		}
 	}
 
@@ -100,7 +101,7 @@ public class AesCryptoTest {
 				byte[] enc = crypto.encrypt(plain);
 				set.add(Hex.encodeHexString(enc));
 			}
-			assertThat(set.size(), is(size));
+			assertEquals(set.size(), size);
 		}
 	}
 

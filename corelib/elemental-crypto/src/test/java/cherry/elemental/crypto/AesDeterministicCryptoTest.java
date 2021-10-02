@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AesDeterministicCryptoTest {
 
@@ -35,7 +34,7 @@ public class AesDeterministicCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(plain));
+			assertArrayEquals(dec, plain);
 		}
 	}
 
@@ -51,7 +50,7 @@ public class AesDeterministicCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(plain));
+			assertArrayEquals(dec, plain);
 		}
 	}
 
@@ -66,7 +65,7 @@ public class AesDeterministicCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(plain));
+			assertArrayEquals(dec, plain);
 		}
 	}
 
@@ -93,11 +92,11 @@ public class AesDeterministicCryptoTest {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc0 = crypto0.encrypt(plain);
 			byte[] enc1 = crypto1.encrypt(plain);
-			assertThat(enc1, is(enc0));
+			assertArrayEquals(enc1, enc0);
 			byte[] dec0 = crypto0.decrypt(enc0);
 			byte[] dec1 = crypto1.decrypt(enc1);
-			assertThat(dec0, is(plain));
-			assertThat(dec1, is(plain));
+			assertArrayEquals(dec0, plain);
+			assertArrayEquals(dec1, plain);
 		}
 	}
 

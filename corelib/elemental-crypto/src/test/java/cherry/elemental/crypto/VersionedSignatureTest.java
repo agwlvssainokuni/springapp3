@@ -1,5 +1,5 @@
 /*
- * Copyright 2016,2019 agwlvssainokuni
+ * Copyright 2016,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 
 package cherry.elemental.crypto;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VersionedSignatureTest {
 
@@ -43,7 +44,7 @@ public class VersionedSignatureTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] signed = impl.sign(plain);
-			assertNotEquals(plain, signed);
+			assertFalse(Arrays.equals(plain, signed));
 			assertTrue(impl.verify(plain, signed));
 		}
 	}
@@ -64,8 +65,8 @@ public class VersionedSignatureTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] signed = impl0.sign(plain);
-			assertNotEquals(plain, signed);
-			assertNotEquals(impl1.sign(plain), signed);
+			assertFalse(Arrays.equals(plain, signed));
+			assertFalse(Arrays.equals(impl1.sign(plain), signed));
 			assertTrue(impl0.verify(plain, signed));
 			assertTrue(impl1.verify(plain, signed));
 		}
@@ -104,8 +105,6 @@ public class VersionedSignatureTest {
 		try {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] signed = impl1.sign(plain);
-			assertNotEquals(impl1.sign(plain), signed);
-
 			impl0.verify(plain, signed);
 			fail("Exception must be thrown");
 		} catch (IllegalStateException ex) {

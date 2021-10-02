@@ -46,6 +46,10 @@ subprojects {
 	compileTestJava.options.encoding = "UTF-8"
 	compileDeliveryJava.options.encoding = "UTF-8"
 
+	test {
+		useJUnitPlatform()
+	}
+
 	processDeliveryResources {
 
 		def props = new Properties()
@@ -310,9 +314,10 @@ subprojects {
 		}
 
 		// テストライブラリ。
-		testImplementation "junit:junit"
-		testImplementation "org.hamcrest:hamcrest-core"
+		testImplementation "org.junit.jupiter:junit-jupiter"
+		testImplementation "org.hamcrest:hamcrest"
 		testImplementation "org.mockito:mockito-core"
+		testImplementation "org.mockito:mockito-junit-jupiter"
 		if (project.name.startsWith("fundamental-")) {
 			testImplementation "org.springframework.boot:spring-boot-starter-test"
 			testRuntimeOnly "org.springframework.boot:spring-boot-starter-aop"

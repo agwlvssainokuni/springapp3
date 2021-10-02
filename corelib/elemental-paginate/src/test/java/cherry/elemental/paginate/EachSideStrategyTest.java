@@ -1,5 +1,5 @@
 /*
- * Copyright 2004,2019 agwlvssainokuni
+ * Copyright 2004,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package cherry.elemental.paginate;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Iterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EachSideStrategyTest {
 

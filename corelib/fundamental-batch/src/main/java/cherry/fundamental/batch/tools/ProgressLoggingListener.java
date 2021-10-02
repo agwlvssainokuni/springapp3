@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 agwlvssainokuni
+ * Copyright 2019,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package cherry.fundamental.batch.tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.env.ConfigurableEnvironment;
 
 public class ProgressLoggingListener implements SpringApplicationRunListener {
 
@@ -45,38 +45,13 @@ public class ProgressLoggingListener implements SpringApplicationRunListener {
 	}
 
 	@Override
-	public void starting() {
+	public void starting(ConfigurableBootstrapContext bootstrapContext) {
 		log.info(msg.resolve("BATCH {0} INITIALIZING", batchId));
-	}
-
-	@Override
-	public void environmentPrepared(ConfigurableEnvironment environment) {
-		// 何もしない。
-	}
-
-	@Override
-	public void contextPrepared(ConfigurableApplicationContext context) {
-		// 何もしない。
-	}
-
-	@Override
-	public void contextLoaded(ConfigurableApplicationContext context) {
-		// 何もしない。
 	}
 
 	@Override
 	public void started(ConfigurableApplicationContext context) {
 		log.info(msg.resolve("BATCH {0} INITIALIZED", batchId));
-	}
-
-	@Override
-	public void running(ConfigurableApplicationContext context) {
-		// 何もしない。
-	}
-
-	@Override
-	public void failed(ConfigurableApplicationContext context, Throwable exception) {
-		// 何もしない。
 	}
 
 }

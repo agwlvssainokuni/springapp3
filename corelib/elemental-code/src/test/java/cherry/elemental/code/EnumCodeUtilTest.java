@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package cherry.elemental.code;
 
 import static cherry.elemental.code.EnumCodeUtil.getCodeList;
 import static cherry.elemental.code.EnumCodeUtil.getCodeMap;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EnumCodeUtilTest {
 
@@ -61,17 +60,17 @@ public class EnumCodeUtilTest {
 	@Test
 	public void testGetCodeList() {
 		List<FlagCode> list = getCodeList(FlagCode.class);
-		assertThat(list.size(), is(2));
-		assertThat(list.get(0), is(FlagCode.FALSE));
-		assertThat(list.get(1), is(FlagCode.TRUE));
+		assertEquals(list.size(), 2);
+		assertEquals(list.get(0), FlagCode.FALSE);
+		assertEquals(list.get(1), FlagCode.TRUE);
 	}
 
 	@Test
 	public void testGetCodeMap() {
 		Map<Integer, FlagCode> map = getCodeMap(FlagCode.class);
-		assertThat(map.size(), is(2));
-		assertThat(map.get(11), is(FlagCode.FALSE));
-		assertThat(map.get(22), is(FlagCode.TRUE));
+		assertEquals(map.size(), 2);
+		assertEquals(map.get(11), FlagCode.FALSE);
+		assertEquals(map.get(22), FlagCode.TRUE);
 	}
 
 	@Test

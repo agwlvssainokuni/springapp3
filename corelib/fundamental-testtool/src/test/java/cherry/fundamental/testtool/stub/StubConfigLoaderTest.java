@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package cherry.fundamental.testtool.stub;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -30,10 +31,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,13 +44,11 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = StubConfigLoaderTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
@@ -64,12 +65,12 @@ public class StubConfigLoaderTest {
 
 	private Method method;
 
-	@Before
+	@BeforeEach
 	public void before() throws NoSuchMethodException {
 		method = ToolTester.class.getDeclaredMethod("toBeStubbed1", Long.class, Long.class);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		for (Method m : repository.getStubbedMethod()) {
 			repository.clear(m);
@@ -104,11 +105,13 @@ public class StubConfigLoaderTest {
 		assertEquals(Long.valueOf(123L), toolTester.toBeStubbed1(Long.valueOf(0L), Long.valueOf(0L)));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testConfigure1_withInvalidType() throws IOException {
-		String json = "{\"cherry.fundamental.testtool.ToolTester\":{\"toBeStubbed1(java.lang.Long,java.lang.Long)\":{\"data\":123,\"type\":\"INVALID_TYPE\"}}}";
-		Resource res = new ByteArrayResource(json.getBytes(StandardCharsets.UTF_8));
-		configure(asList(res));
+		assertThrows(IllegalArgumentException.class, () -> {
+			String json = "{\"cherry.fundamental.testtool.ToolTester\":{\"toBeStubbed1(java.lang.Long,java.lang.Long)\":{\"data\":123,\"type\":\"INVALID_TYPE\"}}}";
+			Resource res = new ByteArrayResource(json.getBytes(StandardCharsets.UTF_8));
+			configure(asList(res));
+		});
 	}
 
 	@Test
@@ -207,11 +210,13 @@ public class StubConfigLoaderTest {
 		assertTrue(repository.getStubbedMethod().isEmpty());
 	}
 
-	@Test(expected = IOException.class)
+	@Test
 	public void testConfigure_NGJSON() throws IOException {
-		String json = "NGJSON";
-		Resource res = new ByteArrayResource(json.getBytes(StandardCharsets.UTF_8));
-		configure(asList(res));
+		assertThrows(IOException.class, () -> {
+			String json = "NGJSON";
+			Resource res = new ByteArrayResource(json.getBytes(StandardCharsets.UTF_8));
+			configure(asList(res));
+		});
 	}
 
 	@Test

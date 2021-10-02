@@ -1,5 +1,5 @@
 /*
- * Copyright 2016,2019 agwlvssainokuni
+ * Copyright 2016,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,13 @@
 
 package cherry.elemental.crypto;
 
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Arrays;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HmacSignatureTest {
 
@@ -30,7 +32,7 @@ public class HmacSignatureTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(245);
 			byte[] signed = impl.sign(plain);
-			assertNotEquals(plain, signed);
+			assertFalse(Arrays.equals(plain, signed));
 			assertTrue(impl.verify(plain, signed));
 		}
 	}

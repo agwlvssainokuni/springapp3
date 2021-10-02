@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ import static cherry.elemental.util.NumberUtil.roundUp2;
 import static cherry.elemental.util.NumberUtil.roundUp3;
 import static cherry.elemental.util.NumberUtil.roundUp4;
 import static cherry.elemental.util.NumberUtil.setScale;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NumberUtilTest {
 

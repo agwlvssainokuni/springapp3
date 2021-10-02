@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NullCryptoTest {
 
@@ -30,9 +29,9 @@ public class NullCryptoTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] enc = crypto.encrypt(plain);
-			assertThat(enc, is(plain));
+			assertArrayEquals(enc, plain);
 			byte[] dec = crypto.decrypt(enc);
-			assertThat(dec, is(enc));
+			assertArrayEquals(dec, enc);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@
 package cherry.fundamental.testtool.invoker;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
 import cherry.fundamental.testtool.reflect.ReflectionResolver;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = InvokerServiceTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
@@ -86,8 +87,7 @@ public class InvokerServiceTest {
 	@Test
 	public void testFlatDto() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked4");
-		assertEquals(
-				"{\"val1\":68,\"val2\":112}",
+		assertEquals("{\"val1\":68,\"val2\":112}",
 				jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
 						asList("{\"val1\":12,\"val2\":34}", "{\"val1\":56,\"val2\":78}"),
 						asList(ToolTester.Dto1.class.getName())));
@@ -96,12 +96,11 @@ public class InvokerServiceTest {
 	@Test
 	public void testNestedDto() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked5");
-		assertEquals("{\"val1\":{\"val1\":6,\"val2\":8},\"val2\":{\"val1\":10,\"val2\":12}}", jsonInvokerService.invoke(
-				null,
-				ToolTester.class,
-				list.get(0),
-				asList("{\"val1\":{\"val1\":1,\"val2\":2},\"val2\":{\"val1\":3,\"val2\":4}}",
-						"{\"val1\":{\"val1\":5,\"val2\":6},\"val2\":{\"val1\":7,\"val2\":8}}"), null));
+		assertEquals("{\"val1\":{\"val1\":6,\"val2\":8},\"val2\":{\"val1\":10,\"val2\":12}}",
+				jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
+						asList("{\"val1\":{\"val1\":1,\"val2\":2},\"val2\":{\"val1\":3,\"val2\":4}}",
+								"{\"val1\":{\"val1\":5,\"val2\":6},\"val2\":{\"val1\":7,\"val2\":8}}"),
+						null));
 	}
 
 	@Test
@@ -120,11 +119,13 @@ public class InvokerServiceTest {
 		assertEquals("1", jsonInvokerService.invoke(null, ToolTester.class, list.get(m1), asList("1", "2"), null));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void testArgClassNotFound() throws Exception {
-		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked4");
-		jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
-				asList("{\"val1\":12,\"val2\":34}", "{\"val1\":56,\"val2\":78}"), asList("NoClass"));
+		assertThrows(IllegalArgumentException.class, () -> {
+			List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked4");
+			jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
+					asList("{\"val1\":12,\"val2\":34}", "{\"val1\":56,\"val2\":78}"), asList("NoClass"));
+		});
 	}
 
 	@Test
@@ -145,8 +146,8 @@ public class InvokerServiceTest {
 	public void testInvoke_NORMAL3_MultiMethod() {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked6");
 		int index0 = list.get(0).getReturnType() == Integer.TYPE ? 0 : 1;
-		assertEquals("333", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6", index0,
-				"[123,456]", null));
+		assertEquals("333", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
+				index0, "[123,456]", null));
 		int index1 = list.get(0).getReturnType() == Long.TYPE ? 0 : 1;
 		assertEquals("-333", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
 				index1, "[123,456]", null));

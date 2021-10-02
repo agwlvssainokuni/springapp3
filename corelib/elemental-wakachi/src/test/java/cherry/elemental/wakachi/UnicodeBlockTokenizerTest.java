@@ -16,18 +16,18 @@
 
 package cherry.elemental.wakachi;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class UnicodeBlockTokenizerTest {
 
 	private UnicodeBlockTokenizer tokenizer;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		tokenizer = new UnicodeBlockTokenizer();
 	}

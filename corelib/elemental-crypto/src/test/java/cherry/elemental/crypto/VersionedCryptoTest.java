@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class VersionedCryptoTest {
 
@@ -43,8 +43,8 @@ public class VersionedCryptoTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] crypto = helper.encrypt(plain);
-			assertThat(crypto, is(not(plain)));
-			assertThat(helper.decrypt(crypto), is(plain));
+			assertFalse(Arrays.equals(crypto, plain));
+			assertArrayEquals(helper.decrypt(crypto), plain);
 		}
 	}
 
@@ -64,10 +64,10 @@ public class VersionedCryptoTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] crypto = helper0.encrypt(plain);
-			assertThat(crypto, is(not(plain)));
-			assertThat(crypto, is(not(helper1.encrypt(plain))));
-			assertThat(helper0.decrypt(crypto), is(plain));
-			assertThat(helper1.decrypt(crypto), is(plain));
+			assertFalse(Arrays.equals(crypto, plain));
+			assertFalse(Arrays.equals(crypto, helper1.encrypt(plain)));
+			assertArrayEquals(helper0.decrypt(crypto), plain);
+			assertArrayEquals(helper1.decrypt(crypto), plain);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class VersionedCryptoTest {
 		try {
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] crypto = crypto1.encrypt(plain);
-			assertThat(crypto1.decrypt(crypto), is(plain));
+			assertArrayEquals(crypto1.decrypt(crypto), plain);
 
 			crypto0.decrypt(crypto);
 			fail("Exception must be thrown");

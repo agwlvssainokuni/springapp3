@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package cherry.elemental.command;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CommandLauncherTest {
 
@@ -37,8 +37,8 @@ public class CommandLauncherTest {
 			CommandResult result = launcher.launch("java", "-version");
 			assertEquals(0, result.getExitValue());
 			System.out.println(result.getStdout());
-			assertTrue(result.getStdout().startsWith("java version")
-					|| result.getStdout().startsWith("openjdk version"));
+			assertTrue(
+					result.getStdout().startsWith("java version") || result.getStdout().startsWith("openjdk version"));
 			assertNull(result.getStderr());
 			assertTrue(result.toString().startsWith("CommandResult[exitValue=0,"));
 		} catch (IOException | InterruptedException ex) {
@@ -54,8 +54,8 @@ public class CommandLauncherTest {
 		try {
 			CommandResult result = launcher.launch("java", "-version");
 			assertEquals(0, result.getExitValue());
-			assertTrue(result.getStderr().startsWith("java version")
-					|| result.getStderr().startsWith("openjdk version"));
+			assertTrue(
+					result.getStderr().startsWith("java version") || result.getStderr().startsWith("openjdk version"));
 			assertEquals("", result.getStdout());
 			assertTrue(result.toString().startsWith("CommandResult[exitValue=0,"));
 		} catch (IOException | InterruptedException ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016,2019 agwlvssainokuni
+ * Copyright 2016,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package cherry.elemental.encdec;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractEncdecTest<T> {
 

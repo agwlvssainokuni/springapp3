@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package cherry.fundamental.validator;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,17 +26,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.BindingResult;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = DataBinderHelperImplTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
@@ -104,11 +104,10 @@ public class DataBinderHelperImplTest {
 		BindingResult binding = dataBinderHelper.bindAndValidate(dto, new MutablePropertyValues(val));
 		List<String> msglist = dataBinderHelper.resolveAllMessage(binding, Locale.getDefault());
 		assertEquals(4, msglist.size());
-		assertEqualsList(
-				asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
-						"{cherry.fundamental.validator.MaxLength.message}",
-						"{cherry.fundamental.validator.CharTypeNumeric.message}",
-						"{cherry.fundamental.validator.MinLength.message}"), msglist);
+		assertEqualsList(asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
+				"{cherry.fundamental.validator.MaxLength.message}",
+				"{cherry.fundamental.validator.CharTypeNumeric.message}",
+				"{cherry.fundamental.validator.MinLength.message}"), msglist);
 	}
 
 	@Test
@@ -135,11 +134,10 @@ public class DataBinderHelperImplTest {
 		BindingResult binding = dataBinderHelper.bindAndValidate(dto, new MutablePropertyValues(val));
 		List<String> msglist = dataBinderHelper.resolveFieldMessage(binding, Locale.getDefault());
 		assertEquals(4, msglist.size());
-		assertEqualsList(
-				asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
-						"{cherry.fundamental.validator.MaxLength.message}",
-						"{cherry.fundamental.validator.CharTypeNumeric.message}",
-						"{cherry.fundamental.validator.MinLength.message}"), msglist);
+		assertEqualsList(asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
+				"{cherry.fundamental.validator.MaxLength.message}",
+				"{cherry.fundamental.validator.CharTypeNumeric.message}",
+				"{cherry.fundamental.validator.MinLength.message}"), msglist);
 	}
 
 	@Test
@@ -153,14 +151,12 @@ public class DataBinderHelperImplTest {
 		BindingResult binding = dataBinderHelper.bindAndValidate(dto, new MutablePropertyValues(val));
 		List<String> msglist1 = dataBinderHelper.resolveFieldMessage(binding, "alpha", Locale.getDefault());
 		assertEquals(2, msglist1.size());
-		assertEqualsList(
-				asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
-						"{cherry.fundamental.validator.MaxLength.message}"), msglist1);
+		assertEqualsList(asList("{cherry.fundamental.validator.CharTypeAlpha.message}",
+				"{cherry.fundamental.validator.MaxLength.message}"), msglist1);
 		List<String> msglist2 = dataBinderHelper.resolveFieldMessage(binding, "number", Locale.getDefault());
 		assertEquals(2, msglist2.size());
-		assertEqualsList(
-				asList("{cherry.fundamental.validator.CharTypeNumeric.message}",
-						"{cherry.fundamental.validator.MinLength.message}"), msglist2);
+		assertEqualsList(asList("{cherry.fundamental.validator.CharTypeNumeric.message}",
+				"{cherry.fundamental.validator.MinLength.message}"), msglist2);
 	}
 
 	private void assertEqualsList(List<String> expected, List<String> result) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,28 @@
 
 package cherry.fundamental.testtool.stub;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.lang.reflect.Method;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = StubTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
@@ -47,12 +48,12 @@ public class StubTest {
 
 	private Method method;
 
-	@Before
+	@BeforeEach
 	public void before() throws NoSuchMethodException {
 		method = ToolTester.class.getDeclaredMethod("toBeStubbed1", Long.class, Long.class);
 	}
 
-	@After
+	@AfterEach
 	public void after() {
 		for (Method m : repository.getStubbedMethod()) {
 			repository.clear(m);
@@ -117,18 +118,22 @@ public class StubTest {
 		assertFalse(stub.hasNext());
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testNextWhenEmpty() {
-		Stub<?> stub = repository.get(method);
-		assertFalse(stub.hasNext());
-		stub.next();
+		assertThrows(IllegalStateException.class, () -> {
+			Stub<?> stub = repository.get(method);
+			assertFalse(stub.hasNext());
+			stub.next();
+		});
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testPeekWhenEmpty() {
-		Stub<?> stub = repository.get(method);
-		assertFalse(stub.hasNext());
-		stub.peek();
+		assertThrows(IllegalStateException.class, () -> {
+			Stub<?> stub = repository.get(method);
+			assertFalse(stub.hasNext());
+			stub.peek();
+		});
 	}
 
 	@Test

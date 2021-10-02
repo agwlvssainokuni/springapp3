@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,24 @@
 
 package cherry.fundamental.testtool.reflect;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = ReflectionResolverTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
@@ -49,9 +50,11 @@ public class ReflectionResolverTest {
 		assertEquals("toolTesterImpl", list.get(0));
 	}
 
-	@Test(expected = ClassNotFoundException.class)
+	@Test
 	public void testResolveBeanName_ClassNotFound() throws Exception {
-		resolver.resolveBeanName(ToolTester.class.getName() + "NotExist");
+		assertThrows(ClassNotFoundException.class, () -> {
+			resolver.resolveBeanName(ToolTester.class.getName() + "NotExist");
+		});
 	}
 
 	@Test
@@ -63,9 +66,11 @@ public class ReflectionResolverTest {
 		assertEquals(Void.TYPE, m.getReturnType());
 	}
 
-	@Test(expected = ClassNotFoundException.class)
+	@Test
 	public void testResolveMethod_ClassNotFound() throws Exception {
-		resolver.resolveMethod(ToolTester.class.getName() + "NotExist", "toBeInvoked6");
+		assertThrows(ClassNotFoundException.class, () -> {
+			resolver.resolveMethod(ToolTester.class.getName() + "NotExist", "toBeInvoked6");
+		});
 	}
 
 }

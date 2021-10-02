@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.security.AlgorithmParameters;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.EncryptedPrivateKeyInfo;
@@ -32,7 +32,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class RsaCryptoTest {
 
@@ -42,8 +42,8 @@ public class RsaCryptoTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(245);
 			byte[] crypto = impl.encrypt(plain);
-			assertThat(crypto, is(not(plain)));
-			assertThat(impl.decrypt(crypto), is(plain));
+			assertFalse(Arrays.equals(crypto, plain));
+			assertArrayEquals(impl.decrypt(crypto), plain);
 		}
 	}
 
@@ -53,8 +53,8 @@ public class RsaCryptoTest {
 		for (int i = 0; i < 100; i++) {
 			byte[] plain = RandomUtils.nextBytes(245);
 			byte[] crypto = impl.encrypt(plain);
-			assertThat(crypto, is(not(plain)));
-			assertThat(impl.decrypt(crypto), is(plain));
+			assertFalse(Arrays.equals(crypto, plain));
+			assertArrayEquals(impl.decrypt(crypto), plain);
 		}
 	}
 
@@ -83,8 +83,8 @@ public class RsaCryptoTest {
 		pbeParam.init(pbeParamSpec);
 		Cipher cipher = Cipher.getInstance(pbeAlgName);
 		cipher.init(Cipher.ENCRYPT_MODE, pbeKey, pbeParam);
-		EncryptedPrivateKeyInfo encryptedKeyInfo = new EncryptedPrivateKeyInfo(pbeParam, cipher.doFinal(key
-				.getPrivate().getEncoded()));
+		EncryptedPrivateKeyInfo encryptedKeyInfo = new EncryptedPrivateKeyInfo(pbeParam,
+				cipher.doFinal(key.getPrivate().getEncoded()));
 
 		RsaCrypto impl = new RsaCrypto();
 		impl.setAlgorithm("RSA/ECB/PKCS1Padding");

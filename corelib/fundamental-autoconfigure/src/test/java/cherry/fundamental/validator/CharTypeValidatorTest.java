@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,23 +22,22 @@ import static cherry.elemental.chartype.CharType.LOWER;
 import static cherry.elemental.chartype.CharType.NUMERIC;
 import static cherry.elemental.chartype.CharType.SPACE;
 import static cherry.elemental.chartype.CharType.UPPER;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.validation.BindingResult;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = CharTypeValidatorTest.class)
 @SpringBootApplication
 @ImportResource(locations = "classpath:spring/appctx-trace.xml")
@@ -63,14 +62,14 @@ public class CharTypeValidatorTest {
 		TestDto dto = new TestDto();
 
 		BindingResult result = dataBinderHelper.bindAndValidate(dto, new MutablePropertyValues(val));
-		assertThat(result.getErrorCount(), is(0));
-		assertThat(dto.getSpace(), is(" \t\r\n"));
-		assertThat(dto.getNumeric(), is("0123456789"));
-		assertThat(dto.getAlpha(), is("ABCabc"));
-		assertThat(dto.getUpper(), is("ABC"));
-		assertThat(dto.getLower(), is("abc"));
-		assertThat(dto.getSurrogate(), is("\uD842\uDF9F"));
-		assertThat(dto.getCp932fw(), is("あいうえお"));
+		assertEquals(result.getErrorCount(), 0);
+		assertEquals(dto.getSpace(), " \t\r\n");
+		assertEquals(dto.getNumeric(), "0123456789");
+		assertEquals(dto.getAlpha(), "ABCabc");
+		assertEquals(dto.getUpper(), "ABC");
+		assertEquals(dto.getLower(), "abc");
+		assertEquals(dto.getSurrogate(), "\uD842\uDF9F");
+		assertEquals(dto.getCp932fw(), "あいうえお");
 	}
 
 	@Test
@@ -88,7 +87,7 @@ public class CharTypeValidatorTest {
 		TestDto dto = new TestDto();
 
 		BindingResult result = dataBinderHelper.bindAndValidate(dto, new MutablePropertyValues(val));
-		assertThat(result.getErrorCount(), is(7));
+		assertEquals(result.getErrorCount(), 7);
 	}
 
 	public static class TestDto {

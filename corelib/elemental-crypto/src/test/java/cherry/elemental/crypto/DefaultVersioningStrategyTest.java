@@ -1,5 +1,5 @@
 /*
- * Copyright 2014,2019 agwlvssainokuni
+ * Copyright 2014,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,16 @@
 
 package cherry.elemental.crypto;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import cherry.elemental.crypto.VersionStrategy.VersionedData;
 
@@ -39,11 +40,11 @@ public class DefaultVersioningStrategyTest {
 			int version = random.nextInt();
 			byte[] plain = RandomUtils.nextBytes(1024);
 			byte[] encoded = strategy.encode(plain, version);
-			assertThat(plain, is(not(encoded)));
+			assertFalse(Arrays.equals(plain, encoded));
 			VersionedData<byte[], Integer> vd = strategy.decode(encoded);
-			assertThat(vd.getData(), is(plain));
-			assertThat(vd.getVersion(), is(Integer.valueOf(version)));
-			assertThat(vd.toString(), startsWith("VersionStrategy.VersionedData[data={"));
+			assertArrayEquals(vd.getData(), plain);
+			assertEquals(vd.getVersion(), Integer.valueOf(version));
+			assertTrue(vd.toString().startsWith("VersionStrategy.VersionedData[data={"));
 		}
 	}
 

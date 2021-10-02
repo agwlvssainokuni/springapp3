@@ -1,5 +1,5 @@
 /*
- * Copyright 2011,2019 agwlvssainokuni
+ * Copyright 2011,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package cherry.elemental.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigInteger;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class IpAddrUtilTest {
 
@@ -462,7 +462,8 @@ public class IpAddrUtilTest {
 		testIpv6AddressCompression("1:2:3:4:5:6:7:8", "0001:0002:0003:0004:0005:0006:0007:0008");
 		testIpv6AddressCompression("11:22:33:44:55:66:77:88", "0011:0022:0033:0044:0055:0066:0077:0088");
 		testIpv6AddressCompression("111:222:333:444:555:666:777:888", "0111:0222:0333:0444:0555:0666:0777:0888");
-		testIpv6AddressCompression("1111:2222:3333:4444:5555:6666:7777:8888", "1111:2222:3333:4444:5555:6666:7777:8888");
+		testIpv6AddressCompression("1111:2222:3333:4444:5555:6666:7777:8888",
+				"1111:2222:3333:4444:5555:6666:7777:8888");
 	}
 
 	@Test
@@ -677,7 +678,8 @@ public class IpAddrUtilTest {
 		assertEquals(new BigInteger("00000000000000000000000000000000", 16), IpAddrUtil.getIpv6AddrAsNumber("::"));
 		assertEquals(new BigInteger("000000000000000000000000ffff0000", 16),
 				IpAddrUtil.getIpv6AddrAsNumber("0000:0000:0000:0000:0000:0000:ffff:0000"));
-		assertEquals(new BigInteger("000000000000000000000000ffff0000", 16), IpAddrUtil.getIpv6AddrAsNumber("::ffff:0"));
+		assertEquals(new BigInteger("000000000000000000000000ffff0000", 16),
+				IpAddrUtil.getIpv6AddrAsNumber("::ffff:0"));
 		assertEquals(new BigInteger("00000000000000000000ffff00000000", 16),
 				IpAddrUtil.getIpv6AddrAsNumber("0000:0000:0000:0000:0000:ffff:0000:0000"));
 		assertEquals(new BigInteger("00000000000000000000ffff00000000", 16),
@@ -696,7 +698,8 @@ public class IpAddrUtilTest {
 				IpAddrUtil.getIpv6AddrAsNumber("0:0:ffff::"));
 		assertEquals(new BigInteger("0000ffff000000000000000000000000", 16),
 				IpAddrUtil.getIpv6AddrAsNumber("0000:ffff:0000:0000:0000:0000:0000:0000"));
-		assertEquals(new BigInteger("0000ffff000000000000000000000000", 16), IpAddrUtil.getIpv6AddrAsNumber("0:ffff::"));
+		assertEquals(new BigInteger("0000ffff000000000000000000000000", 16),
+				IpAddrUtil.getIpv6AddrAsNumber("0:ffff::"));
 		assertEquals(new BigInteger("ffff0000000000000000000000000000", 16),
 				IpAddrUtil.getIpv6AddrAsNumber("ffff:0000:0000:0000:0000:0000:0000:0000"));
 		assertEquals(new BigInteger("ffff0000000000000000000000000000", 16), IpAddrUtil.getIpv6AddrAsNumber("ffff::"));
