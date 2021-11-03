@@ -2,7 +2,7 @@ buildscript {
 	ext {
 
 		// Spring Bootのバージョン。
-		versionSpringBoot = "2.5.5"
+		versionSpringBoot = "2.5.6"
 
 		// リリース物件ビルド構成。
 		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
@@ -39,8 +39,8 @@ subprojects {
 		delivery
 	}
 
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+	sourceCompatibility = 11
+	targetCompatibility = 11
 
 	compileJava.options.encoding = "UTF-8"
 	compileTestJava.options.encoding = "UTF-8"
@@ -89,11 +89,14 @@ subprojects {
 	repositories { mavenCentral() }
 
 	dependencyManagement {
-		imports { mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}" }
+		imports {
+			mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:2020.0.4"
+		}
 		dependencies {
 			dependency group: "org.apache.commons", name: "commons-collections4", version: "4.4"
 			dependency group: "org.apache.commons", name: "commons-csv", version: "1.9.0"
-			dependency group: "com.google.guava", name: "guava", version: "31.0-jre"
+			dependency group: "com.google.guava", name: "guava", version: "31.0.1-jre"
 			dependency group: "javax.el", name: "javax.el-api", version: "3.0.0"
 			dependency group: "org.glassfish", name: "javax.el", version: "3.0.0"
 			dependency group: "org.fluentd", name: "fluent-logger", version: "0.3.4"
@@ -269,6 +272,7 @@ subprojects {
 			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
 		}
 		if (project.name == "gallery-login-inmem-web") {
 			runtimeOnly project(":corelib:fundamental-spring")
@@ -280,6 +284,7 @@ subprojects {
 			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
 		}
 		if (project.name == "gallery-login-jdbc-web") {
 			runtimeOnly project(":corelib:fundamental-spring")
@@ -292,6 +297,7 @@ subprojects {
 			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-jdbc"
+			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
 			runtimeOnly "org.flywaydb:flyway-core"
 			runtimeOnly "com.h2database:h2"
 		}
@@ -309,6 +315,7 @@ subprojects {
 			implementation "org.springframework.boot:spring-boot-starter-validation"
 			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
 			implementation "org.springframework.boot:spring-boot-starter-jdbc"
+			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
 			runtimeOnly "org.flywaydb:flyway-core"
 			runtimeOnly "com.h2database:h2"
 		}
