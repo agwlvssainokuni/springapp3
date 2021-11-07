@@ -1,88 +1,19 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="tool-uri" th:content="@{/testtool/invoker}" />
-<meta name="csrf" th:content="${_csrf.token}" />
-<title>呼出しツール</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
-<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
-<script type="text/javascript" th:src="@{/javascript/testtool/invoker.js}"></script>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="context-root" th:content="@{/}" />
+	<meta name="csrf-header" th:content="${_csrf.headerName}" />
+	<meta name="csrf-parameter" th:content="${_csrf.parameterName}" />
+	<meta name="csrf-token" th:content="${_csrf.token}" />
+	<title>呼出しツール</title>
+	<script type="text/javascript" th:src="@{/javascript/testtool/invoker.js}"></script>
 </head>
+
 <body>
-	<div class="container">
-		<h2 class="my-3">呼出しツール</h2>
-		<div class="form-group row">
-			<div class="col-lg-1">
-				<label for="format" class="col-form-label">電文書式</label>
-			</div>
-			<div class="col-lg-11">
-				<select id="format" name="format" class="form-control">
-					<option value="/yaml">YAML</option>
-					<option value="/json">JSON</option>
-				</select>
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-1">
-				<label for="className" class="col-form-label">クラス</label>
-			</div>
-			<div class="col-lg-7">
-				<input type="text" id="className" name="className" class="form-control"
-					placeholder="BeanのFQCNを指定してください" />
-			</div>
-			<div class="col-lg-4">
-				<select id="beanName" name="beanName" class="form-control">
-					<option value="0" label="Bean名称(非必須)">Bean名称(非必須)</option>
-				</select>
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-1">
-				<label for="methodName" class="col-form-label">メソッド</label>
-			</div>
-			<div class="col-lg-7">
-				<input type="text" id="methodName" name="methodName" class="form-control"
-					placeholder="メソッドの名称を指定してください" />
-			</div>
-			<div class="col-lg-4">
-				<select id="methodIndex" name="methodIndex" class="form-control">
-					<option value="0" label="メソッドを引数のパターンで指定">メソッドを引数のパターンで指定</option>
-				</select>
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-1">
-				<label for="args" class="col-form-label">引数</label>
-			</div>
-			<div class="col-lg-7">
-				<textarea rows="3" cols="1" id="args" name="args" class="form-control"
-					placeholder="引数のリストをYAML形式で指定"></textarea>
-			</div>
-			<div class="col-lg-4">
-				<textarea rows="3" cols="1" id="argTypes" name="argTypes" class="form-control"
-					placeholder="引数の型のリストをYAML形式で指定(非必須)"></textarea>
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-11 offset-lg-1">
-				<button class="btn btn-primary btn-block" type="button" id="invokeBtn">実行</button>
-			</div>
-		</div>
-		<div class="form-group row">
-			<div class="col-lg-1">
-				<label for="result" class="col-form-label">実行結果</label>
-			</div>
-			<div class="col-lg-11">
-				<textarea rows="5" cols="1" id="result" name="result" class="form-control"></textarea>
-			</div>
-		</div>
-	</div>
-	<div class="container">
-		<address class="text-center">Copyright &copy;, 2015,2020, agwlvssainokuni</address>
-	</div>
+	<div id="root"></div>
 </body>
+
 </html>
