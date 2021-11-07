@@ -26,14 +26,17 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
@@ -46,60 +49,62 @@ import cherry.fundamental.testtool.reflect.ReflectionResolver;
 public class InvokerServiceTest {
 
 	@Autowired
-	@Qualifier("jsonInvokerService")
-	private InvokerService jsonInvokerService;
+	private InvokerService invokerService;
 
 	@Autowired
 	private ReflectionResolver resolver;
 
-	@Autowired
-	private ObjectMapper objectMapper;
+	private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().modules(new JavaTimeModule())
+			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).factory(new YAMLFactory()).build();
 
 	@Test
 	public void testNoArgNoRet() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked0");
-		assertEquals("null", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), null, null));
-		assertEquals("null", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class, list.get(0), null, null));
+		assertEquals("--- null\n", invokerService.invoke(null, ToolTester.class, list.get(0), null, null));
+		assertEquals("--- null\n", invokerService.invoke("toolTesterImpl", ToolTester.class, list.get(0), null, null));
 	}
 
 	@Test
 	public void testPrimitive() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked1");
-		assertEquals("579", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), asList("123", "456"), null));
+		assertEquals("--- 579\n",
+				invokerService.invoke(null, ToolTester.class, list.get(0), asList("123", "456"), null));
 	}
 
 	@Test
 	public void testLong() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked2");
-		assertEquals("579", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), asList("123", "456"), null));
-		assertEquals("null", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), asList(null, "456"), null));
-		assertEquals("null", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), asList("123"), null));
-		assertEquals("null", jsonInvokerService.invoke(null, ToolTester.class, list.get(0), null, null));
+		assertEquals("--- 579\n",
+				invokerService.invoke(null, ToolTester.class, list.get(0), asList("123", "456"), null));
+		assertEquals("--- null\n",
+				invokerService.invoke(null, ToolTester.class, list.get(0), asList(null, "456"), null));
+		assertEquals("--- null\n", invokerService.invoke(null, ToolTester.class, list.get(0), asList("123"), null));
+		assertEquals("--- null\n", invokerService.invoke(null, ToolTester.class, list.get(0), null, null));
 	}
 
 	@Test
 	public void testJodaTime() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked3");
-		assertEquals("\"2015-01-23T12:34:56\"", jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
+		assertEquals("--- \"2015-01-23T12:34:56\"\n", invokerService.invoke(null, ToolTester.class, list.get(0),
 				asList("\"2015-01-23\"", "\"12:34:56\""), null));
 	}
 
 	@Test
 	public void testFlatDto() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked4");
-		assertEquals("{\"val1\":68,\"val2\":112}",
-				jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
-						asList("{\"val1\":12,\"val2\":34}", "{\"val1\":56,\"val2\":78}"),
+		assertEquals("---\nval1: 68\nval2: 112\n",
+				invokerService.invoke(null, ToolTester.class, list.get(0),
+						asList("---\nval1: 12\nval2: 34\n", "---\nval1: 56\nval2: 78\n"),
 						asList(ToolTester.Dto1.class.getName())));
 	}
 
 	@Test
 	public void testNestedDto() throws Exception {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked5");
-		assertEquals("{\"val1\":{\"val1\":6,\"val2\":8},\"val2\":{\"val1\":10,\"val2\":12}}",
-				jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
-						asList("{\"val1\":{\"val1\":1,\"val2\":2},\"val2\":{\"val1\":3,\"val2\":4}}",
-								"{\"val1\":{\"val1\":5,\"val2\":6},\"val2\":{\"val1\":7,\"val2\":8}}"),
+		assertEquals("---\nval1:\n  val1: 6\n  val2: 8\nval2:\n  val1: 10\n  val2: 12\n",
+				invokerService.invoke(null, ToolTester.class, list.get(0),
+						asList("---\nval1:\n  val1: 1\n  val2: 2\nval2:\n  val1: 3\n  val2: 4\n",
+								"---\nval1:\n  val1: 5\n  val2: 6\nval2:\n  val1: 7\n  val2: 8\n"),
 						null));
 	}
 
@@ -115,55 +120,55 @@ public class InvokerServiceTest {
 			m0 = 1;
 			m1 = 0;
 		}
-		assertEquals("-1", jsonInvokerService.invoke(null, ToolTester.class, list.get(m0), asList("1", "2"), null));
-		assertEquals("1", jsonInvokerService.invoke(null, ToolTester.class, list.get(m1), asList("1", "2"), null));
+		assertEquals("--- -1\n", invokerService.invoke(null, ToolTester.class, list.get(m0), asList("1", "2"), null));
+		assertEquals("--- 1\n", invokerService.invoke(null, ToolTester.class, list.get(m1), asList("1", "2"), null));
 	}
 
 	@Test
 	public void testArgClassNotFound() throws Exception {
 		assertThrows(IllegalArgumentException.class, () -> {
 			List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked4");
-			jsonInvokerService.invoke(null, ToolTester.class, list.get(0),
-					asList("{\"val1\":12,\"val2\":34}", "{\"val1\":56,\"val2\":78}"), asList("NoClass"));
+			invokerService.invoke(null, ToolTester.class, list.get(0),
+					asList("---\nval1: 12\nval2: 34\n", "---\nval1: 56\nval2: 78\n"), asList("NoClass"));
 		});
 	}
 
 	@Test
 	public void testInvoke_NORMAL1() {
-		assertEquals("579", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked1", 0,
-				"[123,456]", "[\"java.lang.Long\",\"java.lang.Long\"]"));
+		assertEquals("--- 579\n", invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked1", 0,
+				"---\n- 123\n- 456\n", "---\n- java.lang.Long\n- java.lang.Long\n"));
 	}
 
 	@Test
 	public void testInvoke_NORMAL2_NullArgs() {
-		assertEquals("579", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked2", 0,
-				"[123,456]", "[\"java.lang.Long\",\"java.lang.Long\"]"));
-		assertEquals("null",
-				jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked2", 0, null, null));
+		assertEquals("--- 579\n", invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked2", 0,
+				"---\n- 123\n- 456\n", "---\n- java.lang.Long\n- java.lang.Long\n"));
+		assertEquals("--- null\n",
+				invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked2", 0, null, null));
 	}
 
 	@Test
 	public void testInvoke_NORMAL3_MultiMethod() {
 		List<Method> list = resolver.resolveMethod(ToolTester.class, "toBeInvoked6");
 		int index0 = list.get(0).getReturnType() == Integer.TYPE ? 0 : 1;
-		assertEquals("333", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
-				index0, "[123,456]", null));
+		assertEquals("--- 333\n", invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
+				index0, "---\n- 123\n- 456\n", null));
 		int index1 = list.get(0).getReturnType() == Long.TYPE ? 0 : 1;
-		assertEquals("-333", jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
-				index1, "[123,456]", null));
+		assertEquals("--- -333\n", invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "toBeInvoked6",
+				index1, "---\n- 123\n- 456\n", null));
 	}
 
 	@Test
 	public void testInvoke_ClassNotFound() throws IOException {
-		String result = jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName() + "NotExist",
-				"toBeInvoked1", 0, "[123,456]", "[\"java.lang.Long\",\"java.lang.Long\"]");
+		String result = invokerService.invoke("toolTesterImpl", ToolTester.class.getName() + "NotExist", "toBeInvoked1",
+				0, "---\n- 123\n- 456\n", "---\n- java.lang.Long\n- java.lang.Long\n");
 		Map<?, ?> map = objectMapper.readValue(result, Map.class);
 		assertEquals("java.lang.ClassNotFoundException", map.get("type"));
 	}
 
 	@Test
 	public void testInvoke_NoSuchMethod() throws IOException {
-		String result = jsonInvokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "noSuchMethod", 0, null,
+		String result = invokerService.invoke("toolTesterImpl", ToolTester.class.getName(), "noSuchMethod", 0, null,
 				null);
 		Map<?, ?> map = objectMapper.readValue(result, Map.class);
 		assertEquals("java.lang.NoSuchMethodException", map.get("type"));

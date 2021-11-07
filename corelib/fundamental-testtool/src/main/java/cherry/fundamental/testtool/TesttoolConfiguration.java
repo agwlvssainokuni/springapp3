@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 agwlvssainokuni
+ * Copyright 2019,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package cherry.fundamental.testtool;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import cherry.fundamental.testtool.invoker.InvokerService;
@@ -31,11 +35,6 @@ import cherry.fundamental.testtool.stub.StubInterceptor;
 import cherry.fundamental.testtool.stub.StubRepository;
 import cherry.fundamental.testtool.stub.StubRepositoryImpl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 @Configuration
 public class TesttoolConfiguration {
 
@@ -43,10 +42,7 @@ public class TesttoolConfiguration {
 
 	private final StubRepository repository = new StubRepositoryImpl();
 
-	private final ObjectMapper jsonObjectMapper = Jackson2ObjectMapperBuilder.json().modules(new JavaTimeModule())
-			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).build();
-
-	private final ObjectMapper yamlObjectMapper = Jackson2ObjectMapperBuilder.json().modules(new JavaTimeModule())
+	private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().modules(new JavaTimeModule())
 			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).factory(new YAMLFactory()).build();
 
 	@Bean
@@ -60,14 +56,8 @@ public class TesttoolConfiguration {
 	}
 
 	@Bean
-	@Primary
-	public InvokerService jsonInvokerService() {
-		return new InvokerServiceImpl(jsonObjectMapper, reflectionResolver);
-	}
-
-	@Bean
-	public InvokerService yamlInvokerService() {
-		return new InvokerServiceImpl(yamlObjectMapper, reflectionResolver);
+	public InvokerService invokerService() {
+		return new InvokerServiceImpl(objectMapper, reflectionResolver);
 	}
 
 	@Bean
@@ -76,14 +66,8 @@ public class TesttoolConfiguration {
 	}
 
 	@Bean
-	@Primary
-	public StubConfigService jsonStubConfigService() {
-		return new StubConfigServiceImpl(repository, jsonObjectMapper, reflectionResolver);
-	}
-
-	@Bean
-	public StubConfigService yamlStubConfigService() {
-		return new StubConfigServiceImpl(repository, yamlObjectMapper, reflectionResolver);
+	public StubConfigService stubConfigService() {
+		return new StubConfigServiceImpl(repository, objectMapper, reflectionResolver);
 	}
 
 }

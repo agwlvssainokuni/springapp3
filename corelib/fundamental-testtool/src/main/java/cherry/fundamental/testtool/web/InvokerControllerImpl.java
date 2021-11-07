@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,16 +27,12 @@ import cherry.fundamental.testtool.reflect.ReflectionResolver;
 
 public class InvokerControllerImpl implements InvokerController {
 
-	private final InvokerService jsonInvokerService;
-
-	private final InvokerService yamlInvokerService;
+	private final InvokerService invokerService;
 
 	private final ReflectionResolver reflectionResolver;
 
-	public InvokerControllerImpl(InvokerService jsonInvokerService, InvokerService yamlInvokerService,
-			ReflectionResolver reflectionResolver) {
-		this.jsonInvokerService = jsonInvokerService;
-		this.yamlInvokerService = yamlInvokerService;
+	public InvokerControllerImpl(InvokerService invokerService, ReflectionResolver reflectionResolver) {
+		this.invokerService = invokerService;
 		this.reflectionResolver = reflectionResolver;
 	}
 
@@ -46,15 +42,9 @@ public class InvokerControllerImpl implements InvokerController {
 	}
 
 	@Override
-	public String invokeJson(String beanName, String className, String methodName, int methodIndex, String args,
+	public String invoke(String beanName, String className, String methodName, int methodIndex, String args,
 			String argTypes) {
-		return jsonInvokerService.invoke(beanName, className, methodName, methodIndex, args, argTypes);
-	}
-
-	@Override
-	public String invokeYaml(String beanName, String className, String methodName, int methodIndex, String args,
-			String argTypes) {
-		return yamlInvokerService.invoke(beanName, className, methodName, methodIndex, args, argTypes);
+		return invokerService.invoke(beanName, className, methodName, methodIndex, args, argTypes);
 	}
 
 	@Override

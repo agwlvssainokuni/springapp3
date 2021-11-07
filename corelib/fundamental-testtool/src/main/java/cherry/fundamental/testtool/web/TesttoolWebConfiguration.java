@@ -1,5 +1,5 @@
 /*
- * Copyright 2019,2020 agwlvssainokuni
+ * Copyright 2019,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package cherry.fundamental.testtool.web;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,19 +30,15 @@ public class TesttoolWebConfiguration {
 
 	@Bean
 	@ConditionalOnProperty(prefix = "cherry.testtool.web", name = "invoker", havingValue = "true")
-	public InvokerController invokerController(@Qualifier("jsonInvokerService") InvokerService jsonInvokerService,
-			@Qualifier("yamlInvokerService") InvokerService yamlInvokerService, ReflectionResolver reflectionResolver) {
-		return new InvokerControllerImpl(jsonInvokerService, yamlInvokerService, reflectionResolver);
+	public InvokerController invokerController(InvokerService invokerService, ReflectionResolver reflectionResolver) {
+		return new InvokerControllerImpl(invokerService, reflectionResolver);
 	}
 
 	@Bean
 	@ConditionalOnProperty(prefix = "cherry.testtool.web", name = "stubconfig", havingValue = "true")
-	public StubConfigController stubConfigController(
-			@Qualifier("jsonStubConfigService") StubConfigService jsonStubConfigService,
-			@Qualifier("yamlStubConfigService") StubConfigService yamlStubConfigService, StubRepository repository,
+	public StubConfigController stubConfigController(StubConfigService stubConfigService, StubRepository repository,
 			ReflectionResolver reflectionResolver) {
-		return new StubConfigControllerImpl(jsonStubConfigService, yamlStubConfigService, repository,
-				reflectionResolver);
+		return new StubConfigControllerImpl(stubConfigService, repository, reflectionResolver);
 	}
 
 }

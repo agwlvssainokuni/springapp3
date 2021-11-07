@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,25 +28,18 @@ public interface InvokerController {
 	@RequestMapping()
 	void page();
 
-	@RequestMapping({ "json" })
+	@RequestMapping("invoke")
 	@ResponseBody()
-	String invokeJson(@RequestParam(value = "beanName", required = false) String beanName,
+	String invoke(@RequestParam(value = "beanName", required = false) String beanName,
 			@RequestParam("className") String className, @RequestParam("methodName") String methodName,
-			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
-			@RequestParam("args") String args, @RequestParam("argTypes") String argTypes);
+			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex, @RequestParam("args") String args,
+			@RequestParam("argTypes") String argTypes);
 
-	@RequestMapping({ "yaml" })
-	@ResponseBody()
-	String invokeYaml(@RequestParam(value = "beanName", required = false) String beanName,
-			@RequestParam("className") String className, @RequestParam("methodName") String methodName,
-			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
-			@RequestParam("args") String args, @RequestParam("argTypes") String argTypes);
-
-	@RequestMapping(value = { "json", "yaml" }, params = { "bean" })
+	@RequestMapping("bean")
 	@ResponseBody()
 	List<String> resolveBeanName(@RequestParam("className") String className);
 
-	@RequestMapping(value = { "json", "yaml" }, params = { "method" })
+	@RequestMapping("method")
 	@ResponseBody()
 	List<String> resolveMethod(@RequestParam("className") String className,
 			@RequestParam("methodName") String methodName);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,15 @@ import cherry.fundamental.testtool.stub.StubRepository;
 
 public class StubConfigControllerImpl implements StubConfigController {
 
-	private final StubConfigService jsonStubConfigService;
-
-	private final StubConfigService yamlStubConfigService;
+	private final StubConfigService stubConfigService;
 
 	private final StubRepository repository;
 
 	private final ReflectionResolver reflectionResolver;
 
-	public StubConfigControllerImpl(StubConfigService jsonStubConfigService, StubConfigService yamlStubConfigService,
-			StubRepository repository, ReflectionResolver reflectionResolver) {
-		this.jsonStubConfigService = jsonStubConfigService;
-		this.yamlStubConfigService = yamlStubConfigService;
+	public StubConfigControllerImpl(StubConfigService stubConfigService, StubRepository repository,
+			ReflectionResolver reflectionResolver) {
+		this.stubConfigService = stubConfigService;
 		this.repository = repository;
 		this.reflectionResolver = reflectionResolver;
 	}
@@ -52,42 +49,22 @@ public class StubConfigControllerImpl implements StubConfigController {
 	}
 
 	@Override
-	public String alwaysReturnJson(String className, String methodName, int methodIndex, String value, String valueType) {
+	public String alwaysReturn(String className, String methodName, int methodIndex, String value, String valueType) {
 		if (StringUtils.isEmpty(value)) {
-			return jsonStubConfigService.clear(className, methodName, methodIndex);
+			return stubConfigService.clear(className, methodName, methodIndex);
 		} else {
-			return jsonStubConfigService.alwaysReturn(className, methodName, methodIndex, value, valueType);
+			return stubConfigService.alwaysReturn(className, methodName, methodIndex, value, valueType);
 		}
 	}
 
 	@Override
-	public String alwaysReturnYaml(String className, String methodName, int methodIndex, String value, String valueType) {
-		if (StringUtils.isEmpty(value)) {
-			return yamlStubConfigService.clear(className, methodName, methodIndex);
-		} else {
-			return yamlStubConfigService.alwaysReturn(className, methodName, methodIndex, value, valueType);
-		}
-	}
-
-	@Override
-	public List<String> peekStubJson(String className, String methodName, int methodIndex) {
-		if (!jsonStubConfigService.hasNext(className, methodName, methodIndex)) {
+	public List<String> peekStub(String className, String methodName, int methodIndex) {
+		if (!stubConfigService.hasNext(className, methodName, methodIndex)) {
 			return null;
 		}
 		List<String> list = new ArrayList<>();
-		list.add(jsonStubConfigService.peek(className, methodName, methodIndex));
-		list.add(jsonStubConfigService.peekType(className, methodName, methodIndex));
-		return list;
-	}
-
-	@Override
-	public List<String> peekStubYaml(String className, String methodName, int methodIndex) {
-		if (!jsonStubConfigService.hasNext(className, methodName, methodIndex)) {
-			return null;
-		}
-		List<String> list = new ArrayList<>();
-		list.add(yamlStubConfigService.peek(className, methodName, methodIndex));
-		list.add(yamlStubConfigService.peekType(className, methodName, methodIndex));
+		list.add(stubConfigService.peek(className, methodName, methodIndex));
+		list.add(stubConfigService.peekType(className, methodName, methodIndex));
 		return list;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,40 +28,27 @@ public interface StubConfigController {
 	@RequestMapping()
 	void page();
 
-	@RequestMapping({ "json" })
+	@RequestMapping("put")
 	@ResponseBody()
-	String alwaysReturnJson(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
+	String alwaysReturn(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
 			@RequestParam("value") String value, @RequestParam("valueType") String valueType);
 
-	@RequestMapping({ "yaml" })
+	@RequestMapping("peek")
 	@ResponseBody()
-	String alwaysReturnYaml(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
-			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
-			@RequestParam("value") String value, @RequestParam("valueType") String valueType);
-
-	@RequestMapping(value = { "json" }, params = { "peek" })
-	@ResponseBody()
-	List<String> peekStubJson(@RequestParam("className") String className,
-			@RequestParam("methodName") String methodName,
+	List<String> peekStub(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex);
 
-	@RequestMapping(value = { "yaml" }, params = { "peek" })
-	@ResponseBody()
-	List<String> peekStubYaml(@RequestParam("className") String className,
-			@RequestParam("methodName") String methodName,
-			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex);
-
-	@RequestMapping(value = { "json", "yaml" }, params = { "bean" })
+	@RequestMapping("bean")
 	@ResponseBody()
 	List<String> resolveBeanName(@RequestParam("className") String className);
 
-	@RequestMapping(value = { "json", "yaml" }, params = { "method" })
+	@RequestMapping("method")
 	@ResponseBody()
 	List<String> resolveMethod(@RequestParam("className") String className,
 			@RequestParam("methodName") String methodName);
 
-	@RequestMapping(value = { "json", "yaml" }, params = { "list" })
+	@RequestMapping("list")
 	@ResponseBody()
 	List<String> getStubbedMethod(@RequestParam(value = "className", required = false) String className);
 
