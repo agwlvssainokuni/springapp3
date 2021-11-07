@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 // ENTRY
+
 import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "./stubconfig/App";
 
 window.onload = () => {
-  ReactDOM.render( /*#__PURE__*/React.createElement(App, null), document.querySelector("#root"));
-};
+	ReactDOM.render(
+		<App />,
+		document.querySelector("#root")
+	);
+}
