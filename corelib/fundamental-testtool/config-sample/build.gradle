@@ -1,0 +1,3 @@
+runtimeOnly project(":corelib:fundamental-autoconfigure")
+runtimeOnly project(":corelib:fundamental-bizcal")
+runtimeOnly project(":corelib:fundamental-testtool")
