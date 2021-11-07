@@ -32,9 +32,9 @@ const uri = (r => {
 /**
  * HTMLに埋め込んだCSRF構成に基づきCSRF情報を保持する。
  * HTMLへの埋め込みは以下の要領。
- *   <meta name="csrf-header" th:content="${_csrf.headerName}" />
- *   <meta name="csrf-parameter" th:content="${_csrf.parameterName}" />
- *   <meta name="csrf-token" th:content="${_csrf.token}" />
+ *   <meta name="csrf-header" th:content="${_csrf?.headerName}" />
+ *   <meta name="csrf-parameter" th:content="${_csrf?.parameterName}" />
+ *   <meta name="csrf-token" th:content="${_csrf?.token}" />
  */
 
 
