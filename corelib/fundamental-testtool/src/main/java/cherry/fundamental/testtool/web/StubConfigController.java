@@ -32,7 +32,8 @@ public interface StubConfigController {
 	@ResponseBody()
 	String alwaysReturn(@RequestParam("className") String className, @RequestParam("methodName") String methodName,
 			@RequestParam(value = "methodIndex", defaultValue = "0") int methodIndex,
-			@RequestParam("value") String value, @RequestParam("valueType") String valueType);
+			@RequestParam("value") String value, @RequestParam("valueType") String valueType,
+			@RequestParam("script") String script, @RequestParam("engine") String engine);
 
 	@RequestMapping("peek")
 	@ResponseBody()

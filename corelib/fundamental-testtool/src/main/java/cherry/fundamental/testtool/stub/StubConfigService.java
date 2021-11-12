@@ -24,6 +24,14 @@ public interface StubConfigService {
 
 	String peekType(String className, String methodName, int methodIndex);
 
+	boolean isScript(String className, String methodName, int methodIndex);
+
+	String peekScript(String className, String methodName, int methodIndex);
+
+	String peekScriptEngine(String className, String methodName, int methodIndex);
+
+	String peekScriptEval(String className, String methodName, int methodIndex);
+
 	boolean isThrowable(String className, String methodName, int methodIndex);
 
 	String peekThrowable(String className, String methodName, int methodIndex);
@@ -33,6 +41,10 @@ public interface StubConfigService {
 	String alwaysReturn(String className, String methodName, int methodIndex, String value, String valueType);
 
 	String thenReturn(String className, String methodName, int methodIndex, String value, String valueType);
+
+	String alwaysScript(String className, String methodName, int methodIndex, String script, String engine);
+
+	String thenScript(String className, String methodName, int methodIndex, String script, String engine);
 
 	String alwaysThrows(String className, String methodName, int methodIndex, String throwableClassName);
 

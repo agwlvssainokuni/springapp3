@@ -30,6 +30,8 @@ const App = () => {
     let [methodIndex, setMethodIndex] = useState("0");
     let [value, setValue] = useState("");
     let [valueType, setValueType] = useState("");
+    let [script, setScript] = useState("");
+    let [engine, setEngine] = useState("");
     let [result, setResult] = useState("");
 
     const handleClassName = () => resolveBeanName(className)
@@ -46,12 +48,16 @@ const App = () => {
         .then(r => {
             setValue(r[0]);
             setValueType(r[1]);
+            setScript(r[2]);
+            setEngine(r[3]);
         });
     const handleClearBtn = () => {
         setValue("");
         setValueType("");
+        setScript("");
+        setEngine("");
     };
-    const handleRegisterBtn = () => alwaysReturn(className, methodName, methodIndex, value, valueType)
+    const handleRegisterBtn = () => alwaysReturn(className, methodName, methodIndex, value, valueType, script, engine)
         .then(r => {
             setResult(r);
         });
@@ -167,6 +173,21 @@ const App = () => {
                         label="返却値の型を指定(非必須)"
                         value={valueType}
                         onChange={(e) => setValueType(e.target.value)}>
+                    </TextField>
+                </Grid>
+
+                <Grid item lg={1}>
+                </Grid>
+                <Grid item lg={11}>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        size="small"
+                        multiline
+                        minRows={3}
+                        label="返却値を生成するスクリプトを記述"
+                        value={script}
+                        onChange={(e) => setScript(e.target.value)}>
                     </TextField>
                 </Grid>
 

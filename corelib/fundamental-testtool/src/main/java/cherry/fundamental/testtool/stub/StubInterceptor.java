@@ -25,8 +25,11 @@ public class StubInterceptor implements MethodInterceptor {
 
 	private final StubRepository repository;
 
-	public StubInterceptor(StubRepository repository) {
+	private final StubScriptProcessor scriptProcessor;
+
+	public StubInterceptor(StubRepository repository, StubScriptProcessor scriptProcessor) {
 		this.repository = repository;
+		this.scriptProcessor = scriptProcessor;
 	}
 
 	@Override
@@ -39,6 +42,10 @@ public class StubInterceptor implements MethodInterceptor {
 					throw stub.nextThrowable().getDeclaredConstructor().newInstance();
 				} else if (stub.isMock()) {
 					return method.invoke(stub.nextMock(), invocation.getArguments());
+				} else if (stub.isScript()) {
+					String engine = stub.peekScriptEngine();
+					String script = stub.nextScript();
+					return scriptProcessor.eval(script, engine);
 				} else {
 					return stub.next();
 				}

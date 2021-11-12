@@ -27,6 +27,8 @@ const App = () => {
   let [methodIndex, setMethodIndex] = useState("0");
   let [value, setValue] = useState("");
   let [valueType, setValueType] = useState("");
+  let [script, setScript] = useState("");
+  let [engine, setEngine] = useState("");
   let [result, setResult] = useState("");
 
   const handleClassName = () => resolveBeanName(className).then(r => {
@@ -42,14 +44,18 @@ const App = () => {
   const handlePeekBtn = () => peekStub(className, methodName, methodIndex).then(r => {
     setValue(r[0]);
     setValueType(r[1]);
+    setScript(r[2]);
+    setEngine(r[3]);
   });
 
   const handleClearBtn = () => {
     setValue("");
     setValueType("");
+    setScript("");
+    setEngine("");
   };
 
-  const handleRegisterBtn = () => alwaysReturn(className, methodName, methodIndex, value, valueType).then(r => {
+  const handleRegisterBtn = () => alwaysReturn(className, methodName, methodIndex, value, valueType, script, engine).then(r => {
     setResult(r);
   });
 
@@ -149,6 +155,21 @@ const App = () => {
     label: "\u8FD4\u5374\u5024\u306E\u578B\u3092\u6307\u5B9A(\u975E\u5FC5\u9808)",
     value: valueType,
     onChange: e => setValueType(e.target.value)
+  })), /*#__PURE__*/React.createElement(Grid, {
+    item: true,
+    lg: 1
+  }), /*#__PURE__*/React.createElement(Grid, {
+    item: true,
+    lg: 11
+  }, /*#__PURE__*/React.createElement(TextField, {
+    fullWidth: true,
+    variant: "outlined",
+    size: "small",
+    multiline: true,
+    minRows: 3,
+    label: "\u8FD4\u5374\u5024\u3092\u751F\u6210\u3059\u308B\u30B9\u30AF\u30EA\u30D7\u30C8\u3092\u8A18\u8FF0",
+    value: script,
+    onChange: e => setScript(e.target.value)
   })), /*#__PURE__*/React.createElement(Grid, {
     item: true,
     lg: 1

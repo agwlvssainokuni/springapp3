@@ -19,6 +19,8 @@ package cherry.fundamental.testtool.stub;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Stub<T> {
 
 	private Item<T> always;
@@ -44,6 +46,26 @@ public class Stub<T> {
 
 	public String peekType() {
 		return doPeek().getType();
+	}
+
+	public boolean isScript() {
+		return StringUtils.isNotBlank(doPeek().getScript());
+	}
+
+	public String nextScript() {
+		return doNext().getScript();
+	}
+
+	public String nextScriptEngine() {
+		return doNext().getEngine();
+	}
+
+	public String peekScript() {
+		return doPeek().getScript();
+	}
+
+	public String peekScriptEngine() {
+		return doPeek().getEngine();
 	}
 
 	public boolean isMock() {
@@ -135,6 +157,24 @@ public class Stub<T> {
 		return this;
 	}
 
+	public Stub<T> alwaysScript(String script, String engine) {
+		Item<T> item = new Item<>();
+		item.setScript(script);
+		item.setEngine(engine);
+		always = item;
+		list.clear();
+		return this;
+	}
+
+	public Stub<T> thenScript(String script, String engine) {
+		Item<T> item = new Item<>();
+		item.setScript(script);
+		item.setEngine(engine);
+		list.add(item);
+		always = null;
+		return this;
+	}
+
 	public Stub<T> alwaysMock(Object mock) {
 		Item<T> item = new Item<>();
 		item.setMock(mock);
@@ -173,6 +213,10 @@ public class Stub<T> {
 
 		private String type = null;
 
+		private String script = null;
+
+		private String engine = null;
+
 		private Object mock = null;
 
 		private Class<? extends Throwable> throwable = null;
@@ -191,6 +235,22 @@ public class Stub<T> {
 
 		public void setType(String type) {
 			this.type = type;
+		}
+
+		public String getScript() {
+			return script;
+		}
+
+		public void setScript(String script) {
+			this.script = script;
+		}
+
+		public String getEngine() {
+			return engine;
+		}
+
+		public void setEngine(String engine) {
+			this.engine = engine;
 		}
 
 		public Object getMock() {

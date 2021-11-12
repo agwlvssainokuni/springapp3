@@ -23,25 +23,30 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import javax.script.ScriptException;
+
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang3.StringUtils;
 
 import cherry.fundamental.testtool.reflect.ReflectionResolver;
 import cherry.fundamental.testtool.util.ToMapUtil;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class StubConfigServiceImpl implements StubConfigService {
 
 	private final StubRepository repository;
+
+	private final StubScriptProcessor scriptProcessor;
 
 	private final ObjectMapper objectMapper;
 
 	private final ReflectionResolver reflectionResolver;
 
-	public StubConfigServiceImpl(StubRepository repository, ObjectMapper objectMapper,
-			ReflectionResolver reflectionResolver) {
+	public StubConfigServiceImpl(StubRepository repository, StubScriptProcessor scriptProcessor,
+			ObjectMapper objectMapper, ReflectionResolver reflectionResolver) {
 		this.repository = repository;
+		this.scriptProcessor = scriptProcessor;
 		this.objectMapper = objectMapper;
 		this.reflectionResolver = reflectionResolver;
 	}
@@ -64,6 +69,40 @@ public class StubConfigServiceImpl implements StubConfigService {
 	public String peekType(String className, String methodName, int methodIndex) {
 		return execute(className, methodName, methodIndex, (Function<Method, String>) (method) -> {
 			return repository.get(method).peekType();
+		});
+	}
+
+	@Override
+	public boolean isScript(String className, String methodName, int methodIndex) {
+		return execute(className, methodName, methodIndex, (Predicate<Method>) (method) -> {
+			return repository.get(method).isScript();
+		});
+	}
+
+	@Override
+	public String peekScript(String className, String methodName, int methodIndex) {
+		return execute(className, methodName, methodIndex, (Function<Method, String>) (method) -> {
+			return repository.get(method).peekScript();
+		});
+	}
+
+	@Override
+	public String peekScriptEngine(String className, String methodName, int methodIndex) {
+		return execute(className, methodName, methodIndex, (Function<Method, String>) (method) -> {
+			return repository.get(method).peekScriptEngine();
+		});
+	}
+
+	@Override
+	public String peekScriptEval(String className, String methodName, int methodIndex) {
+		return executeWithMapping(className, methodName, methodIndex, (Function<Method, Object>) (method) -> {
+			String engine = repository.get(method).peekScriptEngine();
+			String script = repository.get(method).peekScript();
+			try {
+				return scriptProcessor.eval(script, engine);
+			} catch (ScriptException ex) {
+				return ToMapUtil.fromThrowable(ex, Integer.MAX_VALUE);
+			}
 		});
 	}
 
@@ -120,6 +159,22 @@ public class StubConfigServiceImpl implements StubConfigService {
 			} catch (IOException ex) {
 				return ToMapUtil.fromThrowable(ex, Integer.MAX_VALUE);
 			}
+		});
+	}
+
+	@Override
+	public String alwaysScript(String className, String methodName, int methodIndex, String script, String engine) {
+		return executeWithMapping(className, methodName, methodIndex, (Function<Method, Object>) (method) -> {
+			repository.get(method).alwaysScript(script, engine);
+			return Boolean.TRUE;
+		});
+	}
+
+	@Override
+	public String thenScript(String className, String methodName, int methodIndex, String script, String engine) {
+		return executeWithMapping(className, methodName, methodIndex, (Function<Method, Object>) (method) -> {
+			repository.get(method).thenScript(script, engine);
+			return Boolean.TRUE;
 		});
 	}
 

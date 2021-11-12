@@ -49,9 +49,13 @@ public class StubConfigControllerImpl implements StubConfigController {
 	}
 
 	@Override
-	public String alwaysReturn(String className, String methodName, int methodIndex, String value, String valueType) {
-		if (StringUtils.isEmpty(value)) {
+	public String alwaysReturn(String className, String methodName, int methodIndex, String value, String valueType,
+			String script, String engine) {
+		if (StringUtils.isBlank(value) && StringUtils.isBlank(script)) {
 			return stubConfigService.clear(className, methodName, methodIndex);
+		}
+		if (StringUtils.isNotBlank(script)) {
+			return stubConfigService.alwaysScript(className, methodName, methodIndex, script, engine);
 		} else {
 			return stubConfigService.alwaysReturn(className, methodName, methodIndex, value, valueType);
 		}
@@ -63,8 +67,17 @@ public class StubConfigControllerImpl implements StubConfigController {
 			return null;
 		}
 		List<String> list = new ArrayList<>();
-		list.add(stubConfigService.peek(className, methodName, methodIndex));
-		list.add(stubConfigService.peekType(className, methodName, methodIndex));
+		if (stubConfigService.isScript(className, methodName, methodIndex)) {
+			list.add(stubConfigService.peekScriptEval(className, methodName, methodIndex));
+			list.add("");
+			list.add(stubConfigService.peekScript(className, methodName, methodIndex));
+			list.add(stubConfigService.peekScriptEngine(className, methodName, methodIndex));
+		} else {
+			list.add(stubConfigService.peek(className, methodName, methodIndex));
+			list.add(stubConfigService.peekType(className, methodName, methodIndex));
+			list.add("");
+			list.add("");
+		}
 		return list;
 	}
 

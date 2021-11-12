@@ -23,7 +23,7 @@ const alwaysReturn = ((action) => {
 	if (csrfToken.header != null) {
 		headers.append(csrfToken.header, csrfToken.token);
 	}
-	return async (className, methodName, methodIndex, value, valueType) => {
+	return async (className, methodName, methodIndex, value, valueType, script, engine) => {
 		let response = await fetch(action, {
 			method: "POST",
 			headers: headers,
@@ -33,6 +33,8 @@ const alwaysReturn = ((action) => {
 				methodIndex: methodIndex,
 				value: value,
 				valueType: valueType,
+				script: script,
+				engine: engine,
 			}),
 		});
 		let result = await response.text();
