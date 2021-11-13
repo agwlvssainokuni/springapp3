@@ -246,13 +246,13 @@ subprojects {
 			implementation "org.apache.commons:commons-lang3"
 			implementation "org.apache.commons:commons-collections4"
 			implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
-			implementation "org.graalvm.js:js"
-			implementation "org.graalvm.js:js-scriptengine"
 			implementation "org.springframework.boot:spring-boot-starter"
 			implementation "org.springframework.boot:spring-boot-starter-json"
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-web"
 			// runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+			runtimeOnly "org.graalvm.js:js"
+			runtimeOnly "org.graalvm.js:js-scriptengine"
 			testImplementation "org.springframework.boot:spring-boot-starter-json"
 		}
 		if (project.name == "fundamental-validator") {

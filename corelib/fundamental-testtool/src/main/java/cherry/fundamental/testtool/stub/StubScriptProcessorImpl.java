@@ -21,6 +21,7 @@ import java.util.Optional;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -32,7 +33,7 @@ public class StubScriptProcessorImpl implements StubScriptProcessor {
     private final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
     private final String defaultEngineName = scriptEngineManager.getEngineFactories().stream()
-            .map(e -> e.getEngineName()).findFirst().get();
+            .map(ScriptEngineFactory::getEngineName).findFirst().get();
 
     private final ApplicationContext applicationContext;
 
