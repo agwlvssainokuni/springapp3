@@ -25,18 +25,23 @@ usage_and_exit() {
     echo "  Options" 1>&2
     echo "    -u BASEURL" 1>&2
     echo "    -s SRCDIR" 1>&2
+    echo "    -r" 1>&2
+    echo "    -c" 1>&2
     exit $1
 }
 
 # 構成項目。
 conf_url=http://localhost:8080
 conf_src=./src
+conf_mode=show
 
-while getopts u:s:h OPT
+while getopts u:s:rch OPT
 do
     case $OPT in
     u) conf_url=${OPTARG%/};;
     s) conf_src=${OPTARG%/};;
+    r) conf_mode=register;;
+    c) conf_mode=clear;;
     h) usage_and_exit 0;;
     \?) usage_and_exit -1;;
     esac
@@ -60,14 +65,37 @@ do
         echo "  ${className}"
         echo "  ${methodName} ${methodIndex}"
         # (d) スタブ設定対象APIを呼び出す。
-        curl \
-            --data-urlencode "className=${className}" \
-            --data-urlencode "methodName=${methodName}" \
-            --data-urlencode "methodIndex=${methodIndex}" \
-            --data-urlencode "value=" \
-            --data-urlencode "valueType=" \
-            --data-urlencode "script@${file}" \
-            --data-urlencode "engine=" \
-            "${conf_url}/testtool/stubconfig/put"
+        case $conf_mode in
+        register)
+            curl \
+                --data-urlencode "className=${className}" \
+                --data-urlencode "methodName=${methodName}" \
+                --data-urlencode "methodIndex=${methodIndex}" \
+                --data-urlencode "value=" \
+                --data-urlencode "valueType=" \
+                --data-urlencode "script@${file}" \
+                --data-urlencode "engine=" \
+                "${conf_url}/testtool/stubconfig/put"
+            ;;
+        clear)
+            curl \
+                --data-urlencode "className=${className}" \
+                --data-urlencode "methodName=${methodName}" \
+                --data-urlencode "methodIndex=${methodIndex}" \
+                --data-urlencode "value=" \
+                --data-urlencode "valueType=" \
+                --data-urlencode "script=" \
+                --data-urlencode "engine=" \
+                "${conf_url}/testtool/stubconfig/put"
+            ;;
+        *)
+            curl \
+                --data-urlencode "className=${className}" \
+                --data-urlencode "methodName=${methodName}" \
+                --data-urlencode "methodIndex=${methodIndex}" \
+                "${conf_url}/testtool/stubconfig/peek"
+            echo
+            ;;
+        esac
     done
 done
