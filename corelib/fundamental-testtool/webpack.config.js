@@ -1,10 +1,10 @@
 module.exports = {
 	output: {
 		filename: "[name]",
-		path: __dirname + "/src/main/resources/static/javascript"
+		path: __dirname + "/src/main/resources/static/testtool/javascript"
 	},
 	entry: {
-		"testtool/invoker.js": "./src/main/javascript/testtool/invoker.js",
-		"testtool/stubconfig.js": "./src/main/javascript/testtool/stubconfig.js"
+		"invoker.js": "./src/main/javascript/invoker.js",
+		"stubconfig.js": "./src/main/javascript/stubconfig.js"
 	}
 };

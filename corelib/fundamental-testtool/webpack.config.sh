@@ -30,8 +30,8 @@ usage_and_exit() {
 
 # 構成項目。
 conf_src=./src/main/javascript
-conf_dst=src/main/resources/static/javascript
-#conf_dst=build/resources/main/static/javascript
+conf_dst=src/main/resources/static/testtool/javascript
+# conf_dst=src/main/resources/static/javascript
 
 while getopts s:d:h OPT; do
         case $OPT in
