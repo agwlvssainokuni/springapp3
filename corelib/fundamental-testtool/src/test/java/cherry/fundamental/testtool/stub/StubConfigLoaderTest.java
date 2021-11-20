@@ -47,6 +47,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import cherry.fundamental.testtool.ToolTester;
+import cherry.fundamental.testtool.reflect.ReflectionResolver;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = StubConfigLoaderTest.class)
@@ -59,6 +60,9 @@ public class StubConfigLoaderTest {
 
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@Autowired
+	private ReflectionResolver reflectionResolver;
 
 	@Autowired
 	private ToolTester toolTester;
@@ -233,7 +237,7 @@ public class StubConfigLoaderTest {
 	}
 
 	private void configure(List<Resource> resources) throws IOException {
-		new StubConfigLoader(repository, objectMapper).load(resources);
+		new StubConfigLoader(repository, objectMapper, reflectionResolver).load(resources);
 	}
 
 }

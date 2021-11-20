@@ -1,5 +1,5 @@
 /*
- * Copyright 2015,2019 agwlvssainokuni
+ * Copyright 2015,2021 agwlvssainokuni
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,6 @@ public class Stub<T> {
 
 	public String nextScript() {
 		return doNext().getScript();
-	}
-
-	public String nextScriptEngine() {
-		return doNext().getEngine();
 	}
 
 	public String peekScript() {
