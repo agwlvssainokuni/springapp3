@@ -23,8 +23,10 @@ basedir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 usage_and_exit() {
     echo "Usage: $0 [options]" 1>&2
     echo "  Options" 1>&2
-    echo "    -u BASEURL" 1>&2
-    echo "    -s SRCDIR" 1>&2
+    echo "    -l {BASE URL}" 1>&2
+    echo "    -s {STUBCONFIG DIR}" 1>&2
+    echo "    -u {BASIC AUTH}" 1>&2
+    echo "    -H {HTTP HEADER}" 1>&2
     echo "    -r" 1>&2
     echo "    -c" 1>&2
     exit $1
@@ -32,14 +34,17 @@ usage_and_exit() {
 
 # 構成項目。
 conf_url=http://localhost:8080
-conf_src=./src
+conf_src=./stubconfig
 conf_mode=show
+curlcmd=(curl)
 
-while getopts u:s:rch OPT
+while getopts l:s:u:H:rch OPT
 do
     case $OPT in
-    u) conf_url=${OPTARG%/};;
+    l) conf_url=${OPTARG%/};;
     s) conf_src=${OPTARG%/};;
+    u) curlcmd+=(-u "${OPTARG}");;
+    H) curlcmd+=(-H "${OPTARG}");;
     r) conf_mode=register;;
     c) conf_mode=clear;;
     h) usage_and_exit 0;;
@@ -67,7 +72,7 @@ do
         # (d) スタブ設定対象APIを呼び出す。
         case $conf_mode in
         register)
-            curl \
+            "${curlcmd[@]}" \
                 --data-urlencode "className=${className}" \
                 --data-urlencode "methodName=${methodName}" \
                 --data-urlencode "methodIndex=${methodIndex}" \
@@ -78,7 +83,7 @@ do
                 "${conf_url}/testtool/stubconfig/put"
             ;;
         clear)
-            curl \
+            "${curlcmd[@]}" \
                 --data-urlencode "className=${className}" \
                 --data-urlencode "methodName=${methodName}" \
                 --data-urlencode "methodIndex=${methodIndex}" \
@@ -89,7 +94,7 @@ do
                 "${conf_url}/testtool/stubconfig/put"
             ;;
         *)
-            curl \
+            "${curlcmd[@]}" \
                 --data-urlencode "className=${className}" \
                 --data-urlencode "methodName=${methodName}" \
                 --data-urlencode "methodIndex=${methodIndex}" \
