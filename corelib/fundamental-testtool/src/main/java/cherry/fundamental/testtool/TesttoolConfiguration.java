@@ -30,6 +30,7 @@ import cherry.fundamental.testtool.invoker.InvokerService;
 import cherry.fundamental.testtool.invoker.InvokerServiceImpl;
 import cherry.fundamental.testtool.reflect.ReflectionResolver;
 import cherry.fundamental.testtool.reflect.ReflectionResolverImpl;
+import cherry.fundamental.testtool.stub.StubConfigLoader;
 import cherry.fundamental.testtool.stub.StubConfigService;
 import cherry.fundamental.testtool.stub.StubConfigServiceImpl;
 import cherry.fundamental.testtool.stub.StubInterceptor;
@@ -77,6 +78,11 @@ public class TesttoolConfiguration {
 	@Bean
 	public StubConfigService stubConfigService() {
 		return new StubConfigServiceImpl(repository, scriptProcessor, objectMapper, reflectionResolver);
+	}
+
+	@Bean
+	public StubConfigLoader stubConfigLoader() {
+		return new StubConfigLoader(repository, objectMapper, reflectionResolver);
 	}
 
 }

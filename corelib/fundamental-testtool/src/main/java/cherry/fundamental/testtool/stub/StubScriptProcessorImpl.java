@@ -42,18 +42,22 @@ public class StubScriptProcessorImpl implements StubScriptProcessor {
     }
 
     @Override
-    public <T> T eval(String script, String engineName) throws ScriptException {
+    public <T> T eval(String script, String engineName, Object... args) throws ScriptException {
         ScriptEngine engine = scriptEngineManager.getEngineByName(
                 Optional.ofNullable(engineName).filter(StringUtils::isNotBlank).orElse(defaultEngineName));
-        configureScriptEngine(engine);
+        configureScriptEngine(engine, args);
         @SuppressWarnings("unchecked")
         T result = (T) engine.eval(script);
         return result;
     }
 
-    private void configureScriptEngine(ScriptEngine engine) {
+    private void configureScriptEngine(ScriptEngine engine, Object[] args) {
         Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         bindings.put("polyglot.js.allowAllAccess", true);
         bindings.put("appctx", applicationContext);
+        bindings.put("args", args);
+        for (int i = 0; i < args.length; i++) {
+            bindings.put("arg" + i, args[i]);
+        }
     }
 }

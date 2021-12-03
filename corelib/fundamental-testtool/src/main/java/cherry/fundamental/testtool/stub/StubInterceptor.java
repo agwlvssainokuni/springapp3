@@ -45,7 +45,7 @@ public class StubInterceptor implements MethodInterceptor {
 				} else if (stub.isScript()) {
 					String engine = stub.peekScriptEngine();
 					String script = stub.nextScript();
-					return scriptProcessor.eval(script, engine);
+					return scriptProcessor.eval(script, engine, invocation.getArguments());
 				} else {
 					return stub.next();
 				}

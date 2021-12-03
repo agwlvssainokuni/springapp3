@@ -20,6 +20,6 @@ import javax.script.ScriptException;
 
 public interface StubScriptProcessor {
 
-    <T> T eval(String script, String engine) throws ScriptException;
+    <T> T eval(String script, String engine, Object... args) throws ScriptException;
 
 }
