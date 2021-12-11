@@ -37,13 +37,13 @@ public class StubConfigServiceImpl implements StubConfigService {
 
 	private final StubRepository repository;
 
-	private final StubScriptProcessor scriptProcessor;
+	private final ScriptProcessor scriptProcessor;
 
 	private final ObjectMapper objectMapper;
 
 	private final ReflectionResolver reflectionResolver;
 
-	public StubConfigServiceImpl(StubRepository repository, StubScriptProcessor scriptProcessor,
+	public StubConfigServiceImpl(StubRepository repository, ScriptProcessor scriptProcessor,
 			ObjectMapper objectMapper, ReflectionResolver reflectionResolver) {
 		this.repository = repository;
 		this.scriptProcessor = scriptProcessor;

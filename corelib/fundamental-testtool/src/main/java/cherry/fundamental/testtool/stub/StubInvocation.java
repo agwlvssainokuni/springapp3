@@ -16,17 +16,9 @@
 
 package cherry.fundamental.testtool.stub;
 
-import java.lang.reflect.Method;
-import java.util.List;
+@FunctionalInterface
+public interface StubInvocation {
 
-public interface StubRepository {
-
-	List<Method> getStubbedMethod();
-
-	boolean contains(Method method);
-
-	StubConfig get(Method method);
-
-	void clear(Method method);
+    Object invoke(Object[] args) throws Throwable;
 
 }

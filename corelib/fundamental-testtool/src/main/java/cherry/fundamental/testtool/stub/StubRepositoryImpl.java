@@ -26,7 +26,7 @@ import org.apache.commons.collections4.map.LazyMap;
 
 public class StubRepositoryImpl implements StubRepository {
 
-	private Map<Method, Stub<?>> stubmap = LazyMap.lazyMap(new HashMap<Method, Stub<?>>(), Stub::new);
+	private Map<Method, StubConfig> stubmap = LazyMap.lazyMap(new HashMap<Method, StubConfig>(), StubConfig::new);
 
 	@Override
 	public List<Method> getStubbedMethod() {
@@ -39,10 +39,8 @@ public class StubRepositoryImpl implements StubRepository {
 	}
 
 	@Override
-	public <T> Stub<T> get(Method method) {
-		@SuppressWarnings("unchecked")
-		Stub<T> stub = (Stub<T>) stubmap.get(method);
-		return stub;
+	public StubConfig get(Method method) {
+		return stubmap.get(method);
 	}
 
 	@Override

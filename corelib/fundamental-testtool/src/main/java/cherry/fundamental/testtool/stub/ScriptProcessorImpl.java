@@ -28,7 +28,7 @@ import javax.script.ScriptException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 
-public class StubScriptProcessorImpl implements StubScriptProcessor {
+public class ScriptProcessorImpl implements ScriptProcessor {
 
     private final ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
 
@@ -37,7 +37,7 @@ public class StubScriptProcessorImpl implements StubScriptProcessor {
 
     private final ApplicationContext applicationContext;
 
-    public StubScriptProcessorImpl(ApplicationContext applicationContext) {
+    public ScriptProcessorImpl(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 

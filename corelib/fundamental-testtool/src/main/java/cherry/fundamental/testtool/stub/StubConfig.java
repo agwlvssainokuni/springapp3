@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class Stub<T> {
+public class StubConfig {
 
-	private Item<T> always;
+	private Item always;
 
-	private final List<Item<T>> list = new LinkedList<>();
+	private final List<Item> list = new LinkedList<>();
 
 	private boolean repeated = false;
 
@@ -36,11 +36,11 @@ public class Stub<T> {
 		return !list.isEmpty();
 	}
 
-	public T next() {
+	public Object next() {
 		return doNext().getValue();
 	}
 
-	public T peek() {
+	public Object peek() {
 		return doPeek().getValue();
 	}
 
@@ -88,21 +88,21 @@ public class Stub<T> {
 		return doPeek().getThrowable();
 	}
 
-	private Item<T> doNext() {
+	private Item doNext() {
 		if (always != null) {
 			return always;
 		}
 		if (list.isEmpty()) {
 			throw new IllegalStateException("Empty stub");
 		}
-		Item<T> item = list.remove(0);
+		Item item = list.remove(0);
 		if (isRepeated()) {
 			list.add(item);
 		}
 		return item;
 	}
 
-	private Item<T> doPeek() {
+	private Item doPeek() {
 		if (always != null) {
 			return always;
 		}
@@ -116,23 +116,23 @@ public class Stub<T> {
 		return repeated;
 	}
 
-	public Stub<?> setRepeated(boolean repeated) {
+	public StubConfig setRepeated(boolean repeated) {
 		this.repeated = repeated;
 		return this;
 	}
 
-	public Stub<T> clear() {
+	public StubConfig clear() {
 		always = null;
 		list.clear();
 		return this;
 	}
 
-	public <E extends T> Stub<T> alwaysReturn(E value) {
+	public StubConfig alwaysReturn(Object value) {
 		return alwaysReturn(value, value == null ? null : value.getClass().getCanonicalName());
 	}
 
-	public <E extends T> Stub<T> alwaysReturn(E value, String type) {
-		Item<T> item = new Item<>();
+	public StubConfig alwaysReturn(Object value, String type) {
+		Item item = new Item();
 		item.setValue(value);
 		item.setType(type);
 		always = item;
@@ -140,12 +140,12 @@ public class Stub<T> {
 		return this;
 	}
 
-	public <E extends T> Stub<T> thenReturn(E value) {
+	public StubConfig thenReturn(Object value) {
 		return thenReturn(value, value == null ? null : value.getClass().getCanonicalName());
 	}
 
-	public <E extends T> Stub<T> thenReturn(E value, String type) {
-		Item<T> item = new Item<>();
+	public StubConfig thenReturn(Object value, String type) {
+		Item item = new Item();
 		item.setValue(value);
 		item.setType(type);
 		list.add(item);
@@ -153,8 +153,8 @@ public class Stub<T> {
 		return this;
 	}
 
-	public Stub<T> alwaysScript(String script, String engine) {
-		Item<T> item = new Item<>();
+	public StubConfig alwaysScript(String script, String engine) {
+		Item item = new Item();
 		item.setScript(script);
 		item.setEngine(engine);
 		always = item;
@@ -162,8 +162,8 @@ public class Stub<T> {
 		return this;
 	}
 
-	public Stub<T> thenScript(String script, String engine) {
-		Item<T> item = new Item<>();
+	public StubConfig thenScript(String script, String engine) {
+		Item item = new Item();
 		item.setScript(script);
 		item.setEngine(engine);
 		list.add(item);
@@ -171,41 +171,41 @@ public class Stub<T> {
 		return this;
 	}
 
-	public Stub<T> alwaysMock(Object mock) {
-		Item<T> item = new Item<>();
+	public StubConfig alwaysMock(Object mock) {
+		Item item = new Item();
 		item.setMock(mock);
 		always = item;
 		list.clear();
 		return this;
 	}
 
-	public Stub<T> thenMock(Object mock) {
-		Item<T> item = new Item<>();
+	public StubConfig thenMock(Object mock) {
+		Item item = new Item();
 		item.setMock(mock);
 		list.add(item);
 		always = null;
 		return this;
 	}
 
-	public Stub<T> alwaysThrows(Class<? extends Throwable> klass) {
-		Item<T> item = new Item<>();
+	public StubConfig alwaysThrows(Class<? extends Throwable> klass) {
+		Item item = new Item();
 		item.setThrowable(klass);
 		always = item;
 		list.clear();
 		return this;
 	}
 
-	public Stub<T> thenThrows(Class<? extends Throwable> klass) {
-		Item<T> item = new Item<>();
+	public StubConfig thenThrows(Class<? extends Throwable> klass) {
+		Item item = new Item();
 		item.setThrowable(klass);
 		list.add(item);
 		always = null;
 		return this;
 	}
 
-	static class Item<T> {
+	static class Item {
 
-		private T value = null;
+		private Object value = null;
 
 		private String type = null;
 
@@ -217,11 +217,11 @@ public class Stub<T> {
 
 		private Class<? extends Throwable> throwable = null;
 
-		public T getValue() {
+		public Object getValue() {
 			return value;
 		}
 
-		public void setValue(T value) {
+		public void setValue(Object value) {
 			this.value = value;
 		}
 

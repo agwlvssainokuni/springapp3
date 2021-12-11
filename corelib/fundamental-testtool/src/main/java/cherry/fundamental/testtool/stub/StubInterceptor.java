@@ -16,40 +16,22 @@
 
 package cherry.fundamental.testtool.stub;
 
-import java.lang.reflect.Method;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 public class StubInterceptor implements MethodInterceptor {
 
-	private final StubRepository repository;
+	private final StubResolver stubResolver;
 
-	private final StubScriptProcessor scriptProcessor;
-
-	public StubInterceptor(StubRepository repository, StubScriptProcessor scriptProcessor) {
-		this.repository = repository;
-		this.scriptProcessor = scriptProcessor;
+	public StubInterceptor(StubResolver stubResolver) {
+		this.stubResolver = stubResolver;
 	}
 
 	@Override
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		Method method = invocation.getMethod();
-		if (repository.contains(method)) {
-			Stub<?> stub = repository.get(method);
-			if (stub.hasNext()) {
-				if (stub.isThrowable()) {
-					throw stub.nextThrowable().getDeclaredConstructor().newInstance();
-				} else if (stub.isMock()) {
-					return method.invoke(stub.nextMock(), invocation.getArguments());
-				} else if (stub.isScript()) {
-					String engine = stub.peekScriptEngine();
-					String script = stub.nextScript();
-					return scriptProcessor.eval(script, engine, invocation.getArguments());
-				} else {
-					return stub.next();
-				}
-			}
+		var stubOpt = stubResolver.getStubInvocation(invocation);
+		if (stubOpt.isPresent()) {
+			return stubOpt.get().invoke(invocation.getArguments());
 		}
 		return invocation.proceed();
 	}

@@ -17,16 +17,17 @@
 package cherry.fundamental.testtool.stub;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Optional;
 
-public interface StubRepository {
+import org.aopalliance.intercept.MethodInvocation;
+import org.aspectj.lang.ProceedingJoinPoint;
 
-	List<Method> getStubbedMethod();
+public interface StubResolver {
 
-	boolean contains(Method method);
+    Optional<StubInvocation> getStubInvocation(Method method);
 
-	StubConfig get(Method method);
+    Optional<StubInvocation> getStubInvocation(MethodInvocation invocation);
 
-	void clear(Method method);
+    Optional<StubInvocation> getStubInvocation(ProceedingJoinPoint pjp);
 
 }

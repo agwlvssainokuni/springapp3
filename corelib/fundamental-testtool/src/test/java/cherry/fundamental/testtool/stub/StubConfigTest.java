@@ -38,10 +38,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import cherry.fundamental.testtool.ToolTester;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = StubTest.class)
+@SpringBootTest(classes = StubConfigTest.class)
 @SpringBootApplication(scanBasePackages = "cherry.fundamental.testtool")
 @ImportResource(locations = { "classpath:spring/appctx-trace.xml", "classpath:spring/appctx-stub.xml" })
-public class StubTest {
+public class StubConfigTest {
 
 	@Autowired
 	private StubRepository repository;
@@ -62,7 +62,7 @@ public class StubTest {
 
 	@Test
 	public void testNext() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName());
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName());
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -73,7 +73,7 @@ public class StubTest {
 
 	@Test
 	public void testNextWhenRepeatedFalse() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName())
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName())
 				.setRepeated(false);
 		assertFalse(repository.get(method).isRepeated());
 
@@ -88,7 +88,7 @@ public class StubTest {
 
 	@Test
 	public void testNextWhenRepeatedTrue() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName())
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName())
 				.setRepeated(true);
 		assertTrue(repository.get(method).isRepeated());
 
@@ -107,7 +107,7 @@ public class StubTest {
 
 	@Test
 	public void testPeek() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName());
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L), Long.class.getCanonicalName());
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -121,7 +121,7 @@ public class StubTest {
 	@Test
 	public void testNextWhenEmpty() {
 		assertThrows(IllegalStateException.class, () -> {
-			Stub<?> stub = repository.get(method);
+			StubConfig stub = repository.get(method);
 			assertFalse(stub.hasNext());
 			stub.next();
 		});
@@ -130,7 +130,7 @@ public class StubTest {
 	@Test
 	public void testPeekWhenEmpty() {
 		assertThrows(IllegalStateException.class, () -> {
-			Stub<?> stub = repository.get(method);
+			StubConfig stub = repository.get(method);
 			assertFalse(stub.hasNext());
 			stub.peek();
 		});
@@ -139,7 +139,7 @@ public class StubTest {
 	@Test
 	public void testNextMock() {
 		ToolTester mock = mock(ToolTester.class);
-		Stub<?> stub = repository.get(method).thenMock(mock);
+		StubConfig stub = repository.get(method).thenMock(mock);
 		assertTrue(stub.hasNext());
 		assertTrue(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -150,7 +150,7 @@ public class StubTest {
 	@Test
 	public void testPeekMock() {
 		ToolTester mock = mock(ToolTester.class);
-		Stub<?> stub = repository.get(method).thenMock(mock);
+		StubConfig stub = repository.get(method).thenMock(mock);
 		assertTrue(stub.hasNext());
 		assertTrue(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -162,7 +162,7 @@ public class StubTest {
 
 	@Test
 	public void testNextThrowable() {
-		Stub<?> stub = repository.get(method).thenThrows(IllegalArgumentException.class);
+		StubConfig stub = repository.get(method).thenThrows(IllegalArgumentException.class);
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertTrue(stub.isThrowable());
@@ -172,7 +172,7 @@ public class StubTest {
 
 	@Test
 	public void testPeekThrowable() {
-		Stub<?> stub = repository.get(method).thenThrows(IllegalArgumentException.class);
+		StubConfig stub = repository.get(method).thenThrows(IllegalArgumentException.class);
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertTrue(stub.isThrowable());
@@ -184,7 +184,7 @@ public class StubTest {
 
 	@Test
 	public void testAlwaysReturn1() {
-		Stub<?> stub = repository.get(method).alwaysReturn(Long.valueOf(123L));
+		StubConfig stub = repository.get(method).alwaysReturn(Long.valueOf(123L));
 		for (int i = 0; i < 100; i++) {
 			assertTrue(stub.hasNext());
 			assertFalse(stub.isMock());
@@ -199,7 +199,7 @@ public class StubTest {
 
 	@Test
 	public void testAlwaysReturn1_null() {
-		Stub<?> stub = repository.get(method).alwaysReturn((Long) null);
+		StubConfig stub = repository.get(method).alwaysReturn((Long) null);
 		for (int i = 0; i < 100; i++) {
 			assertTrue(stub.hasNext());
 			assertFalse(stub.isMock());
@@ -214,7 +214,7 @@ public class StubTest {
 
 	@Test
 	public void testAlwaysReturn2() {
-		Stub<?> stub = repository.get(method).alwaysReturn(Long.valueOf(123L), "long");
+		StubConfig stub = repository.get(method).alwaysReturn(Long.valueOf(123L), "long");
 		for (int i = 0; i < 100; i++) {
 			assertTrue(stub.hasNext());
 			assertFalse(stub.isMock());
@@ -229,7 +229,7 @@ public class StubTest {
 
 	@Test
 	public void testThenReturn1() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L));
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L));
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -241,7 +241,7 @@ public class StubTest {
 
 	@Test
 	public void testThenReturn1_null() {
-		Stub<?> stub = repository.get(method).thenReturn((Long) null);
+		StubConfig stub = repository.get(method).thenReturn((Long) null);
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -253,7 +253,7 @@ public class StubTest {
 
 	@Test
 	public void testThenReturn2() {
-		Stub<?> stub = repository.get(method).thenReturn(Long.valueOf(123L), "long");
+		StubConfig stub = repository.get(method).thenReturn(Long.valueOf(123L), "long");
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -266,7 +266,7 @@ public class StubTest {
 	@Test
 	public void testAlwaysMock() {
 		ToolTester mock = mock(ToolTester.class);
-		Stub<?> stub = repository.get(method).alwaysMock(mock);
+		StubConfig stub = repository.get(method).alwaysMock(mock);
 		for (int i = 0; i < 100; i++) {
 			assertTrue(stub.hasNext());
 			assertTrue(stub.isMock());
@@ -281,7 +281,7 @@ public class StubTest {
 	@Test
 	public void testThenMock() {
 		ToolTester mock = mock(ToolTester.class);
-		Stub<?> stub = repository.get(method).thenMock(mock);
+		StubConfig stub = repository.get(method).thenMock(mock);
 		assertTrue(stub.hasNext());
 		assertTrue(stub.isMock());
 		assertFalse(stub.isThrowable());
@@ -292,7 +292,7 @@ public class StubTest {
 
 	@Test
 	public void testAlwaysThrows() {
-		Stub<?> stub = repository.get(method).alwaysThrows(IllegalArgumentException.class);
+		StubConfig stub = repository.get(method).alwaysThrows(IllegalArgumentException.class);
 		for (int i = 0; i < 100; i++) {
 			assertTrue(stub.hasNext());
 			assertFalse(stub.isMock());
@@ -306,7 +306,7 @@ public class StubTest {
 
 	@Test
 	public void testThenThrows() {
-		Stub<?> stub = repository.get(method).thenThrows(IllegalArgumentException.class);
+		StubConfig stub = repository.get(method).thenThrows(IllegalArgumentException.class);
 		assertTrue(stub.hasNext());
 		assertFalse(stub.isMock());
 		assertTrue(stub.isThrowable());

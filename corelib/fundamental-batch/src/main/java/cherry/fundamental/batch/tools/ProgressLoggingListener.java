@@ -16,6 +16,8 @@
 
 package cherry.fundamental.batch.tools;
 
+import java.time.Duration;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -50,7 +52,7 @@ public class ProgressLoggingListener implements SpringApplicationRunListener {
 	}
 
 	@Override
-	public void started(ConfigurableApplicationContext context) {
+	public void started(ConfigurableApplicationContext context, Duration timeTaken) {
 		log.info(msg.resolve("BATCH {0} INITIALIZED", batchId));
 	}
 

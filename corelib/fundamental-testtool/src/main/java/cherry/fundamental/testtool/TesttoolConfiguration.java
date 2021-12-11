@@ -30,14 +30,15 @@ import cherry.fundamental.testtool.invoker.InvokerService;
 import cherry.fundamental.testtool.invoker.InvokerServiceImpl;
 import cherry.fundamental.testtool.reflect.ReflectionResolver;
 import cherry.fundamental.testtool.reflect.ReflectionResolverImpl;
+import cherry.fundamental.testtool.stub.ScriptProcessor;
+import cherry.fundamental.testtool.stub.ScriptProcessorImpl;
 import cherry.fundamental.testtool.stub.StubConfigLoader;
 import cherry.fundamental.testtool.stub.StubConfigService;
 import cherry.fundamental.testtool.stub.StubConfigServiceImpl;
-import cherry.fundamental.testtool.stub.StubInterceptor;
 import cherry.fundamental.testtool.stub.StubRepository;
 import cherry.fundamental.testtool.stub.StubRepositoryImpl;
-import cherry.fundamental.testtool.stub.StubScriptProcessor;
-import cherry.fundamental.testtool.stub.StubScriptProcessorImpl;
+import cherry.fundamental.testtool.stub.StubResolver;
+import cherry.fundamental.testtool.stub.StubResolverImpl;
 
 @Configuration
 public class TesttoolConfiguration {
@@ -46,13 +47,13 @@ public class TesttoolConfiguration {
 
 	private final StubRepository repository = new StubRepositoryImpl();
 
-	private final StubScriptProcessor scriptProcessor;
+	private final ScriptProcessor scriptProcessor;
 
 	private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().modules(new JavaTimeModule())
 			.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS).factory(new YAMLFactory()).build();
 
 	public TesttoolConfiguration(ApplicationContext applicationContext) {
-		this.scriptProcessor = new StubScriptProcessorImpl(applicationContext);
+		this.scriptProcessor = new ScriptProcessorImpl(applicationContext);
 	}
 
 	@Bean
@@ -71,8 +72,8 @@ public class TesttoolConfiguration {
 	}
 
 	@Bean
-	public StubInterceptor stubInterceptor() {
-		return new StubInterceptor(repository, scriptProcessor);
+	public StubResolver stubResolver() {
+		return new StubResolverImpl(repository, scriptProcessor);
 	}
 
 	@Bean

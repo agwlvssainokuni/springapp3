@@ -1,3 +1,4 @@
 runtimeOnly project(":corelib:fundamental-autoconfigure")
 runtimeOnly project(":corelib:fundamental-bizcal")
-runtimeOnly project(":corelib:fundamental-testtool")
+implementation project(":corelib:fundamental-testtool")
+implementation "org.springframework.boot:spring-boot-starter-aop"

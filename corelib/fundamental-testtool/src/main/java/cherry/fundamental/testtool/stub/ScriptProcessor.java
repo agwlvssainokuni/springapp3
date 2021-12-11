@@ -18,7 +18,7 @@ package cherry.fundamental.testtool.stub;
 
 import javax.script.ScriptException;
 
-public interface StubScriptProcessor {
+public interface ScriptProcessor {
 
     <T> T eval(String script, String engine, Object... args) throws ScriptException;
 
