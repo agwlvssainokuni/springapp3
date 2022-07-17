@@ -2,7 +2,7 @@ buildscript {
 	ext {
 
 		// Spring Bootのバージョン。
-		versionSpringBoot = "2.6.1"
+		versionSpringBoot = "2.7.1"
 
 		// リリース物件ビルド構成。
 		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
@@ -91,18 +91,18 @@ subprojects {
 	dependencyManagement {
 		imports {
 			mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}"
-			mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.0"
+			mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.3"
 		}
 		dependencies {
 			dependency group: "org.apache.commons", name: "commons-collections4", version: "4.4"
 			dependency group: "org.apache.commons", name: "commons-csv", version: "1.9.0"
-			dependency group: "com.google.guava", name: "guava", version: "31.0.1-jre"
+			dependency group: "com.google.guava", name: "guava", version: "31.1-jre"
 			dependency group: "javax.el", name: "javax.el-api", version: "3.0.0"
 			dependency group: "org.glassfish", name: "javax.el", version: "3.0.0"
-			dependency group: "org.graalvm.js", name: "js", version: "21.3.0"
-			dependency group: "org.graalvm.js", name: "js-scriptengine", version: "21.3.0"
+			dependency group: "org.graalvm.js", name: "js", version: "22.1.0.1"
+			dependency group: "org.graalvm.js", name: "js-scriptengine", version: "22.1.0.1"
 			dependency group: "org.fluentd", name: "fluent-logger", version: "0.3.4"
-			dependency group: "com.icegreen", name: "greenmail", version: "1.6.5"
+			dependency group: "com.icegreen", name: "greenmail", version: "1.6.9"
 		}
 	}
 
