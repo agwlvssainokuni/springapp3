@@ -2,7 +2,7 @@ buildscript {
 	ext {
 
 		// Spring Bootのバージョン。
-		versionSpringBoot = "2.7.1"
+		versionSpringBoot = "2.7.2"
 
 		// リリース物件ビルド構成。
 		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
@@ -20,7 +20,7 @@ buildscript {
 }
 
 plugins {
-	id "io.spring.dependency-management" version "1.0.11.RELEASE" apply false
+	id "io.spring.dependency-management" version "1.0.12.RELEASE" apply false
 	id "org.springframework.boot" version "${versionSpringBoot}" apply false
 }
 
