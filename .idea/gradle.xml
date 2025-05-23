@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/corelib" />
+            <option value="$PROJECT_DIR$/corelib/elemental-chartype" />
+            <option value="$PROJECT_DIR$/corelib/elemental-code" />
+            <option value="$PROJECT_DIR$/corelib/elemental-collection" />
+            <option value="$PROJECT_DIR$/corelib/elemental-command" />
+            <option value="$PROJECT_DIR$/corelib/elemental-crypto" />
+            <option value="$PROJECT_DIR$/corelib/elemental-encdec" />
+            <option value="$PROJECT_DIR$/corelib/elemental-fluent" />
+            <option value="$PROJECT_DIR$/corelib/elemental-log" />
+            <option value="$PROJECT_DIR$/corelib/elemental-logback" />
+            <option value="$PROJECT_DIR$/corelib/elemental-loop" />
+            <option value="$PROJECT_DIR$/corelib/elemental-paginate" />
+            <option value="$PROJECT_DIR$/corelib/elemental-util" />
+            <option value="$PROJECT_DIR$/corelib/elemental-wakachi" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-appinfo" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-autoconfigure" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-batch" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-bizcal" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-buildinfo" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-crypto" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-formatter" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-mail" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-numbering" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-servlet" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-spring" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-testtool" />
+            <option value="$PROJECT_DIR$/corelib/fundamental-validator" />
+            <option value="$PROJECT_DIR$/galleryapp" />
+            <option value="$PROJECT_DIR$/galleryapp/gallery-blank-web" />
+            <option value="$PROJECT_DIR$/galleryapp/gallery-ex01-web" />
+            <option value="$PROJECT_DIR$/galleryapp/gallery-login-inmem-web" />
+            <option value="$PROJECT_DIR$/galleryapp/gallery-login-jdbc-web" />
+            <option value="$PROJECT_DIR$/release" />
+            <option value="$PROJECT_DIR$/release/buildinfo" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>
