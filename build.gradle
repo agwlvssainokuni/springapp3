@@ -1,337 +1,347 @@
 buildscript {
-	ext {
+    ext {
 
-		// Spring Bootのバージョン。
-		versionSpringBoot = "2.7.2"
+        // Spring Bootのバージョン。
+        versionSpringBoot = "3.4.6"
 
-		// リリース物件ビルド構成。
-		getProjectProperty = {n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
-		propInstid = getProjectProperty("instid", "00")
-		propEnvname = getProjectProperty("envname", "prod")
-		propTopdir = getProjectProperty("topdir", "/opt/${rootProject.name}")
-		propInstdir = getProjectProperty("instdir", "${propTopdir}/${propInstid}")
-		propWebdir = getProjectProperty("webdir", "${propInstdir}/web")
-		propWebconfdir = getProjectProperty("webconfdir", "${propWebdir}/conf")
-		propWeblogdir = getProjectProperty("weblogdir", "${propWebdir}/log")
-		propBatchdir = getProjectProperty("batchdir", "${propInstdir}/batch")
-		propBatchconfdir = getProjectProperty("batchconfdir", "${propBatchdir}/conf")
-		propBatchlogdir = getProjectProperty("batchlogdir", "${propBatchdir}/log")
-	}
+        // リリース物件ビルド構成。
+        getProjectProperty = { n, v -> rootProject.hasProperty(n) ? rootProject.getProperty(n) : v }
+        propInstid = getProjectProperty("instid", "00")
+        propEnvname = getProjectProperty("envname", "prod")
+        propTopdir = getProjectProperty("topdir", "/opt/${rootProject.name}")
+        propInstdir = getProjectProperty("instdir", "${propTopdir}/${propInstid}")
+        propWebdir = getProjectProperty("webdir", "${propInstdir}/web")
+        propWebconfdir = getProjectProperty("webconfdir", "${propWebdir}/conf")
+        propWeblogdir = getProjectProperty("weblogdir", "${propWebdir}/log")
+        propBatchdir = getProjectProperty("batchdir", "${propInstdir}/batch")
+        propBatchconfdir = getProjectProperty("batchconfdir", "${propBatchdir}/conf")
+        propBatchlogdir = getProjectProperty("batchlogdir", "${propBatchdir}/log")
+    }
 }
 
 plugins {
-	id "io.spring.dependency-management" version "1.0.12.RELEASE" apply false
-	id "org.springframework.boot" version "${versionSpringBoot}" apply false
+    id "io.spring.dependency-management" version "1.1.7" apply false
+    id "org.springframework.boot" version "${versionSpringBoot}" apply false
 }
 
 subprojects {
-	apply plugin: "java-library"
-	apply plugin: "io.spring.dependency-management"
-	if (project.name.startsWith("gallery-")) {
-		apply plugin: "org.springframework.boot"
-	}
+    apply plugin: "java-library"
+    apply plugin: "io.spring.dependency-management"
+    if (project.name.startsWith("gallery-")) {
+        apply plugin: "org.springframework.boot"
+    }
 
-	if (project.name.startsWith("gallery-")) {
-		springBoot { mainClass = "cherry.gallery.Main" }
-	}
+    if (project.name.startsWith("gallery-")) {
+        springBoot { mainClass = "cherry.gallery.Main" }
+    }
 
-	sourceSets {
-		delivery
-	}
+    sourceSets {
+        delivery
+    }
 
-	sourceCompatibility = 17
-	targetCompatibility = 17
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
 
-	compileJava.options.encoding = "UTF-8"
-	compileTestJava.options.encoding = "UTF-8"
-	compileDeliveryJava.options.encoding = "UTF-8"
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
 
-	test {
-		useJUnitPlatform()
-	}
+    tasks.withType(Test).configureEach {
+        useJUnitPlatform()
+        jvmArgs += "-javaagent:${configurations.javaagent.asPath}"
+        jvmArgs += '-Dpolyglot.engine.WarnInterpreterOnly=false'
+    }
 
-	processDeliveryResources {
+    processDeliveryResources {
 
-		def props = new Properties()
-		["tokens/basis.properties", "tokens/${propEnvname}.properties", "tokens/${propEnvname}_${propInstid}.properties"].each {
-			def file = rootProject.file(it)
-			if (file.exists()) {
-				file.withInputStream { props.load(it) }
-			}
-		}
+        def props = new Properties()
+        ["tokens/basis.properties", "tokens/${propEnvname}.properties", "tokens/${propEnvname}_${propInstid}.properties"].each {
+            def file = rootProject.file(it)
+            if (file.exists()) {
+                file.withInputStream { props.load(it) }
+            }
+        }
 
-		props.setProperty("tokens.instid", propInstid)
-		props.setProperty("tokens.envname", propEnvname)
+        props.setProperty("tokens.instid", propInstid)
+        props.setProperty("tokens.envname", propEnvname)
 
-		props.setProperty("tokens.topdir", propTopdir)
-		props.setProperty("tokens.instdir", propInstdir)
-		props.setProperty("tokens.webdir", propWebdir)
-		props.setProperty("tokens.webconfdir", propWebconfdir)
-		props.setProperty("tokens.weblogdir", propWeblogdir)
-		props.setProperty("tokens.batchdir", propBatchdir)
-		props.setProperty("tokens.batchconfdir", propBatchconfdir)
-		props.setProperty("tokens.batchlogdir", propBatchlogdir)
+        props.setProperty("tokens.topdir", propTopdir)
+        props.setProperty("tokens.instdir", propInstdir)
+        props.setProperty("tokens.webdir", propWebdir)
+        props.setProperty("tokens.webconfdir", propWebconfdir)
+        props.setProperty("tokens.weblogdir", propWeblogdir)
+        props.setProperty("tokens.batchdir", propBatchdir)
+        props.setProperty("tokens.batchconfdir", propBatchconfdir)
+        props.setProperty("tokens.batchlogdir", propBatchlogdir)
 
-		filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
-		rename("\\.template\$", "")
-	}
+        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
+        rename("\\.template\$", "")
+    }
 
-	processResources {
-		if (project.name == "buildinfo") {
-			def props = new Properties()
-			["BUILD_NUMBER", "BUILD_ID", "BUILD_TIMESTAMP", "JOB_NAME", "BUILD_TAG", "GIT_COMMIT", "GIT_BRANCH"].each {
-				props.setProperty(it, System.getenv(it) == null ? "N/A" : System.getenv(it))
-			}
-			filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
-		}
-	}
+    processResources {
+        if (project.name == "buildinfo") {
+            def props = new Properties()
+            ["BUILD_NUMBER", "BUILD_ID", "BUILD_TIMESTAMP", "JOB_NAME", "BUILD_TAG", "GIT_COMMIT", "GIT_BRANCH"].each {
+                props.setProperty(it, System.getenv(it) == null ? "N/A" : System.getenv(it))
+            }
+            filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: props)
+        }
+    }
 
-	repositories { mavenCentral() }
+    repositories { mavenCentral() }
 
-	dependencyManagement {
-		imports {
-			mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}"
-			mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.3"
-		}
-		dependencies {
-			dependency group: "org.apache.commons", name: "commons-collections4", version: "4.4"
-			dependency group: "org.apache.commons", name: "commons-csv", version: "1.9.0"
-			dependency group: "com.google.guava", name: "guava", version: "31.1-jre"
-			dependency group: "javax.el", name: "javax.el-api", version: "3.0.0"
-			dependency group: "org.glassfish", name: "javax.el", version: "3.0.0"
-			dependency group: "org.graalvm.js", name: "js", version: "22.1.0.1"
-			dependency group: "org.graalvm.js", name: "js-scriptengine", version: "22.1.0.1"
-			dependency group: "org.fluentd", name: "fluent-logger", version: "0.3.4"
-			dependency group: "com.icegreen", name: "greenmail", version: "1.6.9"
-		}
-	}
+    configurations { javaagent }
 
-	dependencies {
-		// elemental
-		if (project.name == "elemental-chartype") {
-			implementation "org.apache.commons:commons-lang3"
-		}
-		if (project.name == "elemental-code") {
-			// なし。
-		}
-		if (project.name == "elemental-collection") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.apache.commons:commons-collections4"
-		}
-		if (project.name == "elemental-command") {
-			implementation "org.apache.commons:commons-lang3"
-		}
-		if (project.name == "elemental-crypto") {
-			implementation "org.apache.commons:commons-lang3"
-			testImplementation "commons-codec:commons-codec"
-		}
-		if (project.name == "elemental-encdec") {
-			testImplementation "org.apache.commons:commons-lang3"
-		}
-		if (project.name == "elemental-log") {
-			implementation "org.slf4j:slf4j-api"
-		}
-		if (project.name == "elemental-logback") {
-			implementation "ch.qos.logback:logback-classic"
-			testImplementation "org.slf4j:slf4j-api"
-			testRuntimeOnly "org.codehaus.janino:janino"
-		}
-		if (project.name == "elemental-loop") {
-			implementation "com.google.guava:guava"
-			testImplementation "org.slf4j:slf4j-api"
-			testRuntimeOnly "ch.qos.logback:logback-classic"
-		}
-		if (project.name == "elemental-paginate") {
-			implementation "org.apache.commons:commons-lang3"
-		}
-		if (project.name == "elemental-util") {
-			// なし。
-		}
-		if (project.name == "elemental-wakachi") {
-			// なし。
-		}
-		if (project.name == "elemental-fluent") {
-			implementation "org.fluentd:fluent-logger"
-			implementation "ch.qos.logback:logback-classic"
-		}
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${versionSpringBoot}"
+            mavenBom "io.micrometer:micrometer-bom:1.15.0"
+        }
+        dependencies {
+            dependency "org.apache.commons:commons-collections4:4.5.0"
+            dependency "org.apache.commons:commons-csv:1.14.0"
+            dependency "com.google.guava:guava:33.4.8-jre"
+            dependency "javax.el:javax.el-api:3.0.0"
+            dependency "org.glassfish:javax.el:3.0.0"
+            dependency "org.graalvm.js:js:24.2.1"
+            dependency "org.graalvm.js:js-scriptengine:24.2.1"
+            dependency "org.fluentd:fluent-logger:0.3.4"
+            dependency "com.icegreen:greenmail:2.1.3"
+        }
+    }
 
-		// fundamental
-		if (project.name == "fundamental-autoconfigure") {
-			compileOnly project(":corelib:elemental-crypto")
-			compileOnly project(":corelib:fundamental-appinfo")
-			compileOnly project(":corelib:fundamental-bizcal")
-			compileOnly project(":corelib:fundamental-buildinfo")
-			compileOnly project(":corelib:fundamental-crypto")
-			compileOnly project(":corelib:fundamental-formatter")
-			compileOnly project(":corelib:fundamental-mail")
-			compileOnly project(":corelib:fundamental-numbering")
-			compileOnly project(":corelib:fundamental-servlet")
-			compileOnly project(":corelib:fundamental-validator")
-			testImplementation project(":corelib:elemental-chartype")
-			testImplementation project(":corelib:elemental-crypto")
-			testImplementation project(":corelib:fundamental-appinfo")
-			testImplementation project(":corelib:fundamental-bizcal")
-			testImplementation project(":corelib:fundamental-buildinfo")
-			testImplementation project(":corelib:fundamental-crypto")
-			testImplementation project(":corelib:fundamental-formatter")
-			testImplementation project(":corelib:fundamental-mail")
-			testImplementation project(":corelib:fundamental-numbering")
-			testImplementation project(":corelib:fundamental-servlet")
-			testImplementation project(":corelib:fundamental-validator")
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.apache.commons:commons-collections4"
-			testImplementation "org.apache.commons:commons-lang3"
-			testImplementation "com.google.guava:guava"
-			testImplementation "javax.servlet:javax.servlet-api"
-			compileOnly "org.springframework.boot:spring-boot-starter-jdbc"
-			testImplementation "org.springframework.boot:spring-boot-starter-jdbc"
-			compileOnly "org.springframework.boot:spring-boot-starter-mail"
-			testImplementation "org.springframework.boot:spring-boot-starter-mail"
-			testRuntimeOnly "com.h2database:h2"
-			testImplementation "com.icegreen:greenmail"
-			compileOnly "org.springframework.boot:spring-boot-configuration-processor"
-		}
-		if (project.name == "fundamental-appinfo") {
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
-		if (project.name == "fundamental-batch") {
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
-		if (project.name == "fundamental-bizcal") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.yaml:snakeyaml"
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
-		if (project.name == "fundamental-buildinfo") {
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
-		if (project.name == "fundamental-crypto") {
-			implementation project(":corelib:elemental-crypto")
-			implementation "org.apache.commons:commons-collections4"
-			implementation "org.springframework.boot:spring-boot-starter"
-			testImplementation project(":corelib:elemental-crypto")
-		}
-		if (project.name == "fundamental-formatter") {
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
-		if (project.name == "fundamental-mail") {
-			implementation project(":corelib:elemental-loop")
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.freemarker:freemarker"
-			implementation "org.yaml:snakeyaml"
-			implementation "org.springframework.boot:spring-boot-starter-jdbc"
-			implementation "org.springframework.boot:spring-boot-starter-mail"
-		}
-		if (project.name == "fundamental-numbering") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.apache.commons:commons-collections4"
-			implementation "org.springframework.boot:spring-boot-starter-jdbc"
-			testImplementation "com.h2database:h2"
-		}
-		if (project.name == "fundamental-servlet") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.slf4j:slf4j-api"
-			implementation "org.springframework.boot:spring-boot-starter"
-			compileOnly "javax.servlet:javax.servlet-api"
-			testImplementation "javax.servlet:javax.servlet-api"
-		}
-		if (project.name == "fundamental-spring") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.slf4j:slf4j-api"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-web"
-			implementation "org.springframework.boot:spring-boot-starter-security"
-		}
-		if (project.name == "fundamental-testtool") {
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.apache.commons:commons-collections4"
-			implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-json"
-			implementation "org.springframework.boot:spring-boot-starter-aop"
-			// runtimeOnly "org.springframework.boot:spring-boot-starter-web"
-			// runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
-			runtimeOnly "org.graalvm.js:js"
-			runtimeOnly "org.graalvm.js:js-scriptengine"
-			testImplementation "org.springframework.boot:spring-boot-starter-json"
-		}
-		if (project.name == "fundamental-validator") {
-			implementation project(":corelib:elemental-chartype")
-			runtimeOnly "javax.el:javax.el-api"
-			implementation "javax.validation:validation-api"
-			implementation "org.apache.commons:commons-lang3"
-			runtimeOnly "org.glassfish:javax.el"
-			runtimeOnly "org.hibernate.validator:hibernate-validator"
-			implementation "org.springframework.boot:spring-boot-starter"
-		}
+    dependencies {
+        // elemental
+        if (project.name == "elemental-chartype") {
+            implementation "org.apache.commons:commons-lang3"
+        }
+        if (project.name == "elemental-code") {
+            // なし。
+        }
+        if (project.name == "elemental-collection") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.apache.commons:commons-collections4"
+        }
+        if (project.name == "elemental-command") {
+            implementation "org.apache.commons:commons-lang3"
+        }
+        if (project.name == "elemental-crypto") {
+            implementation "org.apache.commons:commons-lang3"
+            testImplementation "commons-codec:commons-codec"
+        }
+        if (project.name == "elemental-encdec") {
+            testImplementation "org.apache.commons:commons-lang3"
+        }
+        if (project.name == "elemental-log") {
+            implementation "org.slf4j:slf4j-api"
+        }
+        if (project.name == "elemental-logback") {
+            implementation "ch.qos.logback:logback-classic"
+            testImplementation "org.slf4j:slf4j-api"
+            testRuntimeOnly "org.codehaus.janino:janino"
+        }
+        if (project.name == "elemental-loop") {
+            implementation "com.google.guava:guava"
+            testImplementation "org.slf4j:slf4j-api"
+            testRuntimeOnly "ch.qos.logback:logback-classic"
+        }
+        if (project.name == "elemental-paginate") {
+            implementation "org.apache.commons:commons-lang3"
+        }
+        if (project.name == "elemental-util") {
+            // なし。
+        }
+        if (project.name == "elemental-wakachi") {
+            // なし。
+        }
+        if (project.name == "elemental-fluent") {
+            implementation "org.fluentd:fluent-logger"
+            implementation "ch.qos.logback:logback-classic"
+        }
 
-		// galleryapp
-		if (project.name == "gallery-blank-web") {
-			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-web"
-			implementation "org.springframework.boot:spring-boot-starter-security"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
-			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
-		}
-		if (project.name == "gallery-login-inmem-web") {
-			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-web"
-			implementation "org.springframework.boot:spring-boot-starter-security"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
-			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
-		}
-		if (project.name == "gallery-login-jdbc-web") {
-			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-web"
-			implementation "org.springframework.boot:spring-boot-starter-security"
-			implementation "org.springframework.boot:spring-boot-starter-jdbc"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
-			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
-			runtimeOnly "org.flywaydb:flyway-core"
-			runtimeOnly "com.h2database:h2"
-		}
-		if (project.name == "gallery-ex01-web") {
-			runtimeOnly project(":corelib:fundamental-autoconfigure")
-			implementation project(":corelib:fundamental-servlet")
-			runtimeOnly project(":corelib:fundamental-spring")
-			implementation "org.apache.commons:commons-lang3"
-			implementation "org.apache.commons:commons-csv"
-			implementation "org.springframework.boot:spring-boot-starter"
-			implementation "org.springframework.boot:spring-boot-starter-web"
-			implementation "org.springframework.boot:spring-boot-starter-security"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-json"
-			implementation "org.springframework.boot:spring-boot-starter-validation"
-			runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
-			implementation "org.springframework.boot:spring-boot-starter-jdbc"
-			runtimeOnly "org.springframework.cloud:spring-cloud-starter-sleuth"
-			runtimeOnly "org.flywaydb:flyway-core"
-			runtimeOnly "com.h2database:h2"
-		}
+        // fundamental
+        if (project.name == "fundamental-autoconfigure") {
+            compileOnly project(":corelib:elemental-crypto")
+            compileOnly project(":corelib:fundamental-appinfo")
+            compileOnly project(":corelib:fundamental-bizcal")
+            compileOnly project(":corelib:fundamental-buildinfo")
+            compileOnly project(":corelib:fundamental-crypto")
+            compileOnly project(":corelib:fundamental-formatter")
+            compileOnly project(":corelib:fundamental-mail")
+            compileOnly project(":corelib:fundamental-numbering")
+            compileOnly project(":corelib:fundamental-servlet")
+            compileOnly project(":corelib:fundamental-validator")
+            testImplementation project(":corelib:elemental-chartype")
+            testImplementation project(":corelib:elemental-crypto")
+            testImplementation project(":corelib:fundamental-appinfo")
+            testImplementation project(":corelib:fundamental-bizcal")
+            testImplementation project(":corelib:fundamental-buildinfo")
+            testImplementation project(":corelib:fundamental-crypto")
+            testImplementation project(":corelib:fundamental-formatter")
+            testImplementation project(":corelib:fundamental-mail")
+            testImplementation project(":corelib:fundamental-numbering")
+            testImplementation project(":corelib:fundamental-servlet")
+            testImplementation project(":corelib:fundamental-validator")
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.apache.commons:commons-collections4"
+            testImplementation "org.apache.commons:commons-lang3"
+            testImplementation "com.google.guava:guava"
+            testImplementation "jakarta.servlet:jakarta.servlet-api"
+            compileOnly "org.springframework.boot:spring-boot-starter-jdbc"
+            testImplementation "org.springframework.boot:spring-boot-starter-jdbc"
+            compileOnly "org.springframework.boot:spring-boot-starter-mail"
+            testImplementation "org.springframework.boot:spring-boot-starter-mail"
+            testRuntimeOnly "com.h2database:h2"
+            testImplementation "com.icegreen:greenmail"
+            compileOnly "org.springframework.boot:spring-boot-configuration-processor"
+        }
+        if (project.name == "fundamental-appinfo") {
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
+        if (project.name == "fundamental-batch") {
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
+        if (project.name == "fundamental-bizcal") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.yaml:snakeyaml"
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
+        if (project.name == "fundamental-buildinfo") {
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
+        if (project.name == "fundamental-crypto") {
+            implementation project(":corelib:elemental-crypto")
+            implementation "org.apache.commons:commons-collections4"
+            implementation "org.springframework.boot:spring-boot-starter"
+            testImplementation project(":corelib:elemental-crypto")
+        }
+        if (project.name == "fundamental-formatter") {
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
+        if (project.name == "fundamental-mail") {
+            implementation project(":corelib:elemental-loop")
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.freemarker:freemarker"
+            implementation "org.yaml:snakeyaml"
+            implementation "org.springframework.boot:spring-boot-starter-jdbc"
+            implementation "org.springframework.boot:spring-boot-starter-mail"
+        }
+        if (project.name == "fundamental-numbering") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.apache.commons:commons-collections4"
+            implementation "org.springframework.boot:spring-boot-starter-jdbc"
+            testImplementation "com.h2database:h2"
+        }
+        if (project.name == "fundamental-servlet") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.slf4j:slf4j-api"
+            implementation "org.springframework.boot:spring-boot-starter"
+            compileOnly "jakarta.servlet:jakarta.servlet-api"
+            testImplementation "jakarta.servlet:jakarta.servlet-api"
+        }
+        if (project.name == "fundamental-spring") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.slf4j:slf4j-api"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-security"
+        }
+        if (project.name == "fundamental-testtool") {
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.apache.commons:commons-collections4"
+            implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-json"
+            implementation "org.springframework.boot:spring-boot-starter-aop"
+            // runtimeOnly "org.springframework.boot:spring-boot-starter-web"
+            // runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+            runtimeOnly "org.graalvm.js:js"
+            runtimeOnly "org.graalvm.js:js-scriptengine"
+            testImplementation "org.springframework.boot:spring-boot-starter-json"
+        }
+        if (project.name == "fundamental-validator") {
+            implementation project(":corelib:elemental-chartype")
+            runtimeOnly "javax.el:javax.el-api"
+            implementation "javax.validation:validation-api"
+            implementation "org.apache.commons:commons-lang3"
+            runtimeOnly "org.glassfish:javax.el"
+            runtimeOnly "org.hibernate.validator:hibernate-validator"
+            implementation "org.springframework.boot:spring-boot-starter"
+        }
 
-		// テストライブラリ。
-		testImplementation "org.junit.jupiter:junit-jupiter"
-		testImplementation "org.hamcrest:hamcrest"
-		testImplementation "org.mockito:mockito-core"
-		testImplementation "org.mockito:mockito-junit-jupiter"
-		if (project.name.startsWith("fundamental-")) {
-			testImplementation "org.springframework.boot:spring-boot-starter-test"
-			testRuntimeOnly "org.springframework.boot:spring-boot-starter-aop"
-		}
-	}
+        // galleryapp
+        if (project.name == "gallery-blank-web") {
+            runtimeOnly project(":corelib:fundamental-spring")
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-security"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+            runtimeOnly "io.micrometer:micrometer-tracing-bridge-brave"
+        }
+        if (project.name == "gallery-login-inmem-web") {
+            runtimeOnly project(":corelib:fundamental-spring")
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-security"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+            runtimeOnly "io.micrometer:micrometer-tracing-bridge-brave"
+        }
+        if (project.name == "gallery-login-jdbc-web") {
+            runtimeOnly project(":corelib:fundamental-spring")
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-security"
+            implementation "org.springframework.boot:spring-boot-starter-jdbc"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-validation"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+            runtimeOnly "io.micrometer:micrometer-tracing-bridge-brave"
+            runtimeOnly "org.flywaydb:flyway-core"
+            runtimeOnly "com.h2database:h2"
+        }
+        if (project.name == "gallery-ex01-web") {
+            runtimeOnly project(":corelib:fundamental-autoconfigure")
+            implementation project(":corelib:fundamental-servlet")
+            runtimeOnly project(":corelib:fundamental-spring")
+            implementation "org.apache.commons:commons-lang3"
+            implementation "org.apache.commons:commons-csv"
+            implementation "org.springframework.boot:spring-boot-starter"
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-security"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-aop"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-json"
+            implementation "org.springframework.boot:spring-boot-starter-validation"
+            runtimeOnly "org.springframework.boot:spring-boot-starter-thymeleaf"
+            implementation "org.springframework.boot:spring-boot-starter-jdbc"
+            runtimeOnly "io.micrometer:micrometer-tracing-bridge-brave"
+            runtimeOnly "org.flywaydb:flyway-core"
+            runtimeOnly "com.h2database:h2"
+        }
+
+        // テストライブラリ。
+        testImplementation "org.junit.jupiter:junit-jupiter"
+        testImplementation "org.hamcrest:hamcrest"
+        testImplementation "org.mockito:mockito-core"
+        testImplementation "org.mockito:mockito-junit-jupiter"
+        javaagent('org.mockito:mockito-core') { transitive = false }
+        if (project.name.startsWith("fundamental-")) {
+            testImplementation "org.springframework.boot:spring-boot-starter-test"
+            testRuntimeOnly "org.springframework.boot:spring-boot-starter-aop"
+        }
+    }
 }
